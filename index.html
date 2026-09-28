@@ -139,20 +139,16 @@
       <!-- Weather Forecast Header -->
       <div id="weather-banner" class="bg-gradient-to-r from-blue-500 to-sky-400 text-white p-3 rounded-2xl shadow-sm space-y-1"></div>
 
-      <!-- Organizer Smart Arrangement -->
-      <div id="organizer-smart-itinerary-wrap" class="hidden">
-        <button onclick="openSmartMatchModal()" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
-          <i class="fa-solid fa-bolt"></i>
-          <span>固定行程的智慧安排</span>
-        </button>
-        <p class="text-[10px] text-slate-400 text-center mt-1">依既有固定行程位置，比對收藏景點並建議安排日期</p>
-      </div>
-
       <!-- Itinerary List -->
       <div id="itinerary-items-container" class="space-y-3"></div>
 
       <!-- Add New Itinerary Item Button -->
-      <div id="organizer-add-itinerary-wrap" class="pt-1 hidden">
+      <div id="organizer-add-itinerary-wrap" class="pt-1 hidden space-y-2">
+        <button onclick="openSmartMatchModal()" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-bolt"></i>
+          <span>固定行程的智慧安排</span>
+        </button>
+        <p class="text-[10px] text-slate-400 text-center">依既有固定行程位置，比對收藏景點並建議安排日期</p>
         <button onclick="openAddItineraryModal()" class="w-full bg-white border border-sky-200 text-sky-700 hover:bg-sky-50 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
           <i class="fa-solid fa-plus text-sky-600"></i>
           <span id="add-itin-btn-label">新增 Day 1 行程地點</span>
@@ -564,7 +560,14 @@
       <input type="hidden" id="edit-itin-id">
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">行程標題：</label>
-        <input type="text" id="input-itin-title" placeholder="例如：Mộc Quán 海鮮晚餐" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <input type="text" id="input-itin-title" oninput="handleItineraryTitleSearch()" placeholder="例如：Mộc Quán 海鮮晚餐" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <div id="itin-map-preview" class="hidden mt-2 bg-sky-50 border border-sky-100 rounded-xl p-2.5">
+          <p class="text-[10px] text-slate-500 mb-1.5">儲存前先確認 Google Maps 搜尋結果是否為你要的地點：</p>
+          <a id="itin-preview-map-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[11px] text-sky-700 font-extrabold inline-flex items-center gap-1">
+            <i class="fa-solid fa-location-dot"></i>
+            <span>開啟 Google Maps 確認地點</span>
+          </a>
+        </div>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">時間 / 備註標籤：</label>
@@ -580,7 +583,8 @@
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">Google Map 導航連結：</label>
-        <input type="text" id="input-itin-map" placeholder="例如：https://maps.google.com/..." class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <input type="text" id="input-itin-map" oninput="handleItineraryTitleSearch()" placeholder="可留白；系統會依行程標題自動搜尋 Google Maps" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <p class="text-[10px] text-slate-400 mt-1">若自動搜尋不是正確地點，可在這裡貼上正確的 Google Maps 連結覆蓋。</p>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">購票 / 預約連結：</label>
@@ -1781,7 +1785,7 @@
     }
 
     function updateItineraryPermissions() {
-      const organizerOnlyIds = ['organizer-add-itinerary-wrap', 'organizer-smart-itinerary-wrap'];
+      const organizerOnlyIds = ['organizer-add-itinerary-wrap'];
       organizerOnlyIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.classList.toggle('hidden', !isOrganizer());
@@ -1794,6 +1798,26 @@
         .trim();
       if (!cleanTitle) return '';
       return `https://maps.google.com/?q=${encodeURIComponent(cleanTitle)}`;
+    }
+
+    function handleItineraryTitleSearch() {
+      const titleEl = document.getElementById('input-itin-title');
+      const mapEl = document.getElementById('input-itin-map');
+      const preview = document.getElementById('itin-map-preview');
+      const link = document.getElementById('itin-preview-map-link');
+      if (!titleEl || !preview || !link) return;
+
+      const title = titleEl.value.trim();
+      const manualMap = mapEl ? mapEl.value.trim() : '';
+      const autoMap = manualMap || buildAutoMapLink(title);
+
+      if (title.length >= 2 && autoMap) {
+        link.href = autoMap;
+        preview.classList.remove('hidden');
+      } else {
+        link.href = '#';
+        preview.classList.add('hidden');
+      }
     }
 
     function renderItinerary() {
@@ -1875,6 +1899,8 @@
       document.getElementById('input-itin-comment').value = '';
       document.getElementById('input-itin-map').value = '';
       document.getElementById('input-itin-ticket').value = '';
+      const mapPreview = document.getElementById('itin-map-preview');
+      if (mapPreview) mapPreview.classList.add('hidden');
 
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -1898,6 +1924,7 @@
       document.getElementById('input-itin-comment').value = item.comment || '';
       document.getElementById('input-itin-map').value = item.map || '';
       document.getElementById('input-itin-ticket').value = item.ticketLink || '';
+      handleItineraryTitleSearch();
 
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
