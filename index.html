@@ -1287,8 +1287,8 @@
       cloudPassword = password;
       cloudConnected = true;
       localStorage.setItem('danang_room_id', roomId);
-      sessionStorage.setItem('perfect_cloud_password', password);
       localStorage.setItem('perfect_cloud_password', password);
+      sessionStorage.setItem('perfect_cloud_password', password);
       const display = document.getElementById('room-name-display');
       if (display) display.textContent = roomId;
       setCloudStatus(`已連線：${roomId}`, true);
@@ -2734,41 +2734,37 @@
     }
 
     window.onload = async function() {
-      const roomDisplay = document.getElementById('room-name-display');
-      if (roomDisplay) roomDisplay.textContent = roomId;
+      document.getElementById('room-name-display').textContent = roomId;
       fetchLiveExchangeRates();
       refreshUI();
 
-      // 房間名稱只是上次使用紀錄；只有 Supabase 驗證成功後才算真正連線。
+      // 房間名稱只是本機記錄，不代表已連線。只有 Supabase 驗證成功後才顯示已連線。
       cloudConnected = false;
-      if (cloudPassword && cloudClient) {
-        setCloudStatus(`正在重新連線：${roomId}…`);
-        try {
-          const { data, error } = await cloudClient.rpc('get_trip_room', {
-            p_room_id: roomId,
-            p_password: cloudPassword
-          });
-          if (!error && data !== null) {
-            // 先以雲端最新狀態覆蓋本機，再正式啟動 polling / realtime。
-            applyRoomState(data || {});
-            activateCloudRoom(roomId, cloudPassword);
-            setCloudStatus(`已連線：${roomId}`, true);
-          } else {
-            sessionStorage.removeItem('perfect_cloud_password');
-            localStorage.removeItem('perfect_cloud_password');
-            cloudPassword = '';
-            cloudConnected = false;
-            setCloudStatus('尚未連線：請重新登入房間');
-          }
-        } catch (err) {
-          console.error('auto reconnect error:', err);
+      setCloudStatus(cloudPassword ? `正在連線：${roomId}…` : '尚未登入雲端房間', false);
+
+      if (!cloudPassword || !cloudClient) return;
+
+      try {
+        const { data, error } = await cloudClient.rpc('get_trip_room', {
+          p_room_id: roomId,
+          p_password: cloudPassword
+        });
+        if (!error && data !== null) {
+          applyRoomState(data || {});
+          activateCloudRoom(roomId, cloudPassword);
+          // 登入完成後立即再拉一次，避免開頁瞬間使用到舊畫面。
+          await pullCloudState(true);
+        } else {
+          sessionStorage.removeItem('perfect_cloud_password');
+          localStorage.removeItem('perfect_cloud_password');
+          cloudPassword = '';
           cloudConnected = false;
-          setCloudStatus('雲端暫時無法連線，請稍後重試');
+          setCloudStatus('尚未登入雲端房間', false);
         }
-      } else if (!cloudPassword) {
-        setCloudStatus('尚未連線：請登入房間');
-      } else {
-        setCloudStatus('Supabase 載入失敗，請確認網路');
+      } catch (err) {
+        console.error('auto cloud login error:', err);
+        cloudConnected = false;
+        setCloudStatus('雲端連線失敗，請重新登入', false);
       }
     };
   </script>
