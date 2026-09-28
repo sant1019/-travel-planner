@@ -52,6 +52,7 @@
           <span id="room-name-display">danang2026</span>
           <span class="opacity-60">・</span>
           <span id="cloud-header-status">尚未連線</span>
+          <span id="member-header-badge" class="hidden ml-1 bg-white/20 px-1.5 py-0.5 rounded-full text-[9px] font-bold"></span>
         </button>
       </div>
     </header>
@@ -463,6 +464,23 @@
         <button onclick="joinCloudRoom()" class="bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">登入同步</button>
       </div>
       <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+    </div>
+
+    <!-- Member Identity Modal -->
+    <div id="modal-member-identity" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-user-group text-sky-600 mr-1.5"></i>設定你的暱稱</h3>
+      <p class="text-[11px] text-slate-500">第一次使用請建立新成員；如果你已經在其他裝置使用過，請直接選擇既有暱稱。</p>
+      <div id="existing-members-wrap" class="hidden">
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">我是既有成員</label>
+        <div id="existing-members-list" class="grid gap-2"></div>
+      </div>
+      <div class="border-t border-slate-100 pt-3">
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">建立新成員</label>
+        <input type="text" id="input-member-nickname" maxlength="30" placeholder="輸入暱稱" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <button onclick="createMemberIdentity()" class="mt-2 w-full bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">建立並使用這個暱稱</button>
+      </div>
+      <p id="member-identity-status" class="text-[10px] text-slate-400"></p>
+      <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">稍後設定</button>
     </div>
 
     <!-- Edit/Add Fixed Expense Modal -->
@@ -1131,6 +1149,143 @@
       : null;
     let cloudPassword = localStorage.getItem('perfect_cloud_password') || sessionStorage.getItem('perfect_cloud_password') || '';
     let cloudConnected = false;
+    let currentMember = null;
+
+    function memberStorageKey(targetRoom = roomId) { return `perfect_member_${targetRoom}`; }
+
+    function loadStoredMember(targetRoom = roomId) {
+      try {
+        const raw = localStorage.getItem(memberStorageKey(targetRoom));
+        const parsed = raw ? JSON.parse(raw) : null;
+        return parsed && parsed.id && parsed.nickname ? parsed : null;
+      } catch (e) { return null; }
+    }
+
+    function saveMemberIdentity(member) {
+      currentMember = member || null;
+      try {
+        if (member) localStorage.setItem(memberStorageKey(), JSON.stringify(member));
+      } catch (e) {}
+      renderMemberIdentity();
+    }
+
+    function renderMemberIdentity() {
+      const badge = document.getElementById('member-header-badge');
+      if (!badge) return;
+      if (!currentMember) { badge.textContent = ''; badge.classList.add('hidden'); return; }
+      badge.textContent = currentMember.role === 'organizer' ? `${currentMember.nickname}・主辦` : currentMember.nickname;
+      badge.classList.remove('hidden');
+    }
+
+    function setMemberStatus(text, isError=false) {
+      const el = document.getElementById('member-identity-status');
+      if (!el) return;
+      el.textContent = text || '';
+      el.className = `text-[10px] ${isError ? 'text-rose-600' : 'text-slate-400'}`;
+    }
+
+    async function fetchRoomMembers() {
+      if (!cloudClient || !cloudPassword || !cloudConnected) return [];
+      const { data, error } = await cloudClient.rpc('get_trip_room_members', { p_room_id: roomId, p_password: cloudPassword });
+      if (error) throw error;
+      return Array.isArray(data) ? data : [];
+    }
+
+    async function ensureMemberIdentity(showIfMissing=true) {
+      if (!cloudConnected) return;
+
+      const stored = loadStoredMember();
+
+      // 尚未選擇成員時，先顯示視窗，再讀取雲端成員。
+      if (!stored && showIfMissing) {
+        closeModal();
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+        document.getElementById('modal-member-identity').classList.remove('hidden');
+        setMemberStatus('正在讀取成員…');
+      }
+
+      try {
+        const members = await fetchRoomMembers();
+
+        if (stored) {
+          const verified = members.find(m => m.id === stored.id && m.nickname === stored.nickname);
+          if (verified) {
+            saveMemberIdentity(verified);
+            return;
+          }
+        }
+
+        currentMember = null;
+        renderMemberIdentity();
+
+        if (showIfMissing) await openMemberIdentityModal(members);
+      } catch (e) {
+        console.error('member identity error:', e);
+        if (showIfMissing) {
+          closeModal();
+          document.getElementById('modal-backdrop').classList.remove('hidden');
+          document.getElementById('modal-member-identity').classList.remove('hidden');
+          setMemberStatus('成員資料讀取失敗，請稍後再試', true);
+        }
+      }
+    }
+
+    async function openMemberIdentityModal(prefetchedMembers=null) {
+      if (!cloudConnected) return showToast('請先登入雲端房間');
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-member-identity').classList.remove('hidden');
+      setMemberStatus('正在讀取成員…');
+      try {
+        const members = prefetchedMembers || await fetchRoomMembers();
+        const wrap = document.getElementById('existing-members-wrap');
+        const list = document.getElementById('existing-members-list');
+        list.innerHTML = '';
+        if (members.length) {
+          wrap.classList.remove('hidden');
+          members.forEach(member => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-full border border-slate-200 bg-white py-2 px-3 rounded-xl text-xs font-semibold text-slate-700 text-left';
+            btn.textContent = member.role === 'organizer' ? `${member.nickname}（主辦人）` : member.nickname;
+            btn.onclick = () => selectExistingMember(member);
+            list.appendChild(btn);
+          });
+        } else wrap.classList.add('hidden');
+        setMemberStatus('');
+      } catch (e) {
+        console.error('get members error:', e);
+        setMemberStatus('讀取成員失敗，請稍後再試', true);
+      }
+    }
+
+    function selectExistingMember(member) {
+      saveMemberIdentity(member);
+      closeModal();
+      showToast(`已使用暱稱：${member.nickname}`);
+    }
+
+    async function createMemberIdentity() {
+      const input = document.getElementById('input-member-nickname');
+      const nickname = (input?.value || '').trim();
+      if (!nickname) return setMemberStatus('請輸入暱稱', true);
+      setMemberStatus('正在建立…');
+      try {
+        const { data, error } = await cloudClient.rpc('create_trip_room_member', { p_room_id: roomId, p_password: cloudPassword, p_nickname: nickname });
+        if (error) {
+          const msg = error.message || '';
+          if (msg.includes('nickname_already_exists') || msg.includes('duplicate')) setMemberStatus('這個暱稱已有人使用，請選擇既有成員或換一個暱稱', true);
+          else setMemberStatus('建立暱稱失敗，請稍後再試', true);
+          return;
+        }
+        saveMemberIdentity(data);
+        closeModal();
+        showToast(`歡迎，${data.nickname}`);
+      } catch (e) {
+        console.error('create member error:', e);
+        setMemberStatus('建立暱稱失敗，請稍後再試', true);
+      }
+    }
     let cloudPushTimer = null;
     let cloudPollTimer = null;
     let cloudRealtimeChannel = null;
@@ -1299,6 +1454,7 @@
         activateCloudRoom(newRoom, password);
         closeModal();
         showToast('雲端同步已連線');
+        setTimeout(() => ensureMemberIdentity(true), 150);
       } catch (err) {
         console.error('joinCloudRoom exception:', err);
         setCloudStatus('登入發生錯誤，請稍後再試');
@@ -1322,6 +1478,14 @@
       if (display) display.textContent = roomId;
       setCloudStatus(`已連線：${roomId}`, true);
       startCloudPolling();
+      currentMember = loadStoredMember(newRoom);
+      renderMemberIdentity();
+
+      // 房間一驗證成功就獨立啟動成員身分檢查，
+      // 不再等待後續 pullCloudState，避免同步流程阻擋暱稱視窗。
+      if (!currentMember) {
+        setTimeout(() => ensureMemberIdentity(true), 300);
+      }
     }
 
     // 多人安全同步：每次只更新被修改的區塊，並把「修改前版本」一起交給
@@ -2675,7 +2839,7 @@
     function closeModal() {
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
-        'modal-header-edit', 'modal-sync-room', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
+        'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
@@ -2823,7 +2987,22 @@
         if (!error && data !== null) {
           applyRoomState(data || {});
           activateCloudRoom(roomId, cloudPassword);
-          // 登入完成後立即再拉一次，避免開頁瞬間使用到舊畫面。
+
+          // 自動登入成功後，如果本機尚未選擇成員，
+          // 直接同步顯示暱稱視窗，不再依賴任何 timer / polling / RPC 後續流程。
+          if (!loadStoredMember(roomId)) {
+            closeModal();
+            document.getElementById('modal-backdrop').classList.remove('hidden');
+            document.getElementById('modal-member-identity').classList.remove('hidden');
+            setMemberStatus('正在讀取成員…');
+            fetchRoomMembers()
+              .then(members => openMemberIdentityModal(members))
+              .catch(err => {
+                console.error('member startup error:', err);
+                setMemberStatus('成員資料讀取失敗，請稍後再試', true);
+              });
+          }
+
           await pullCloudState(true);
         } else {
           // 暫時的網路/RPC 問題不應清除已儲存的房間密碼，避免其中一台裝置被登出。
