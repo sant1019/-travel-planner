@@ -1832,7 +1832,7 @@
             <button onclick="openAddFavItemModal('${cat.id}')" class="text-[11px] text-rose-600 font-bold hover:underline">+ 新增收藏</button>
           </div>
           <div class="space-y-2">
-            ${cat.items.filter(item => !personalHiddenState[item.id]).map(item => {
+            ${cat.items.map(item => {
               const prox = calculateProximityMatch(item);
               const voteInfo = getItemVotesBreakdown(item);
               const votersText = (item.voters && item.voters.length > 0)
