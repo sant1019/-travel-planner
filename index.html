@@ -142,8 +142,8 @@
       <!-- Itinerary List -->
       <div id="itinerary-items-container" class="space-y-3"></div>
 
-      <!-- Add New Itinerary Item Button -->
-      <div id="itinerary-admin-add-wrap" class="pt-1">
+      <!-- Add New Itinerary Item Button: organizer only -->
+      <div id="organizer-add-itinerary-wrap" class="pt-1 hidden">
         <button onclick="openAddItineraryModal()" class="w-full bg-white border border-sky-200 text-sky-700 hover:bg-sky-50 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
           <i class="fa-solid fa-plus text-sky-600"></i>
           <span id="add-itin-btn-label">新增 Day 1 行程地點</span>
@@ -158,7 +158,7 @@
             <h2 class="text-xs font-bold"><i class="fa-solid fa-star text-amber-300 mr-1"></i>口袋名單與景點投票</h2>
             <p class="text-[10px] text-pink-100">點擊「🙋‍♂️ 我想去」輸入姓名與同行人數！</p>
           </div>
-          <button id="smart-match-btn" onclick="openSmartMatchModal()" class="text-xs bg-white text-rose-600 font-bold px-2.5 py-1.5 rounded-xl shadow hover:bg-rose-50 active:scale-95 transition shrink-0">
+          <button onclick="openSmartMatchModal()" class="text-xs bg-white text-rose-600 font-bold px-2.5 py-1.5 rounded-xl shadow hover:bg-rose-50 active:scale-95 transition shrink-0">
             ⚡ 智慧排行程
           </button>
         </div>
@@ -1181,29 +1181,15 @@
         if (member) localStorage.setItem(memberStorageKey(), JSON.stringify(member));
       } catch (e) {}
       renderMemberIdentity();
-    }
-
-    function isOrganizer() {
-      return !!(currentMember && currentMember.role === 'organizer');
+      updateItineraryPermissions();
     }
 
     function renderMemberIdentity() {
       const badge = document.getElementById('member-header-badge');
       if (!badge) return;
-      if (!currentMember) {
-        badge.textContent = '';
-        badge.classList.add('hidden');
-      } else {
-        badge.textContent = isOrganizer() ? `${currentMember.nickname}・主辦` : currentMember.nickname;
-        badge.classList.remove('hidden');
-      }
-
-      // 團體正式行程只有主辦人可以調整。
-      const addWrap = document.getElementById('itinerary-admin-add-wrap');
-      if (addWrap) addWrap.classList.toggle('hidden', !isOrganizer());
-      const smartMatchBtn = document.getElementById('smart-match-btn');
-      if (smartMatchBtn) smartMatchBtn.classList.toggle('hidden', !isOrganizer());
-      try { renderItinerary(); } catch (_) {}
+      if (!currentMember) { badge.textContent = ''; badge.classList.add('hidden'); return; }
+      badge.textContent = currentMember.role === 'organizer' ? `${currentMember.nickname}・主辦` : currentMember.nickname;
+      badge.classList.remove('hidden');
     }
 
     function setMemberStatus(text, isError=false) {
@@ -1780,7 +1766,17 @@
       }, 500);
     }
 
+    function isOrganizer() {
+      return !!(currentMember && currentMember.role === 'organizer');
+    }
+
+    function updateItineraryPermissions() {
+      const addWrap = document.getElementById('organizer-add-itinerary-wrap');
+      if (addWrap) addWrap.classList.toggle('hidden', !isOrganizer());
+    }
+
     function renderItinerary() {
+      updateItineraryPermissions();
       const weather = weatherData[currentDay] || weatherData[1];
       document.getElementById('weather-banner').innerHTML = `
         <div class="flex justify-between items-start">
@@ -1799,16 +1795,14 @@
       `;
 
       const addBtnLabel = document.getElementById('add-itin-btn-label');
-      if (addBtnLabel) addBtnLabel.textContent = `新增 Day ${currentDay} 團體行程`;
-      const addWrap = document.getElementById('itinerary-admin-add-wrap');
-      if (addWrap) addWrap.classList.toggle('hidden', !isOrganizer());
+      if (addBtnLabel) addBtnLabel.textContent = `新增 Day ${currentDay} 行程地點`;
 
       const data = getStoredData('itinerary', defaultItineraryData);
       const dayData = data[currentDay] || { items: [] };
       const container = document.getElementById('itinerary-items-container');
 
       if (dayData.items.length === 0) {
-        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-100 text-center text-slate-400 text-xs">當天尚無團體行程。</div>`;
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-100 text-center text-slate-400 text-xs">當天尚無行程點，可點擊下方按鈕新增或將收藏景點排入！</div>`;
         return;
       }
 
@@ -1823,13 +1817,15 @@
               ` : ''}
               <h3 class="text-xs font-bold text-slate-800">${item.title}</h3>
             </div>
-            ${isOrganizer() ? `<div class="flex items-center space-x-1 text-slate-400 text-xs shrink-0">
+            <div class="flex items-center space-x-1 text-slate-400 text-xs shrink-0">
+              ${isOrganizer() ? `
               ${idx > 0 ? `<button onclick="moveItineraryOrder(${idx}, -1)" class="hover:text-sky-600 p-1" title="上移"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
               ${idx < dayData.items.length - 1 ? `<button onclick="moveItineraryOrder(${idx}, 1)" class="hover:text-sky-600 p-1" title="下移"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
-              <button onclick="openEditItineraryModal('${item.id}')" class="hover:text-sky-600 p-1" title="編輯團體行程"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button onclick="openEditItineraryModal('${item.id}')" class="hover:text-sky-600 p-1" title="編輯行程與註解"><i class="fa-solid fa-pen-to-square"></i></button>
               <button onclick="openMoveDayModal('${item.id}', '${item.title}')" class="hover:text-sky-600 p-1" title="轉移天數"><i class="fa-solid fa-calendar-day"></i></button>
               <button onclick="deleteItineraryItem('${item.id}')" class="hover:text-rose-600 p-1" title="刪除行程"><i class="fa-solid fa-trash-can"></i></button>
-            </div>` : ''}
+              ` : ''}
+            </div>
           </div>
           ${item.desc ? `<div class="text-xs text-slate-600 leading-relaxed">${item.desc}</div>` : ''}
           ${item.comment ? `
@@ -1849,9 +1845,9 @@
     }
 
     function openAddItineraryModal() {
-      if (!isOrganizer()) { showToast("團體行程僅限主辦人管理"); return; }
+      if (!isOrganizer()) return showToast('團體每日行程僅限主辦人新增');
       document.getElementById('edit-itin-id').value = '';
-      document.getElementById('itin-modal-title').innerHTML = `<i class="fa-solid fa-plus text-sky-600 mr-1.5"></i>新增 Day ${currentDay} 團體行程`;
+      document.getElementById('itin-modal-title').innerHTML = `<i class="fa-solid fa-plus text-sky-600 mr-1.5"></i>新增 Day ${currentDay} 行程地點`;
       document.getElementById('input-itin-title').value = '';
       document.getElementById('input-itin-time').value = '';
       document.getElementById('input-itin-desc').value = '';
@@ -1865,7 +1861,7 @@
     }
 
     function openEditItineraryModal(itemId) {
-      if (!isOrganizer()) { showToast("團體行程僅限主辦人管理"); return; }
+      if (!isOrganizer()) return showToast('團體每日行程僅限主辦人編輯');
       const data = getStoredData('itinerary', defaultItineraryData);
       const dayData = data[currentDay];
       if (!dayData) return;
@@ -1888,7 +1884,7 @@
     }
 
     function saveItineraryItem() {
-      if (!isOrganizer()) { showToast("團體行程僅限主辦人管理"); return; }
+      if (!isOrganizer()) return showToast('團體每日行程僅限主辦人修改');
       const itemId = document.getElementById('edit-itin-id').value;
       const title = document.getElementById('input-itin-title').value.trim();
       const time = document.getElementById('input-itin-time').value.trim();
@@ -1929,11 +1925,11 @@
 
       pushStateToCloud('itinerary', data);
       closeModal();
-      showToast(itemId ? "行程資訊與註解已更新！" : "已成功新增團體行程！");
+      showToast(itemId ? "行程資訊與註解已更新！" : "已成功新增行程地點！");
     }
 
     function moveItineraryOrder(index, direction) {
-      if (!isOrganizer()) { showToast("團體行程僅限主辦人管理"); return; }
+      if (!isOrganizer()) return showToast('團體每日行程僅限主辦人調整');
       const data = getStoredData('itinerary', defaultItineraryData);
       const items = data[currentDay].items;
       const targetIndex = index + direction;
@@ -1946,7 +1942,7 @@
     }
 
     function deleteItineraryItem(itemId) {
-      if (!isOrganizer()) { showToast("團體行程僅限主辦人管理"); return; }
+      if (!isOrganizer()) return showToast('團體每日行程僅限主辦人刪除');
       const data = getStoredData('itinerary', defaultItineraryData);
       data[currentDay].items = data[currentDay].items.filter(i => i.id !== itemId);
       pushStateToCloud('itinerary', data);
@@ -1954,7 +1950,7 @@
     }
 
     function openMoveDayModal(itemId, title) {
-      if (!isOrganizer()) { showToast("團體行程僅限主辦人管理"); return; }
+      if (!isOrganizer()) return showToast('團體每日行程僅限主辦人調整');
       document.getElementById('move-item-id').value = itemId;
       document.getElementById('move-item-name').textContent = title;
       closeModal();
@@ -1963,7 +1959,7 @@
     }
 
     function executeMoveDay(targetDay) {
-      if (!isOrganizer()) { showToast("團體行程僅限主辦人管理"); return; }
+      if (!isOrganizer()) return showToast('團體每日行程僅限主辦人調整');
       const itemId = document.getElementById('move-item-id').value;
       const data = getStoredData('itinerary', defaultItineraryData);
       
@@ -2380,7 +2376,6 @@
     }
 
     function applySmartMatchSelection() {
-      if (!isOrganizer()) { showToast("團體行程僅限主辦人管理"); return; }
       const checkboxes = document.querySelectorAll('.smart-match-checkbox:checked');
       const selectedIds = Array.from(checkboxes).map(cb => cb.value);
 
