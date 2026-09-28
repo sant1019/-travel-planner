@@ -1717,10 +1717,31 @@
       closeModal();
     }
 
+    function getPersonalPackingState(type) {
+      const key = `danang_${roomId}_packing_${type}`;
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return {};
+        const parsed = JSON.parse(raw);
+        return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+      } catch (e) {
+        console.warn('Invalid personal packing state:', key, e);
+        try { localStorage.removeItem(key); } catch (_) {}
+        return {};
+      }
+    }
+
+    function setPersonalPackingState(type, value) {
+      const key = `danang_${roomId}_packing_${type}`;
+      try { localStorage.setItem(key, JSON.stringify(value || {})); } catch (e) {
+        console.warn('Unable to save personal packing state:', key, e);
+      }
+    }
+
     function renderPackingList() {
       const globalPacking = getStoredData('packing', defaultPackingData);
-      const personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}');
-      const personalHiddenState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_hidden`) || '{}');
+      const personalCheckedState = getPersonalPackingState('checked');
+      const personalHiddenState = getPersonalPackingState('hidden');
       const container = document.getElementById('packing-categories-list');
 
       container.innerHTML = globalPacking.map(cat => `
@@ -1751,22 +1772,22 @@
     }
 
     function togglePersonalPackingItem(itemId) {
-      const personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}');
+      const personalCheckedState = getPersonalPackingState('checked');
       personalCheckedState[itemId] = !personalCheckedState[itemId];
-      localStorage.setItem(`danang_${roomId}_packing_checked`, JSON.stringify(personalCheckedState));
+      setPersonalPackingState('checked', personalCheckedState);
       renderPackingList();
     }
 
     function deletePersonalPackingItem(catId, itemId) {
       // 個人刪除：只記錄在這台裝置，不修改全團 packing 雲端資料。
-      const personalHiddenState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_hidden`) || '{}');
+      const personalHiddenState = getPersonalPackingState('hidden');
       personalHiddenState[itemId] = true;
-      localStorage.setItem(`danang_${roomId}_packing_hidden`, JSON.stringify(personalHiddenState));
+      setPersonalPackingState('hidden', personalHiddenState);
 
       // 同時清掉這台裝置對該物品的勾選紀錄。
-      const personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}');
+      const personalCheckedState = getPersonalPackingState('checked');
       delete personalCheckedState[itemId];
-      localStorage.setItem(`danang_${roomId}_packing_checked`, JSON.stringify(personalCheckedState));
+      setPersonalPackingState('checked', personalCheckedState);
 
       renderPackingList();
       showToast("已從我的清單移除");
@@ -2805,11 +2826,14 @@
           // 登入完成後立即再拉一次，避免開頁瞬間使用到舊畫面。
           await pullCloudState(true);
         } else {
-          sessionStorage.removeItem('perfect_cloud_password');
-          localStorage.removeItem('perfect_cloud_password');
-          cloudPassword = '';
+          // 暫時的網路/RPC 問題不應清除已儲存的房間密碼，避免其中一台裝置被登出。
           cloudConnected = false;
-          setCloudStatus('尚未登入雲端房間', false);
+          if (error) {
+            console.error('auto get_trip_room error:', error);
+            setCloudStatus('雲端連線失敗，請稍後再試', false);
+          } else {
+            setCloudStatus('房間驗證失敗，請手動登入確認', false);
+          }
         }
       } catch (err) {
         console.error('auto cloud login error:', err);
