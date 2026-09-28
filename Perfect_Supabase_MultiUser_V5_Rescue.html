@@ -1,0 +1,2794 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>越南峴港 & 會安 6天5夜行程助手</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .completed-item {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="text-slate-800 antialiased pb-20 select-none">
+
+  <div class="sticky top-0 z-50 shadow-sm bg-white">
+    <!-- Top Navigation Header -->
+    <header class="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 text-white">
+      <div class="max-w-md mx-auto px-4 py-2 flex items-center justify-between">
+        <!-- 整合為單一按鈕（隱藏外框，簡潔美觀） -->
+        <button onclick="openHeaderEditModal()" class="flex flex-col gap-0.5 text-left hover:bg-white/10 p-1.5 -ml-1.5 rounded-xl transition active:scale-95 group">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-xs font-extrabold tracking-tight flex items-center gap-1">✈️ <span id="header-display-title">峴港會安</span></span>
+            <span id="header-display-duration" class="bg-white/20 px-1.5 py-0.2 rounded text-[10px] font-bold">6D5N</span>
+            <span id="header-display-headcount" class="text-[10px] bg-sky-400/30 text-sky-100 border border-sky-300/30 px-2 py-0.2 rounded-full font-medium">14大2小1嬰</span>
+            <i class="fa-solid fa-pencil text-[9px] text-amber-300 group-hover:scale-110 transition ml-0.5 opacity-80"></i>
+          </div>
+          <div class="flex items-center gap-1 text-[10px] text-sky-100/90 font-medium">
+            <span id="header-display-dates">2026/12/07 - 12/12</span>
+            <span>｜</span>
+            <span id="header-display-grouptag">必去景點</span>
+          </div>
+        </button>
+
+        <button onclick="openSyncModal()" class="text-[11px] bg-white/15 hover:bg-white/25 active:scale-95 transition backdrop-blur-md border border-white/20 px-2 py-1 rounded-full flex items-center gap-1 font-medium shrink-0">
+          <i class="fa-solid fa-cloud text-amber-300"></i>
+          <span id="room-name-display">danang2026</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="border-b border-slate-200 bg-white">
+      <div class="max-w-md mx-auto grid grid-cols-6 text-xs font-semibold text-slate-500">
+        <button onclick="switchTab('packing')" id="tab-btn-packing" class="tab-btn py-2.5 px-1 text-center border-b-2 border-sky-600 text-sky-600 transition">
+          <i class="fa-solid fa-list-check block text-sm mb-0.5"></i>必備
+        </button>
+        <button onclick="switchTab('itinerary')" id="tab-btn-itinerary" class="tab-btn py-2.5 px-1 text-center border-b-2 border-transparent transition hover:text-sky-600">
+          <i class="fa-solid fa-calendar-days block text-sm mb-0.5"></i>行程
+        </button>
+        <button onclick="switchTab('favorites')" id="tab-btn-favorites" class="tab-btn py-2.5 px-1 text-center border-b-2 border-transparent transition hover:text-rose-500">
+          <i class="fa-solid fa-heart block text-sm mb-0.5 text-rose-500"></i>收藏
+        </button>
+        <button onclick="switchTab('budget')" id="tab-btn-budget" class="tab-btn py-2.5 px-1 text-center border-b-2 border-transparent transition hover:text-emerald-600">
+          <i class="fa-solid fa-wallet block text-sm mb-0.5"></i>預算
+        </button>
+        <button onclick="switchTab('notes')" id="tab-btn-notes" class="tab-btn py-2.5 px-1 text-center border-b-2 border-transparent transition hover:text-amber-600">
+          <i class="fa-solid fa-pen-to-square block text-sm mb-0.5"></i>筆記
+        </button>
+        <button onclick="switchTab('info')" id="tab-btn-info" class="tab-btn py-2.5 px-1 text-center border-b-2 border-transparent transition hover:text-indigo-600">
+          <i class="fa-solid fa-circle-info block text-sm mb-0.5"></i>資訊
+        </button>
+      </div>
+    </nav>
+
+    <!-- Sticky Day Selector Bar -->
+    <div id="sticky-day-bar" class="max-w-md mx-auto px-4 py-2 border-b border-slate-100 bg-slate-50/90 backdrop-blur-md hidden">
+      <div class="grid grid-cols-6 gap-1">
+        <button onclick="selectDay(1)" id="day-btn-1" class="day-btn py-1.5 px-1 rounded-xl text-center bg-sky-600 text-white shadow-sm transition">
+          <span class="block text-xs font-extrabold leading-tight">D1</span>
+          <span class="block text-[9px] opacity-90 leading-tight mt-0.5">12/7</span>
+        </button>
+        <button onclick="selectDay(2)" id="day-btn-2" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
+          <span class="block text-xs font-extrabold leading-tight">D2</span>
+          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/8</span>
+        </button>
+        <button onclick="selectDay(3)" id="day-btn-3" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
+          <span class="block text-xs font-extrabold leading-tight">D3</span>
+          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/9</span>
+        </button>
+        <button onclick="selectDay(4)" id="day-btn-4" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
+          <span class="block text-xs font-extrabold leading-tight">D4</span>
+          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/10</span>
+        </button>
+        <button onclick="selectDay(5)" id="day-btn-5" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
+          <span class="block text-xs font-extrabold leading-tight">D5</span>
+          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/11</span>
+        </button>
+        <button onclick="selectDay(6)" id="day-btn-6" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
+          <span class="block text-xs font-extrabold leading-tight">D6</span>
+          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/12</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="max-w-md mx-auto px-4 pt-3 space-y-4">
+
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs px-3.5 py-1.5 rounded-full shadow-lg pointer-events-none transition duration-300 opacity-0 transform translate-y-[-10px] flex items-center space-x-1.5">
+      <i class="fa-solid fa-circle-check text-emerald-400"></i>
+      <span id="toast-text">已更新</span>
+    </div>
+
+    <!-- PAGE: 必備物品 (Packing) -->
+    <section id="page-packing" class="page-content space-y-3">
+      <div class="flex justify-between items-center bg-sky-50 p-3 rounded-2xl border border-sky-100">
+        <div>
+          <h2 class="text-xs font-bold text-sky-900"><i class="fa-solid fa-clipboard-check text-sky-600 mr-1"></i>出國隨身行李清單</h2>
+          <p class="text-[10px] text-sky-600">新增品項全團同步，打勾與刪除為個人專屬記錄</p>
+        </div>
+        <button onclick="openAddPackingCatModal()" class="text-xs bg-sky-600 text-white font-semibold px-2.5 py-1.5 rounded-xl shadow-sm hover:bg-sky-700 active:scale-95 transition">
+          + 新增分類
+        </button>
+      </div>
+
+      <div id="packing-categories-list" class="space-y-3"></div>
+    </section>
+
+    <section id="page-itinerary" class="page-content hidden space-y-3">
+      <!-- Weather Forecast Header -->
+      <div id="weather-banner" class="bg-gradient-to-r from-blue-500 to-sky-400 text-white p-3 rounded-2xl shadow-sm space-y-1"></div>
+
+      <!-- Itinerary List -->
+      <div id="itinerary-items-container" class="space-y-3"></div>
+
+      <!-- Add New Itinerary Item Button -->
+      <div class="pt-1">
+        <button onclick="openAddItineraryModal()" class="w-full bg-white border border-sky-200 text-sky-700 hover:bg-sky-50 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-plus text-sky-600"></i>
+          <span id="add-itin-btn-label">新增 Day 1 行程地點</span>
+        </button>
+      </div>
+    </section>
+
+    <section id="page-favorites" class="page-content hidden space-y-3">
+      <div class="bg-gradient-to-r from-rose-500 to-pink-500 text-white p-3.5 rounded-2xl shadow-sm space-y-2.5">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2 class="text-xs font-bold"><i class="fa-solid fa-star text-amber-300 mr-1"></i>口袋名單與景點投票</h2>
+            <p class="text-[10px] text-pink-100">點擊「🙋‍♂️ 我想去」輸入姓名與同行人數！</p>
+          </div>
+          <button onclick="openSmartMatchModal()" class="text-xs bg-white text-rose-600 font-bold px-2.5 py-1.5 rounded-xl shadow hover:bg-rose-50 active:scale-95 transition shrink-0">
+            ⚡ 智慧排行程
+          </button>
+        </div>
+        <button onclick="openNearbyShopsModal()" class="w-full bg-white/15 hover:bg-white/25 active:scale-95 transition border border-white/30 text-white font-bold py-2 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm backdrop-blur-md">
+          <i class="fa-solid fa-location-crosshairs text-amber-300"></i>
+          <span>📍 尋找目前定位步行10分鐘內的店家</span>
+        </button>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <span class="text-xs font-bold text-slate-600">口袋分類</span>
+        <button onclick="openAddFavCatModal()" class="text-xs text-rose-600 font-bold hover:underline">+ 新增類別</button>
+      </div>
+
+      <div id="favorites-categories-list" class="space-y-3"></div>
+
+      <!-- Souvenirs Wishlist Section -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3 mt-6">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+          <h2 class="text-xs font-bold text-slate-800 flex items-center">
+            <i class="fa-solid fa-gift text-rose-500 mr-1.5"></i>伴手禮 / 戰利品採購清單
+          </h2>
+          <button onclick="openAddSouvenirModal()" class="text-xs bg-rose-500 text-white font-bold px-2.5 py-1.5 rounded-xl shadow-sm hover:bg-rose-600 active:scale-95 transition">
+            + 新增伴手禮
+          </button>
+        </div>
+        <p class="text-[10px] text-slate-400">全團親友可共同新增伴手禮、標示理想價格與上傳參考圖，方便採買對照！</p>
+        <div id="souvenirs-list-container" class="space-y-3 pt-1"></div>
+      </div>
+    </section>
+
+    <section id="page-budget" class="page-content hidden space-y-3">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex justify-between items-start border-b border-slate-100 pb-2">
+          <div>
+            <h2 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-coins text-amber-500 mr-1.5"></i>每人固定開銷統計 (台幣)</h2>
+            <p class="text-[10px] text-slate-400 font-normal mt-0.5">＊金額為概略估算</p>
+          </div>
+          <button onclick="openFixedExpenseModal()" class="text-xs bg-amber-500 text-white font-bold px-2.5 py-1 rounded-xl shadow-sm hover:bg-amber-600 active:scale-95 transition shrink-0">
+            + 新增項目
+          </button>
+        </div>
+
+        <div class="overflow-x-auto text-xs">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="text-slate-400 border-b border-slate-100">
+                <th class="py-1.5">項目</th>
+                <th class="py-1.5 text-right">大人</th>
+                <th class="py-1.5 text-right">兒童</th>
+                <th class="py-1.5 text-right">嬰兒</th>
+                <th class="py-1.5 text-center w-12">操作</th>
+              </tr>
+            </thead>
+            <tbody id="fixed-expenses-tbody" class="divide-y divide-slate-50 text-slate-700"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+          <div>
+            <h3 class="text-xs font-bold text-slate-800 flex items-center">
+              <i class="fa-solid fa-ticket text-indigo-500 mr-1.5"></i>預估門票/活動勾選試算
+            </h3>
+            <p class="text-[10px] text-slate-400 font-normal mt-0.5">勾選併入總額計算</p>
+          </div>
+          <button onclick="openTicketModal()" class="text-xs bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-95 transition shrink-0">
+            + 新增門票
+          </button>
+        </div>
+
+        <div id="ticket-checklist" class="space-y-2 text-xs divide-y divide-slate-50"></div>
+
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1.5 text-xs mt-2">
+          <div class="flex justify-between text-slate-600">
+            <span>大人固定開銷：</span>
+            <span id="calc-adult-fixed" class="font-bold">$21,389</span>
+          </div>
+          <div class="flex justify-between text-indigo-600">
+            <span>已勾選門票總計：</span>
+            <span id="calc-tickets-total" class="font-bold">$0</span>
+          </div>
+          <div class="flex justify-between text-slate-800 font-bold border-t border-slate-200 pt-1.5 text-sm">
+            <span>總支出金額：</span>
+            <span id="calc-grand-total" class="text-sky-700">$21,389</span>
+          </div>
+          <div class="flex justify-between text-emerald-600 font-bold text-xs pt-0.5">
+            <span>剩餘自由支配預算：</span>
+            <span id="calc-remaining-budget">$3,611</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-notes" class="page-content hidden space-y-4">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <h2 class="text-xs font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-pen-to-square text-amber-500 mr-1.5"></i>團體隨手記事 / 其他備忘錄
+        </h2>
+        <textarea id="group-notes-input" oninput="handleNotesInput()" placeholder="大家可以在這裡輸入緊急聯絡人、集合注意事項等..." class="w-full h-40 p-3 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none leading-relaxed"></textarea>
+      </div>
+
+      <!-- Hotel Room Assignment Section -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+          <h2 class="text-xs font-bold text-slate-800 flex items-center">
+            <i class="fa-solid fa-hotel text-indigo-500 mr-1.5"></i>飯店房間 & 入住人員分配
+          </h2>
+          <button onclick="openRoomModal()" class="text-xs bg-indigo-600 text-white font-bold px-2.5 py-1.5 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-95 transition">
+            + 新增房間
+          </button>
+        </div>
+        <p class="text-[10px] text-slate-400">登記入住飯店、房號與入住名單，方便 Check-in 對照！</p>
+        <div id="rooms-list-container" class="space-y-3 pt-1"></div>
+      </div>
+    </section>
+
+    <section id="page-info" class="page-content hidden space-y-3">
+      <!-- 實時匯率換匯計算器 -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+          <h2 class="text-xs font-bold text-slate-800 flex items-center">
+            <i class="fa-solid fa-arrow-right-arrow-left text-emerald-600 mr-1.5"></i>實時匯率換匯計算器
+          </h2>
+          <button onclick="fetchLiveExchangeRates()" class="text-[10px] bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold px-2 py-1 rounded-lg transition border border-emerald-200 flex items-center gap-1">
+            <i class="fa-solid fa-rotate text-emerald-600" id="rate-refresh-icon"></i>
+            <span id="rate-update-time">更新當前匯率</span>
+          </button>
+        </div>
+
+        <div class="space-y-2.5 text-xs">
+          <div>
+            <label class="text-[11px] font-bold text-slate-600 block mb-1">輸入金額：</label>
+            <input type="number" id="fx-amount-input" value="100" oninput="calculateCurrencyConversion()" placeholder="請輸入金額" class="w-full p-2.5 border border-slate-200 rounded-xl text-sm font-extrabold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-11 gap-1 items-center">
+            <div class="col-span-5">
+              <label class="text-[10px] font-bold text-slate-500 block mb-1">持有貨幣</label>
+              <select id="fx-from-currency" onchange="calculateCurrencyConversion()" class="w-full p-2 border border-slate-200 rounded-xl text-xs font-bold bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <option value="TWD" selected>🇹🇼 TWD (新台幣)</option>
+                <option value="VND">🇻🇳 VND (越南盾)</option>
+                <option value="USD">🇺🇸 USD (美金)</option>
+                <option value="JPY">🇯🇵 JPY (日圓)</option>
+                <option value="KRW">🇰🇷 KRW (韓元)</option>
+                <option value="EUR">🇪🇺 EUR (歐元)</option>
+                <option value="THB">🇹🇭 THB (泰銖)</option>
+                <option value="SGD">🇸🇬 SGD (新加坡幣)</option>
+              </select>
+            </div>
+
+            <div class="col-span-1 text-center pt-4">
+              <button onclick="swapCurrencies()" class="w-7 h-7 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-full flex items-center justify-center mx-auto transition active:scale-95" title="互換貨幣">
+                <i class="fa-solid fa-right-left text-xs"></i>
+              </button>
+            </div>
+
+            <div class="col-span-5">
+              <label class="text-[10px] font-bold text-slate-500 block mb-1">目標貨幣</label>
+              <select id="fx-to-currency" onchange="calculateCurrencyConversion()" class="w-full p-2 border border-slate-200 rounded-xl text-xs font-bold bg-white text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none">
+                <option value="VND" selected>🇻🇳 VND (越南盾)</option>
+                <option value="TWD">🇹🇼 TWD (新台幣)</option>
+                <option value="USD">🇺🇸 USD (美金)</option>
+                <option value="JPY">🇯🇵 JPY (日圓)</option>
+                <option value="KRW">🇰🇷 KRW (韓元)</option>
+                <option value="EUR">🇪🇺 EUR (歐元)</option>
+                <option value="THB">🇹🇭 THB (泰銖)</option>
+                <option value="SGD">🇸🇬 SGD (新加坡幣)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 p-3.5 rounded-xl space-y-1 mt-2">
+            <span class="text-[10px] text-emerald-700 font-bold">換算結果估算：</span>
+            <div class="text-lg font-black text-emerald-900 tracking-tight" id="fx-result-display">
+              100 TWD ≈ 78,500 VND
+            </div>
+            <div class="text-[10px] text-emerald-600 font-medium" id="fx-rate-info">
+              當前參考匯率: 1 TWD ≈ 785.00 VND
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 越南入境線上聲明 (PAI) 提醒卡片 -->
+      <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 shadow-sm space-y-3">
+        <div class="flex items-start gap-3">
+          <span class="text-2xl">🇻🇳</span>
+          <div class="space-y-1">
+            <h3 class="font-bold text-amber-900 text-xs">越南入境線上聲明 (PAI)</h3>
+            <p class="text-[11px] text-amber-800 leading-relaxed">
+              請全團旅客於 <strong class="text-rose-600 bg-amber-100 px-1 py-0.5 rounded">2026/12/04 (四) 起</strong>（即出發前 3 天內）完成線上申報。
+            </p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 pt-0.5">
+          <a href="https://prearrival.immigration.gov.vn" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold py-2 px-2.5 rounded-xl shadow-sm flex items-center justify-center gap-1.5 text-center transition">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> 官方填寫網址
+          </a>
+          <a href="https://youtu.be/-xYclU_TXEo?si=7RLVBd1m0ziLFSpm" target="_blank" class="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold py-2 px-2.5 rounded-xl shadow-sm flex items-center justify-center gap-1.5 text-center transition">
+            <i class="fa-brands fa-youtube"></i> 填寫教學影片
+          </a>
+        </div>
+      </div>
+
+      <!-- 星宇航空選位提醒 -->
+      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-2xl shadow-md space-y-2">
+        <h2 class="text-xs font-bold flex items-center">
+          <i class="fa-solid fa-plane-circle-check text-amber-300 mr-1.5 text-sm"></i>星宇航空選位 & 預選餐點時間表
+        </h2>
+        <div class="bg-white/10 p-2.5 rounded-xl backdrop-blur-sm text-[11px] space-y-2 leading-relaxed">
+          <div>
+            <p class="font-bold text-amber-200">🛫 去程 JX703 (12/07 15:20 起飛)</p>
+            <p>🍱 預選餐點：<strong class="text-white">2026/11/16 (一) 15:20</strong> 起 (前21天)</p>
+            <p>💺 免費選位：<strong class="text-white">2026/12/05 (六) 15:20</strong> 起 (前48hr)</p>
+          </div>
+          <div class="border-t border-white/10 pt-1.5">
+            <p class="font-bold text-amber-200">🛬 回程 JX704 (12/12 18:25 起飛)</p>
+            <p>🍱 預選餐點：<strong class="text-white">2026/11/21 (六) 18:25</strong> 起 (前21天)</p>
+            <p>💺 免費選位：<strong class="text-white">2026/12/10 (四) 18:25</strong> 起 (前48hr)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 機場包車接駁資訊 -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+        <h3 class="text-xs font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-van-shuttle text-sky-600 mr-1.5"></i>機場包車接駁資訊
+        </h3>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1 text-slate-700">
+          <p class="font-bold text-slate-900">得佳富租賃有限公司 (包車司機：阿得)</p>
+          <p><i class="fa-solid fa-phone text-emerald-500 mr-1"></i>電話：<a href="tel:0972922097" class="text-sky-600 font-bold underline">0972-922097</a> / 04-25668678</p>
+          <p><i class="fa-brands fa-line text-emerald-500 mr-1"></i>Line ID：<span class="font-bold">0972922097</span></p>
+        </div>
+      </div>
+
+      <!-- 飯店資訊 -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
+        <h3 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-hotel text-indigo-500 mr-1.5"></i>住宿飯店資訊</h3>
+        <div class="space-y-2">
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+            <p class="font-bold text-slate-800">12/07 - 12/09 (2晚) 會安</p>
+            <p class="text-slate-600">Little Residence A Boutique Hotel & Spa</p>
+            <a href="https://maps.google.com/?q=Little+Residence+A+Boutique+Hotel+and+Spa+Hoi+An" target="_blank" class="text-[11px] text-sky-600 font-bold inline-block mt-1">📍 開啟 Google Map</a>
+          </div>
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+            <p class="font-bold text-slate-800">12/09 - 12/12 (3晚) 峴港</p>
+            <p class="text-slate-600">Chi House Danang Hotel and Apartment</p>
+            <a href="https://maps.google.com/?q=Chi+House+Danang+Hotel+and+Apartment" target="_blank" class="text-[11px] text-sky-600 font-bold inline-block mt-1">📍 開啟 Google Map</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="modal-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <!-- Edit Header Data Modal -->
+    <div id="modal-header-edit" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-pen-to-square text-sky-600 mr-1.5"></i>修訂頂部標題與團體資訊</h3>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">目的地 / 標題：</label>
+        <input type="text" id="input-header-title" placeholder="例如：峴港會安" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">天數行程：</label>
+        <input type="text" id="input-header-duration" placeholder="例如：6D5N" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">團員總人數：</label>
+        <input type="text" id="input-header-headcount" placeholder="例如：14大2小1嬰" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">旅遊日期：</label>
+        <input type="text" id="input-header-dates" placeholder="例如：2026/12/07 - 12/12" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">團體標籤：</label>
+        <input type="text" id="input-header-grouptag" placeholder="例如：必去景點" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveHeaderData()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">儲存修改</button>
+      </div>
+    </div>
+
+    <!-- Cloud Room Sync Modal -->
+    <div id="modal-sync-room" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-cloud-arrow-up text-sky-600 mr-1.5"></i>雲端同步房間</h3>
+      <p class="text-[11px] text-slate-500">同一組「房間名稱＋密碼」可在不同手機同步。第一次使用請先建立房間；其他手機再用登入同步。</p>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">房間名稱</label>
+        <input type="text" id="input-room-id" placeholder="至少 4 個字元，例如：danang2026" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">房間密碼</label>
+        <input type="password" id="input-room-password" placeholder="至少 6 個字元" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <p id="cloud-sync-status" class="text-[10px] text-slate-400">尚未登入雲端房間</p>
+      <div class="grid grid-cols-2 gap-2 pt-1">
+        <button onclick="createCloudRoom()" class="bg-emerald-600 text-white py-2 rounded-xl text-xs font-semibold">建立新房間</button>
+        <button onclick="joinCloudRoom()" class="bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">登入同步</button>
+      </div>
+      <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+    </div>
+
+    <!-- Edit/Add Fixed Expense Modal -->
+    <div id="modal-fixed-expense" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 id="fe-modal-title" class="text-sm font-bold text-slate-800"><i class="fa-solid fa-coins text-amber-500 mr-1.5"></i>新增固定開銷項目</h3>
+      <input type="hidden" id="edit-fe-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">項目名稱：</label>
+        <input type="text" id="input-fe-name" placeholder="例如：星宇來回機票、保險" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">大人金額 (NT$)：</label>
+        <input type="number" id="input-fe-adult" placeholder="0" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">兒童金額 (NT$)：</label>
+        <input type="number" id="input-fe-kid" placeholder="0" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">嬰兒金額 (NT$)：</label>
+        <input type="number" id="input-fe-infant" placeholder="0" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveFixedExpense()" class="flex-1 bg-amber-500 text-white py-2 rounded-xl text-xs font-semibold">儲存開銷</button>
+      </div>
+    </div>
+
+    <!-- Edit/Add Ticket Item Modal -->
+    <div id="modal-ticket-item" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 id="ticket-modal-title" class="text-sm font-bold text-slate-800"><i class="fa-solid fa-ticket text-indigo-500 mr-1.5"></i>新增門票 / 活動</h3>
+      <input type="hidden" id="edit-ticket-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">門票 / 活動名稱：</label>
+        <input type="text" id="input-ticket-name" placeholder="例如：印象會安表演門票" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">金額 (NT$)：</label>
+        <input type="number" id="input-ticket-price" placeholder="0" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">備註說明：</label>
+        <input type="text" id="input-ticket-note" placeholder="例如：Klook預訂、現場付費" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">購票 / 預約連結：</label>
+        <input type="text" id="input-ticket-link" placeholder="例如：https://www.klook.com/..." class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveTicketItem()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-semibold">儲存門票</button>
+      </div>
+    </div>
+
+    <!-- Edit/Add Itinerary Item Modal -->
+    <div id="modal-itinerary-item" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 id="itin-modal-title" class="text-sm font-bold text-slate-800"><i class="fa-solid fa-pen-to-square text-sky-600 mr-1.5"></i>編輯行程資訊與註解</h3>
+      <input type="hidden" id="edit-itin-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">行程標題：</label>
+        <input type="text" id="input-itin-title" placeholder="例如：Mộc Quán 海鮮晚餐" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">時間 / 備註標籤：</label>
+        <input type="text" id="input-itin-time" placeholder="例如：18:30 - 20:00" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">行程詳細說明：</label>
+        <textarea id="input-itin-desc" placeholder="詳細活動內容..." class="w-full h-20 p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none leading-relaxed"></textarea>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-amber-700 block mb-1"><i class="fa-regular fa-comment-dots mr-1"></i>團員補充註解：</label>
+        <textarea id="input-itin-comment" placeholder="例如：記得帶推車、先預約座位、門票需攜帶護照..." class="w-full h-16 p-2.5 border border-amber-200 bg-amber-50/50 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none leading-relaxed"></textarea>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">Google Map 導航連結：</label>
+        <input type="text" id="input-itin-map" placeholder="例如：https://maps.google.com/..." class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">購票 / 預約連結：</label>
+        <input type="text" id="input-itin-ticket" placeholder="例如：https://www.klook.com/..." class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveItineraryItem()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">儲存行程與註解</button>
+      </div>
+    </div>
+
+    <!-- Move Itinerary Day Modal -->
+    <div id="modal-move-day" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-calendar-plus text-sky-600 mr-1.5"></i>移動行程至其他天</h3>
+      <input type="hidden" id="move-item-id">
+      <p class="text-xs font-medium text-slate-600" id="move-item-name"></p>
+      <div class="grid grid-cols-2 gap-2 text-xs">
+        <button onclick="executeMoveDay(1)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 1 (12/7)</button>
+        <button onclick="executeMoveDay(2)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 2 (12/8)</button>
+        <button onclick="executeMoveDay(3)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 3 (12/9)</button>
+        <button onclick="executeMoveDay(4)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 4 (12/10)</button>
+        <button onclick="executeMoveDay(5)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 5 (12/11)</button>
+        <button onclick="executeMoveDay(6)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 6 (12/12)</button>
+      </div>
+      <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium mt-1">取消</button>
+    </div>
+
+    <!-- Smart Match Modal -->
+    <div id="modal-smart-match" class="bg-white rounded-2xl p-4 w-full max-w-md flex flex-col shadow-xl hidden max-h-[85vh]">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2 shrink-0">
+        <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i>智慧排行程 / 口袋排行榜</h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="py-2.5 bg-white border-b border-slate-100 shrink-0 space-y-2">
+        <div class="flex space-x-2">
+          <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">關閉</button>
+          <button onclick="applySmartMatchSelection()" class="flex-1 bg-rose-500 text-white py-2 rounded-xl text-xs font-bold shadow-sm">將勾選排入行程</button>
+        </div>
+        <p class="text-[10px] text-slate-400">依票數優先排序，勾選並點擊上方按鈕即可加入行程。</p>
+      </div>
+
+      <div id="smart-match-items-container" class="space-y-2 divide-y divide-slate-100 overflow-y-auto flex-1 pt-2"></div>
+    </div>
+
+    <!-- Nearby Walking Distance Shops Modal -->
+    <div id="modal-nearby-shops" class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3 shadow-xl hidden max-h-[85vh] overflow-y-auto">
+      <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+        <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-person-walking text-sky-600 mr-1.5"></i>目前定位步行 10 分鐘內店家</h3>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <p id="nearby-status-text" class="text-[11px] text-slate-500">正在讀取您的 GPS 定位並搜尋周邊 800 公尺餐廳與店家...</p>
+      
+      <div class="mt-2 rounded-xl overflow-hidden border border-slate-200 shadow-inner">
+        <div class="bg-slate-100 px-3 py-1.5 text-[10px] font-bold text-slate-600 flex items-center justify-between">
+          <span>📍 您的目前 GPS 定位</span>
+          <span id="map-coord-label" class="text-slate-400 font-normal">載入中...</span>
+        </div>
+        <div id="map-container" class="w-full h-48 bg-slate-200 relative">
+          <iframe id="google-map-iframe" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="about:blank"></iframe>
+        </div>
+      </div>
+
+      <div id="nearby-shops-container" class="space-y-2 divide-y divide-slate-100 pt-1"></div>
+    </div>
+
+    <!-- Add Souvenir Modal -->
+    <div id="modal-add-souvenir" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 id="souv-modal-title" class="text-sm font-bold text-slate-800"><i class="fa-solid fa-gift text-rose-500 mr-1.5"></i>新增伴手禮 / 戰利品</h3>
+      <input type="hidden" id="edit-souv-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">伴手禮名稱：</label>
+        <input type="text" id="input-souv-name" placeholder="例如：越南帶皮腰果、G7咖啡" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">理想價格 (預算)：</label>
+        <input type="text" id="input-souv-price" placeholder="例如：約 $150,000 盾 / 盒" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">示意圖圖片網址 (URL)：</label>
+        <input type="text" id="input-souv-img" placeholder="例如：https://... 圖片連結" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">備註說明：</label>
+        <input type="text" id="input-souv-note" placeholder="例如：Big C 超市買最便宜、買5送1" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveSouvenirItem()" class="flex-1 bg-rose-500 text-white py-2 rounded-xl text-xs font-semibold">確定儲存</button>
+      </div>
+    </div>
+
+    <!-- Room Assignment Modal -->
+    <div id="modal-room-assignment" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 id="room-modal-title" class="text-sm font-bold text-slate-800"><i class="fa-solid fa-bed text-indigo-500 mr-1.5"></i>新增房間分配</h3>
+      <input type="hidden" id="edit-room-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">飯店名稱：</label>
+        <select id="input-room-hotel" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white">
+          <option value="會安 Little Residence">會安 Little Residence (12/07 - 12/09)</option>
+          <option value="峴港 Chi House">峴港 Chi House (12/09 - 12/12)</option>
+          <option value="其他飯店">其他飯店</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">入住人員名稱：</label>
+        <input type="text" id="input-room-guests" placeholder="例如：阿偉、小美、寶寶" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">房號：</label>
+        <input type="text" id="input-room-num" placeholder="例如：201、302" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">房型：</label>
+        <input type="text" id="input-room-type" placeholder="例如：豪華雙人房、四人家庭套房" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">備註說明：</label>
+        <input type="text" id="input-room-note" placeholder="例如：含嬰兒床、高樓層禁菸" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveRoomItem()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-semibold">儲存分配</button>
+      </div>
+    </div>
+
+    <!-- Add Packing Category Modal -->
+    <div id="modal-packing-cat" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-folder-plus text-sky-600 mr-1.5"></i>新增必備物品類別</h3>
+      <input type="text" id="input-pcat-title" placeholder="例如：寶寶專用用具、個人藥品" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="savePackingCat()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">確定新增</button>
+      </div>
+    </div>
+
+    <!-- Add Packing Item Modal -->
+    <div id="modal-packing-item" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-square-plus text-sky-600 mr-1.5"></i>新增物品</h3>
+      <input type="hidden" id="target-pcat-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">物品名稱：</label>
+        <input type="text" id="input-pitem-name" placeholder="例如：防蚊液、護照正本" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">備註事項 (可選)：</label>
+        <input type="text" id="input-pitem-note" placeholder="例如：檢查6個月以上效期" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="savePackingItem()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">確定新增</button>
+      </div>
+    </div>
+
+    <!-- Add Fav Category Modal -->
+    <div id="modal-fav-cat" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-folder-plus text-rose-500 mr-1.5"></i>新增口袋類別</h3>
+      <input type="text" id="input-fcat-title" placeholder="例如：夜市打卡、伴手禮清單" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveFavCat()" class="flex-1 bg-rose-500 text-white py-2 rounded-xl text-xs font-semibold">確定新增</button>
+      </div>
+    </div>
+
+    <!-- Edit Fav Category Name Modal -->
+    <div id="modal-edit-fav-cat" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-pen-to-square text-rose-500 mr-1.5"></i>修改口袋類別名稱</h3>
+      <input type="hidden" id="edit-fcat-target-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">新的類別名稱：</label>
+        <input type="text" id="input-edit-fcat-title" placeholder="例如：在地必吃美食" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveEditedFavCat()" class="flex-1 bg-rose-500 text-white py-2 rounded-xl text-xs font-semibold">儲存修改</button>
+      </div>
+    </div>
+
+    <!-- Add Fav Item Modal -->
+    <div id="modal-fav-item" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-heart-circle-plus text-rose-500 mr-1.5"></i>新增口袋地點</h3>
+      <input type="hidden" id="target-fcat-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">景點 / 店家名稱：</label>
+        <input type="text" id="input-fitem-name" oninput="handleFavNameSearch()" placeholder="例如：Mộc Quán、Cộng Cà Phê" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">備註說明：</label>
+        <input type="text" id="input-fitem-note" placeholder="例如：必點烤龍蝦、營業至22:00" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      </div>
+      <div id="fav-search-preview" class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1.5 hidden">
+        <p class="text-[10px] font-bold text-slate-500">自動生成比對連結：</p>
+        <a id="fav-preview-map" href="#" target="_blank" class="text-[11px] text-sky-600 font-bold block truncate"><i class="fa-solid fa-map-pin mr-1"></i>Google Map 導航連結</a>
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveFavItem()" class="flex-1 bg-rose-500 text-white py-2 rounded-xl text-xs font-semibold">儲存收藏</button>
+      </div>
+    </div>
+
+    <!-- Edit Fav Note Modal -->
+    <div id="modal-edit-fav-note" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-pen-to-square text-rose-500 mr-1.5"></i>修改收藏備註</h3>
+      <input type="hidden" id="edit-fcat-id">
+      <input type="hidden" id="edit-fitem-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">景點 / 店家名稱：</label>
+        <p id="edit-fitem-name-display" class="font-bold text-slate-800 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100"></p>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">備註事項：</label>
+        <input type="text" id="input-edit-fitem-note" placeholder="例如：招牌烤龍蝦、營業至22:00" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveEditedFavNote()" class="flex-1 bg-rose-500 text-white py-2 rounded-xl text-xs font-semibold">儲存修改</button>
+      </div>
+    </div>
+
+    <!-- Vote Favorite Item Modal -->
+    <div id="modal-vote-fav" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-fire text-amber-500 mr-1.5"></i>投票想去此地點</h3>
+      <input type="hidden" id="vote-fcat-id">
+      <input type="hidden" id="vote-fitem-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">景點 / 店家：</label>
+        <p id="vote-fitem-name-display" class="font-bold text-slate-800 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100"></p>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">您的姓名 / 稱呼：</label>
+        <input type="text" id="input-vote-name" placeholder="例如：阿偉、小美" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">同行想去人數：</label>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 block mb-1 text-center">大人 [大]</label>
+            <select id="input-vote-adults" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white text-center font-bold">
+              <option value="1" selected>1 人</option>
+              <option value="0">0 人</option>
+              <option value="2">2 人</option>
+              <option value="3">3 人</option>
+              <option value="4">4 人</option>
+              <option value="5">5 人</option>
+              <option value="6">6 人</option>
+              <option value="7">7 人</option>
+              <option value="8">8 人</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 block mb-1 text-center">兒童 [小]</label>
+            <select id="input-vote-kids" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white text-center font-bold">
+              <option value="0" selected>0 人</option>
+              <option value="1">1 人</option>
+              <option value="2">2 人</option>
+              <option value="3">3 人</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-slate-500 block mb-1 text-center">嬰兒 [嬰]</label>
+            <select id="input-vote-infants" class="w-full p-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white text-center font-bold">
+              <option value="0" selected>0 人</option>
+              <option value="1">1 人</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="flex space-x-2 pt-1">
+        <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+        <button onclick="saveFavVote()" class="flex-1 bg-amber-500 text-white py-2 rounded-xl text-xs font-bold shadow-sm">確定投票</button>
+      </div>
+      
+      <div class="border-t border-slate-100 pt-2 space-y-1.5">
+        <p class="text-[11px] font-bold text-slate-700">目前已投票名單：</p>
+        <div id="vote-current-list" class="space-y-1 text-xs max-h-32 overflow-y-auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    let activeTab = 'packing';
+    let currentDay = 1;
+    let roomId = localStorage.getItem('danang_room_id') || 'danang2026';
+
+    const defaultHeaderInfo = {
+      title: '峴港會安',
+      duration: '6D5N',
+      headcount: '14大2小1嬰',
+      dates: '2026/12/07 - 12/12',
+      groupTag: '必去景點'
+    };
+
+    function renderHeaderInfo() {
+      const info = getStoredData('headerInfo', defaultHeaderInfo);
+      const titleEl = document.getElementById('header-display-title');
+      const durationEl = document.getElementById('header-display-duration');
+      const headcountEl = document.getElementById('header-display-headcount');
+      const datesEl = document.getElementById('header-display-dates');
+      const groupTagEl = document.getElementById('header-display-grouptag');
+
+      if (titleEl) titleEl.textContent = info.title || '峴港會安';
+      if (durationEl) durationEl.textContent = info.duration || '6D5N';
+      if (headcountEl) headcountEl.textContent = info.headcount || '14大2小1嬰';
+      if (datesEl) datesEl.textContent = info.dates || '2026/12/07 - 12/12';
+      if (groupTagEl) groupTagEl.textContent = info.groupTag || '必去景點';
+    }
+
+    function openHeaderEditModal() {
+      const info = getStoredData('headerInfo', defaultHeaderInfo);
+      document.getElementById('input-header-title').value = info.title || '';
+      document.getElementById('input-header-duration').value = info.duration || '';
+      document.getElementById('input-header-headcount').value = info.headcount || '';
+      document.getElementById('input-header-dates').value = info.dates || '';
+      document.getElementById('input-header-grouptag').value = info.groupTag || '';
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-header-edit').classList.remove('hidden');
+    }
+
+    function saveHeaderData() {
+      const title = document.getElementById('input-header-title').value.trim();
+      const duration = document.getElementById('input-header-duration').value.trim();
+      const headcount = document.getElementById('input-header-headcount').value.trim();
+      const dates = document.getElementById('input-header-dates').value.trim();
+      const groupTag = document.getElementById('input-header-grouptag').value.trim();
+
+      const newInfo = {
+        title: title || '峴港會安',
+        duration: duration || '6D5N',
+        headcount: headcount || '14大2小1嬰',
+        dates: dates || '2026/12/07 - 12/12',
+        groupTag: groupTag || '必去景點'
+      };
+
+      pushStateToCloud('headerInfo', newInfo);
+      closeModal();
+      showToast("頁首資訊已成功更新！");
+    }
+
+    // 預設備用匯率數據 (相對 USD)
+    let exchangeRates = {
+      USD: 1,
+      TWD: 32.2,
+      VND: 25400,
+      JPY: 154.5,
+      KRW: 1390,
+      EUR: 0.95,
+      THB: 34.5,
+      SGD: 1.35
+    };
+
+    function fetchLiveExchangeRates() {
+      const refreshIcon = document.getElementById('rate-refresh-icon');
+      const updateLabel = document.getElementById('rate-update-time');
+      if (refreshIcon) refreshIcon.classList.add('fa-spin');
+      if (updateLabel) updateLabel.textContent = "更新中...";
+
+      fetch('https://open.er-api.com/v6/latest/USD')
+        ? fetch('https://open.er-api.com/v6/latest/USD')
+            .then(res => res.json())
+            .then(data => {
+              if (data && data.rates) {
+                exchangeRates = { ...exchangeRates, ...data.rates };
+                const now = new Date();
+                const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                if (updateLabel) updateLabel.textContent = `已更新 (${timeStr})`;
+                showToast("已更新為當前最新國際匯率！");
+              }
+            })
+            .catch(err => {
+              if (updateLabel) updateLabel.textContent = "離線參考匯率";
+            })
+            .finally(() => {
+              if (refreshIcon) refreshIcon.classList.remove('fa-spin');
+              calculateCurrencyConversion();
+            })
+        : null;
+    }
+
+    function calculateCurrencyConversion() {
+      const amountInput = document.getElementById('fx-amount-input');
+      const fromCurr = document.getElementById('fx-from-currency')?.value || 'TWD';
+      const toCurr = document.getElementById('fx-to-currency')?.value || 'VND';
+      const resultDisplay = document.getElementById('fx-result-display');
+      const rateInfoDisplay = document.getElementById('fx-rate-info');
+
+      if (!amountInput || !resultDisplay) return;
+
+      const amount = parseFloat(amountInput.value) || 0;
+      const rateFromInUSD = exchangeRates[fromCurr] || 1;
+      const rateToInUSD = exchangeRates[toCurr] || 1;
+
+      // 1 fromCurr = ? toCurr
+      const unitRate = (1 / rateFromInUSD) * rateToInUSD;
+      const convertedAmount = amount * unitRate;
+
+      // 格式化數字顯示
+      const formattedInput = amount.toLocaleString();
+      const formattedResult = convertedAmount >= 1000 ? Math.round(convertedAmount).toLocaleString() : convertedAmount.toFixed(2);
+      const formattedUnitRate = unitRate >= 100 ? unitRate.toFixed(2) : (unitRate >= 1 ? unitRate.toFixed(4) : unitRate.toFixed(6));
+
+      resultDisplay.textContent = `${formattedInput} ${fromCurr} ≈ ${formattedResult} ${toCurr}`;
+      if (rateInfoDisplay) {
+        rateInfoDisplay.textContent = `當前參考匯率: 1 ${fromCurr} ≈ ${formattedUnitRate} ${toCurr}`;
+      }
+    }
+
+    function swapCurrencies() {
+      const fromSelect = document.getElementById('fx-from-currency');
+      const toSelect = document.getElementById('fx-to-currency');
+      if (fromSelect && toSelect) {
+        const temp = fromSelect.value;
+        fromSelect.value = toSelect.value;
+        toSelect.value = temp;
+        calculateCurrencyConversion();
+      }
+    }
+
+    const weatherData = {
+      1: { temp: '22°C - 27°C', status: '會安古鎮 ☀️ 晴時多雲', tip: '體感微涼舒適，秋盆河夜遊建議帶薄外套' },
+      2: { temp: '21°C - 26°C', status: '美山勝地 ⛅ 多雲山區', tip: '遺跡古磚石階濕滑，建議穿防滑平底鞋' },
+      3: { temp: '22°C - 28°C', status: '迦南島 & 峴港 🌤️ 舒適微風', tip: '竹籃船體驗陽光充足，記得做好防曬與防潑水' },
+      4: { temp: '15°C - 21°C', status: '巴拿山 Sun World ☁️ 山頂較涼', tip: '⚠️ 山頂氣溫明顯偏低，全團務必準備防風外套' },
+      5: { temp: '22°C - 27°C', status: '山茶半島 & 峴港市區 ☀️ 晴朗', tip: '海風陣陣，龍橋噴火表演人潮較多請注意安全' },
+      6: { temp: '23°C - 28°C', status: '峴港市區 🌤️ 適合購物採買', tip: '氣溫舒適，準備行李與伴手禮準備返台' }
+    };
+
+    const defaultFixedExpensesData = [
+      { id: 'fe-1', name: '星宇來回機票', adult: 11949, kid: 9729, infant: 1048 },
+      { id: 'fe-2', name: '5晚住宿均分', adult: 5000, kid: 5000, infant: 0 },
+      { id: 'fe-3', name: '嘉義桃機來回接駁', adult: 1190, kid: 1190, infant: 1190 },
+      { id: 'fe-4', name: '越南電子簽證', adult: 1150, kid: 1150, infant: 0 },
+      { id: 'fe-5', name: '峴港當地包車 (6天)', adult: 2100, kid: 2100, infant: 2100 }
+    ];
+
+    const defaultItineraryData = {
+      1: {
+        items: [
+          {
+            id: 'd1-1', time: '09:30 - 10:50', title: '🚗 包車出發集合 (A車 & B車)',
+            desc: `<strong>司機：得佳富租賃 (阿得)</strong> 📞 <a href="tel:0972922097" class="text-sky-600 font-bold underline">0972-922097</a> / 04-25668678 (Line: 0972922097)<br><br>
+            <strong>A車 (5大2小，含1安全座椅):</strong><br>
+            • 09:40 📍 嘉義航空站 (接4大2小，含1座椅)<br>
+            • 10:00 📍 嘉義大賢路 (接1大)<br>
+            • 10:15 出發直達桃園機場<br><br>
+            <strong>B車 (7大):</strong><br>
+            • 09:30 📍 嘉義市東區義教街708號 (千香漢堡) [接1大]<br>
+            • 09:45 📍 嘉義市鎮北路50巷25號 [接2大]<br>
+            • 10:15 📍 嘉義縣梅山鄉南興街19號 [接2大]<br>
+            • 10:45 📍 南投市新光路5號 [接2大]<br>
+            • 10:50 出發直達桃園機場`,
+            comment: '出發前確認行李數量與幼兒座椅設置'
+          },
+          { id: 'd1-2', time: '13:00', title: '✈️ 桃園機場二航廈集合報到', desc: '搭乘星宇航空 JX703 (15:20起飛 ➔ 17:15抵達峴港)' },
+          { id: 'd1-3', time: '18:15', title: '🏨 入住會安飯店', desc: '機場包車直達會安 Little Residence 飯店', map: 'https://maps.google.com/?q=Little+Residence+A+Boutique+Hotel+and+Spa+Hoi+An' },
+          { id: 'd1-4', time: '19:30 - 22:00', title: '🛶 會安古鎮夜遊 & 放水燈', desc: '古鎮晚餐，體驗搭乘小木船遊秋盆河與放水燈', map: 'https://maps.google.com/?q=Hoi+An+Ancient+Town' }
+        ]
+      },
+      2: {
+        items: [
+          { id: 'd2-1', time: '09:00 - 12:00', title: '🏛️ 美山勝地 (My Son)', desc: '千年占婆王國古蹟遺跡（園區內含高爾夫接駁車）', map: 'https://maps.google.com/?q=My+Son+Sanctuary' },
+          { id: 'd2-2', time: '19:30 - 20:45', title: '🎭 Teh Dar 竹採馬戲秀', desc: 'Hội An Lune Center 觀賞結合竹編藝術與特技的表演', map: 'https://maps.google.com/?q=Hoi+An+Lune+Center' }
+        ]
+      },
+      3: {
+        items: [
+          { id: 'd3-1', time: '09:30 - 12:00', title: '🚣 迦南島椰子船', desc: '體驗水上竹籃船、觀賞搖滾船表演與撒網', map: 'https://maps.google.com/?q=Cam+Thanh+Coconut+Village' },
+          { id: 'd3-2', time: '14:30 - 16:30', title: '⛰️ 五行山 (Marble Mountains)', desc: '搭乘透明電梯上山參觀玄空洞天然洞穴', map: 'https://maps.google.com/?q=The+Marble+Mountains' },
+          { id: 'd3-3', time: '17:00', title: '🏨 入住峴港 Chi House', desc: '辦理入住 Chi House Danang Hotel and Apartment', map: 'https://maps.google.com/?q=Chi+House+Danang+Hotel+and+Apartment' },
+          { id: 'd3-4', time: '18:30', title: '🍽️ Mộc Quán 海鮮晚餐', desc: '峴港超高人氣海鮮餐廳特色晚餐', map: 'https://maps.google.com/?q=Moc+Quan+Da+Nang' }
+        ]
+      },
+      4: {
+        items: [
+          { id: 'd4-1', time: '08:30 - 16:00', title: '🏰 巴拿山 Sun World 一日遊', desc: '搭乘高空纜車、打卡黃金橋（佛手橋）、法式小鎮與遊樂園', map: 'https://maps.google.com/?q=Sun+World+Ba+Na+Hills' }
+        ]
+      },
+      5: {
+        items: [
+          { id: 'd5-1', time: '09:30 - 11:30', title: '⛩️ 山茶半島 & 靈應寺', desc: '參觀全越南最高觀音大佛像，俯瞰峴港灣海岸線', map: 'https://maps.google.com/?q=Linh+Ung+Pagoda+Son+Tra' },
+          { id: 'd5-2', time: '14:00 - 16:30', title: '🛍️ 漢市場 & 粉紅教堂', desc: '採買織品伴手禮與打卡粉紅教堂', map: 'https://maps.google.com/?q=Han+Market+Da+Nang' },
+          { id: 'd5-3', time: '20:30 - 21:30', title: '🐉 韓江遊船 & 龍橋噴火秀', desc: '21:00 精準觀賞龍橋噴火與噴水表演！', map: 'https://maps.google.com/?q=Dragon+Bridge+Da+Nang' }
+        ]
+      },
+      6: {
+        items: [
+          { id: 'd6-1', time: '14:00 - 15:30', title: '🛍️ Big C (Go!) 超市採購', desc: '採購腰果、越南咖啡與伴手禮', map: 'https://maps.google.com/?q=Go!+Da+Nang' },
+          { id: 'd6-2', time: '18:25 - 22:10', title: '✈️ 星宇 JX704 賦歸', desc: '15:30 抵達峴港機場 ➔ 18:25 起飛返回桃園機場' }
+        ]
+      }
+    };
+
+    const defaultFavoritesData = [
+      {
+        id: 'fcat-1', title: '美食餐廳', items: [
+          { id: 'fitem-101', name: 'Mộc Quán 海鮮', note: '招牌烤龍蝦、炒空心菜，人氣第一', votes: 0, visited: false },
+          { id: 'fitem-102', name: 'Morning Glory Original', note: '會安古鎮頂級高樓麵與高家飯', votes: 0, visited: false },
+          { id: 'fitem-103', name: 'Hải Sản Bé Mặn', note: '在地道地海鮮熱吵', votes: 0, visited: false }
+        ]
+      },
+      {
+        id: 'fcat-2', title: '舒壓按摩 (SPA)', items: [
+          { id: 'fitem-201', name: 'Salem Spa Garden', note: '熱石按摩、環境優美清幽', votes: 0, visited: false },
+          { id: 'fitem-202', name: 'Yhi Spa (會安)', note: '精油舒壓、精緻景觀', votes: 0, visited: false }
+        ]
+      },
+      {
+        id: 'fcat-3', title: '街頭小吃', items: [
+          { id: 'fitem-301', name: 'Bánh Xèo Bà Dưỡng', note: '峴港最著名炸煎餅，沾醬一絕', votes: 0, visited: false },
+          { id: 'fitem-302', name: 'Bánh Mì Phượng', note: '會安第一名法國麵包', votes: 0, visited: false }
+        ]
+      },
+      {
+        id: 'fcat-4', title: '網美咖啡廳', items: [
+          { id: 'fitem-401', name: 'Cộng Cà Phê', note: '招牌椰奶咖啡 (Coconut Coffee)', votes: 0, visited: false },
+          { id: 'fitem-402', name: 'Faifo Coffee', note: '會安古鎮屋頂俯瞰視角', votes: 0, visited: false }
+        ]
+      }
+    ];
+
+    const defaultPackingData = [
+      {
+        id: 'pcat-1', title: '證件與財務', items: [
+          { id: 'pitem-101', name: '護照正本', note: '效期需滿6個月以上' },
+          { id: 'pitem-102', name: '越南電子簽證 (E-Visa) 印出紙本', note: '每人需備妥紙本' },
+          { id: 'pitem-103', name: '台幣與美金現金', note: '至當地再換越南盾' }
+        ]
+      },
+      {
+        id: 'pcat-2', title: '衣物穿搭', items: [
+          { id: 'pitem-201', name: '薄外套 / 防風外套', note: '巴拿山山頂較冷必備' },
+          { id: 'pitem-202', name: '泳衣 / 泳褲 / 墨鏡', note: '沙灘與飯店泳池使用' }
+        ]
+      },
+      {
+        id: 'pcat-3', title: '電子與日常用品', items: [
+          { id: 'pitem-301', name: '越南 SIM 卡 / eSIM', note: '網路保持通暢' },
+          { id: 'pitem-302', name: '行動電源 & 充電線', note: '隨身帶上飛機' },
+          { id: 'pitem-303', name: '萬用轉接頭 & 延長線', note: '團體多裝置充電' }
+        ]
+      }
+    ];
+
+    const defaultTicketsData = [
+      { id: 't-1', name: '巴拿山纜車門票', price: 1200, checked: true },
+      { id: 't-2', name: '巴拿山自助午餐/晚餐', price: 450, checked: true },
+      { id: 't-3', name: 'Teh Dar 竹採馬戲秀', price: 900, checked: true },
+      { id: 't-4', name: '迦南島椰子船體驗', price: 200, checked: true },
+      { id: 't-5', name: '美山勝地門票', price: 200, checked: true },
+      { id: 't-6', name: '五行山門票+電梯', price: 80, checked: true },
+      { id: 't-7', name: '韓江遊船船票', price: 180, checked: true }
+    ];
+
+    const defaultSouvenirsData = [
+      {
+        id: 'souv-1',
+        name: '越南帶皮腰果 (W240大顆)',
+        price: '約 $150,000 盾 / 盒',
+        note: 'Big C 超市買最便宜，要買蒜香原味',
+        img: 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=200&auto=format&fit=crop&q=60'
+      },
+      {
+        id: 'souv-2',
+        name: 'G7 3合1即溶咖啡',
+        price: '約 $55,000 盾 / 包',
+        note: '伴手禮首選，送禮自用兩相宜',
+        img: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&auto=format&fit=crop&q=60'
+      }
+    ];
+
+    const defaultRoomsData = [
+      {
+        id: 'room-1',
+        hotel: '會安 Little Residence',
+        roomNum: '201',
+        guests: '阿偉、小美',
+        roomType: '豪華雙人房',
+        note: '需要嬰兒床'
+      }
+    ];
+
+    const SUPABASE_URL = 'https://gasrxuamehwtkhyurdas.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_q5DrYXs0g4baNMBTiKeEwA_zllswl4F';
+    const CLOUD_KEYS = ['headerInfo','itinerary','packing','favorites','tickets','fixedExpenses','rooms','souvenirs','notes'];
+    const cloudClient = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+      : null;
+    let cloudPassword = sessionStorage.getItem('perfect_cloud_password') || '';
+    let cloudConnected = false;
+    let cloudPushTimer = null;
+    let cloudPollTimer = null;
+    let cloudRealtimeChannel = null;
+    let cloudPullBusy = false;
+    let cloudApplying = false;
+    let lastCloudSnapshot = '';
+    let cloudBaseState = {};
+    const cloudSectionTimers = {};
+    const cloudSectionPending = {};
+    const cloudSectionInFlight = {};
+
+    function getStoredData(key, fallback) {
+      try {
+        const stored = localStorage.getItem(`danang_${roomId}_${key}`);
+        return stored ? JSON.parse(stored) : fallback;
+      } catch (e) {
+        return fallback;
+      }
+    }
+
+    function setStoredData(key, data) {
+      try {
+        localStorage.setItem(`danang_${roomId}_${key}`, JSON.stringify(data));
+      } catch (e) {}
+    }
+
+    function collectRoomState() {
+      const state = {};
+      CLOUD_KEYS.forEach(key => {
+        const raw = localStorage.getItem(`danang_${roomId}_${key}`);
+        if (raw !== null) {
+          try { state[key] = JSON.parse(raw); } catch (e) {}
+        }
+      });
+      return state;
+    }
+
+    function isValidPackingData(value) {
+      return Array.isArray(value) && value.length > 0 && value.every(cat =>
+        cat && typeof cat === 'object' &&
+        typeof cat.id === 'string' &&
+        typeof cat.title === 'string' &&
+        Array.isArray(cat.items)
+      );
+    }
+
+    function getSafePackingData(value) {
+      if (isValidPackingData(value)) return value;
+      const local = getStoredData('packing', null);
+      if (isValidPackingData(local)) return local;
+      return JSON.parse(JSON.stringify(defaultPackingData));
+    }
+
+    function normalizeRoomStatePayload(payload) {
+      let state = payload;
+      if (typeof state === 'string') {
+        try { state = JSON.parse(state); } catch (e) { return {}; }
+      }
+      if (Array.isArray(state) && state.length === 1 && state[0] && typeof state[0] === 'object') {
+        state = state[0].state ?? state[0].data ?? state[0];
+      }
+      return (state && typeof state === 'object' && !Array.isArray(state)) ? state : {};
+    }
+
+    function applyRoomState(payload) {
+      const state = normalizeRoomStatePayload(payload);
+      cloudApplying = true;
+      CLOUD_KEYS.forEach(key => {
+        if (!Object.prototype.hasOwnProperty.call(state, key)) return;
+        // Rescue 修復：packing 只有在格式完整時才允許覆蓋本機。
+        // 可攔截 []、null、{}、字串及舊版異常資料，避免必備清單整片空白。
+        if (key === 'packing' && !isValidPackingData(state[key])) {
+          setStoredData('packing', getSafePackingData(state[key]));
+          return;
+        }
+        setStoredData(key, state[key]);
+      });
+      cloudApplying = false;
+      cloudBaseState = JSON.parse(JSON.stringify(state || {}));
+      cloudBaseState.packing = getSafePackingData(state.packing);
+      lastCloudSnapshot = JSON.stringify(state);
+      refreshUI();
+    }
+
+    function setCloudStatus(text, ok=false) {
+      const el = document.getElementById('cloud-sync-status');
+      if (el) {
+        el.textContent = text;
+        el.className = `text-[10px] ${ok ? 'text-emerald-600' : 'text-slate-400'}`;
+      }
+    }
+
+    async function createCloudRoom() {
+      const newRoom = document.getElementById('input-room-id').value.trim();
+      const password = document.getElementById('input-room-password').value;
+      if (newRoom.length < 4) return showToast('房間名稱至少 4 個字元');
+      if (password.length < 6) return showToast('密碼至少 6 個字元');
+      if (!cloudClient) return showToast('Supabase 載入失敗，請確認網路');
+
+      const oldRoom = roomId;
+      roomId = newRoom;
+      const seed = collectRoomState();
+      // 若新房間本機還沒有資料，沿用切換前目前畫面資料作為初始內容
+      if (Object.keys(seed).length === 0) {
+        roomId = oldRoom;
+        const oldState = collectRoomState();
+        roomId = newRoom;
+        CLOUD_KEYS.forEach(k => { if (Object.prototype.hasOwnProperty.call(oldState,k)) setStoredData(k, oldState[k]); });
+      }
+      const state = collectRoomState();
+      const { data, error } = await cloudClient.rpc('create_trip_room', {
+        p_room_id: newRoom, p_password: password, p_state: state
+      });
+      if (error || data !== true) {
+        roomId = oldRoom;
+        showToast(error?.message?.includes('duplicate') ? '這個房間名稱已存在' : '建立房間失敗');
+        return;
+      }
+      activateCloudRoom(newRoom, password);
+      closeModal();
+      refreshUI();
+      showToast('雲端房間建立成功');
+    }
+
+    async function joinCloudRoom() {
+      const roomInput = document.getElementById('input-room-id');
+      const passwordInput = document.getElementById('input-room-password');
+      const newRoom = roomInput.value.trim();
+      const password = passwordInput.value;
+      const loginBtn = document.querySelector('#modal-sync-room button[onclick="joinCloudRoom()"]');
+
+      if (newRoom.length < 4) { setCloudStatus('請輸入至少 4 個字元的房間名稱'); roomInput.focus(); return; }
+      if (password.length < 6) { setCloudStatus('請輸入房間密碼（至少 6 個字元）'); passwordInput.focus(); return; }
+      if (!cloudClient) { setCloudStatus('Supabase 載入失敗，請確認網路'); return; }
+
+      const originalText = loginBtn ? loginBtn.textContent : '';
+      if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = '登入中…'; loginBtn.classList.add('opacity-60'); }
+      setCloudStatus('正在登入雲端房間…');
+
+      try {
+        const result = await cloudClient.rpc('get_trip_room', { p_room_id: newRoom, p_password: password });
+        const data = result ? result.data : null;
+        const error = result ? result.error : new Error('Supabase 沒有回傳結果');
+
+        if (error) {
+          console.error('get_trip_room error:', error);
+          const msg = error.message || error.details || error.hint || '未知錯誤';
+          setCloudStatus('登入失敗：' + msg);
+          return;
+        }
+        if (data === null || data === false) {
+          setCloudStatus('房間不存在或密碼錯誤');
+          return;
+        }
+
+        // 先完成連線狀態，再載入資料。即使舊資料格式有單一欄位異常，也不會讓整個登入被判定失敗。
+        activateCloudRoom(newRoom, password);
+
+        let state = data;
+        if (typeof state === 'string') {
+          try { state = JSON.parse(state); } catch (e) { state = {}; }
+        }
+        if (Array.isArray(state) && state.length === 1 && state[0] && typeof state[0] === 'object') {
+          state = state[0].state ?? state[0].data ?? state[0];
+        }
+        if (state && typeof state === 'object' && !Array.isArray(state)) {
+          try {
+            applyRoomState(state);
+          } catch (applyErr) {
+            console.error('applyRoomState error:', applyErr);
+            setCloudStatus(`已連線：${newRoom}（資料載入中）`, true);
+          }
+        }
+
+        closeModal();
+        showToast('雲端同步已連線');
+        setTimeout(() => pullCloudState(true), 300);
+      } catch (err) {
+        console.error('joinCloudRoom exception:', err);
+        const msg = err && err.message ? err.message : String(err || '未知錯誤');
+        setCloudStatus('登入發生錯誤：' + msg);
+      } finally {
+        if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = originalText || '登入同步'; loginBtn.classList.remove('opacity-60'); }
+      }
+    }
+
+    function activateCloudRoom(newRoom, password) {
+      roomId = newRoom;
+      cloudPassword = password;
+      cloudConnected = true;
+      localStorage.setItem('danang_room_id', roomId);
+      sessionStorage.setItem('perfect_cloud_password', password);
+      const display = document.getElementById('room-name-display');
+      if (display) display.textContent = roomId;
+      setCloudStatus(`已連線：${roomId}`, true);
+      startCloudPolling();
+    }
+
+    // 多人安全同步：每次只更新被修改的區塊，並把「修改前版本」一起交給
+    // Supabase 的 update_trip_room_section_safe 做三方合併，避免多人同時新增互蓋。
+    function scheduleSectionPush(key, data) {
+      if (!cloudConnected || !cloudPassword || !cloudClient || cloudApplying) return;
+      cloudSectionPending[key] = JSON.parse(JSON.stringify(data));
+      clearTimeout(cloudSectionTimers[key]);
+      cloudSectionTimers[key] = setTimeout(() => flushSectionPush(key), 250);
+    }
+
+    async function flushSectionPush(key) {
+      if (cloudSectionInFlight[key] || !Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) return;
+      if (!cloudConnected || !cloudPassword || !cloudClient) return;
+
+      const localData = cloudSectionPending[key];
+      delete cloudSectionPending[key];
+      const baseData = Object.prototype.hasOwnProperty.call(cloudBaseState, key)
+        ? cloudBaseState[key]
+        : null;
+      cloudSectionInFlight[key] = true;
+
+      const { data: merged, error } = await cloudClient.rpc('update_trip_room_section_safe', {
+        p_room_id: roomId,
+        p_password: cloudPassword,
+        p_section: key,
+        p_base: baseData,
+        p_data: localData
+      });
+
+      cloudSectionInFlight[key] = false;
+
+      if (!error && merged !== null) {
+        cloudBaseState[key] = JSON.parse(JSON.stringify(merged));
+        // 若送出期間沒有更晚的本機修改，才把伺服器合併結果套回畫面。
+        if (!Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) {
+          setStoredData(key, merged);
+          refreshUI();
+        }
+        setCloudStatus(`已同步：${roomId}`, true);
+      } else {
+        // 失敗時把這次資料放回待送佇列，保留本機資料並稍後重試。
+        if (!Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) {
+          cloudSectionPending[key] = localData;
+        }
+        setCloudStatus('同步失敗，資料已保留在本機');
+      }
+
+      if (Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) {
+        clearTimeout(cloudSectionTimers[key]);
+        cloudSectionTimers[key] = setTimeout(() => flushSectionPush(key), error ? 1500 : 50);
+      }
+    }
+
+    async function pullCloudState(silent=true) {
+      if (!cloudConnected || !cloudPassword || !cloudClient || cloudPullBusy) return;
+      cloudPullBusy = true;
+      const { data, error } = await cloudClient.rpc('get_trip_room', { p_room_id: roomId, p_password: cloudPassword });
+      if (error || data === null) {
+        cloudPullBusy = false;
+        if (!silent) showToast('雲端讀取失敗');
+        return;
+      }
+
+      const remote = data || {};
+      let changed = false;
+      cloudApplying = true;
+      CLOUD_KEYS.forEach(key => {
+        if (!Object.prototype.hasOwnProperty.call(remote, key)) return;
+        // V5 修復：忽略雲端意外出現的空 packing，避免每 3 秒輪詢又把清單清空。
+        if (key === 'packing' && !isValidPackingData(remote[key])) return;
+        // 本機正在修改/送出這個區塊時，不用輪詢結果蓋掉它；RPC 完成後會取得合併結果。
+        if (Object.prototype.hasOwnProperty.call(cloudSectionPending, key) || cloudSectionInFlight[key]) return;
+        const remoteJson = JSON.stringify(remote[key]);
+        const baseJson = JSON.stringify(cloudBaseState[key]);
+        if (remoteJson !== baseJson) {
+          setStoredData(key, remote[key]);
+          cloudBaseState[key] = JSON.parse(remoteJson);
+          changed = true;
+        }
+      });
+      cloudApplying = false;
+      lastCloudSnapshot = JSON.stringify(remote);
+      cloudPullBusy = false;
+      if (changed) {
+        refreshUI();
+        setCloudStatus(`已收到最新資料：${roomId}`, true);
+      }
+    }
+
+    function startCloudRealtime() {
+      if (!cloudClient || !roomId) return;
+      try {
+        if (cloudRealtimeChannel) cloudClient.removeChannel(cloudRealtimeChannel);
+        cloudRealtimeChannel = cloudClient
+          .channel(`trip-room-${roomId}-${Math.random().toString(36).slice(2)}`)
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'trip_rooms', filter: `room_id=eq.${roomId}` }, () => {
+            setTimeout(() => pullCloudState(true), 150);
+          })
+          .subscribe();
+      } catch (e) {
+        console.warn('Realtime unavailable; polling remains active.', e);
+      }
+    }
+
+    function startCloudPolling() {
+      clearInterval(cloudPollTimer);
+      // iPhone/Safari 背景頁面可能暫停計時器，因此同時使用較短輪詢 + 回到頁面立即抓取。
+      pullCloudState(true);
+      cloudPollTimer = setInterval(() => pullCloudState(true), 3000);
+      startCloudRealtime();
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && cloudConnected) pullCloudState(true);
+    });
+    window.addEventListener('focus', () => { if (cloudConnected) pullCloudState(true); });
+    window.addEventListener('pageshow', () => { if (cloudConnected) pullCloudState(true); });
+    window.addEventListener('online', () => { if (cloudConnected) pullCloudState(true); });
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-text').textContent = msg;
+      toast.classList.remove('opacity-0', 'translate-y-[-10px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        toast.classList.add('opacity-0', 'translate-y-[-10px]');
+      }, 2000);
+    }
+
+    function pushStateToCloud(key, data) {
+      setStoredData(key, data);
+      refreshUI();
+      scheduleSectionPush(key, data);
+    }
+
+    function switchTab(tabId) {
+      activeTab = tabId;
+      document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(el => {
+        el.classList.remove('border-sky-600', 'text-sky-600', 'border-rose-500', 'text-rose-500', 'border-emerald-600', 'text-emerald-600', 'border-amber-600', 'text-amber-600', 'border-indigo-600', 'text-indigo-600');
+        el.classList.add('border-transparent');
+      });
+
+      document.getElementById(`page-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('border-transparent');
+        activeBtn.classList.add('border-sky-600', 'text-sky-600');
+      }
+
+      const dayBar = document.getElementById('sticky-day-bar');
+      if (tabId === 'itinerary') {
+        dayBar.classList.remove('hidden');
+      } else {
+        dayBar.classList.add('hidden');
+      }
+
+      refreshUI();
+    }
+
+    function selectDay(day) {
+      currentDay = day;
+      document.querySelectorAll('.day-btn').forEach(btn => {
+        btn.classList.remove('bg-sky-600', 'text-white', 'shadow-sm');
+        btn.classList.add('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+        const spanDate = btn.querySelectorAll('span')[1];
+        if (spanDate) spanDate.style.opacity = '0.75';
+      });
+      const activeBtn = document.getElementById(`day-btn-${day}`);
+      if (activeBtn) {
+        activeBtn.classList.remove('bg-white', 'text-slate-600', 'border', 'border-slate-200');
+        activeBtn.classList.add('bg-sky-600', 'text-white', 'shadow-sm');
+        const spanDate = activeBtn.querySelectorAll('span')[1];
+        if (spanDate) spanDate.style.opacity = '0.9';
+      }
+      renderItinerary();
+    }
+
+    function refreshLiveWeather() {
+      showToast("正在連線更新即時氣象...");
+      setTimeout(() => {
+        window.open('https://www.accuweather.com/en/vn/da-nang/352954/weather-forecast/352954', '_blank');
+      }, 500);
+    }
+
+    function renderItinerary() {
+      const weather = weatherData[currentDay] || weatherData[1];
+      document.getElementById('weather-banner').innerHTML = `
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="flex items-center space-x-1.5">
+              <span class="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded-full text-white">Day ${currentDay} 氣候預報</span>
+            </div>
+            <h3 class="text-sm font-bold mt-1">${weather.status}</h3>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xs font-extrabold bg-white text-sky-700 px-2.5 py-1 rounded-xl shadow-sm">${weather.temp}</span>
+            <button onclick="refreshLiveWeather()" class="text-xs bg-white/20 hover:bg-white/30 text-white p-1.5 rounded-xl transition" title="重新整理即時氣象"><i class="fa-solid fa-rotate-right"></i></button>
+          </div>
+        </div>
+        <p class="text-[11px] text-white/90 pt-0.5"><i class="fa-solid fa-shirt mr-1"></i>穿搭建議：${weather.tip}</p>
+      `;
+
+      const addBtnLabel = document.getElementById('add-itin-btn-label');
+      if (addBtnLabel) addBtnLabel.textContent = `新增 Day ${currentDay} 行程地點`;
+
+      const data = getStoredData('itinerary', defaultItineraryData);
+      const dayData = data[currentDay] || { items: [] };
+      const container = document.getElementById('itinerary-items-container');
+
+      if (dayData.items.length === 0) {
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-100 text-center text-slate-400 text-xs">當天尚無行程點，可點擊下方按鈕新增或將收藏景點排入！</div>`;
+        return;
+      }
+
+      container.innerHTML = dayData.items.map((item, idx) => `
+        <div class="bg-white p-3.5 rounded-2xl border ${item.isFav ? 'border-rose-200 bg-rose-50/30' : 'border-slate-200'} shadow-sm space-y-2">
+          <div class="flex justify-between items-start">
+            <div class="flex items-center space-x-2">
+              ${item.time ? `
+                <span class="text-[10px] font-extrabold ${item.isFav ? 'bg-rose-500 text-white' : 'bg-sky-100 text-sky-700'} px-2 py-0.5 rounded-full shrink-0">
+                  ${item.time}
+                </span>
+              ` : ''}
+              <h3 class="text-xs font-bold text-slate-800">${item.title}</h3>
+            </div>
+            <div class="flex items-center space-x-1 text-slate-400 text-xs shrink-0">
+              ${idx > 0 ? `<button onclick="moveItineraryOrder(${idx}, -1)" class="hover:text-sky-600 p-1" title="上移"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
+              ${idx < dayData.items.length - 1 ? `<button onclick="moveItineraryOrder(${idx}, 1)" class="hover:text-sky-600 p-1" title="下移"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
+              <button onclick="openEditItineraryModal('${item.id}')" class="hover:text-sky-600 p-1" title="編輯行程與註解"><i class="fa-solid fa-pen-to-square"></i></button>
+              <button onclick="openMoveDayModal('${item.id}', '${item.title}')" class="hover:text-sky-600 p-1" title="轉移天數"><i class="fa-solid fa-calendar-day"></i></button>
+              <button onclick="deleteItineraryItem('${item.id}')" class="hover:text-rose-600 p-1" title="刪除行程"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+          </div>
+          ${item.desc ? `<div class="text-xs text-slate-600 leading-relaxed">${item.desc}</div>` : ''}
+          ${item.comment ? `
+            <div class="bg-amber-50/90 border border-amber-200/70 p-2.5 rounded-xl text-[11px] text-amber-900 mt-1 flex items-start space-x-1.5">
+              <i class="fa-regular fa-comment-dots text-amber-600 mt-0.5 shrink-0"></i>
+              <div class="leading-relaxed"><strong>註解：</strong>${item.comment}</div>
+            </div>
+          ` : ''}
+          ${(item.map || item.ticketLink) ? `
+            <div class="flex items-center gap-3 pt-0.5 flex-wrap">
+              ${item.map ? `<a href="${item.map}" target="_blank" class="text-[11px] text-sky-600 font-bold inline-block"><i class="fa-solid fa-location-dot mr-1"></i>開啟 Google Map</a>` : ''}
+              ${item.ticketLink ? `<a href="${item.ticketLink}" target="_blank" class="text-[11px] text-indigo-600 font-bold inline-block"><i class="fa-solid fa-ticket mr-1"></i>開啟購票連結</a>` : ''}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    function openAddItineraryModal() {
+      document.getElementById('edit-itin-id').value = '';
+      document.getElementById('itin-modal-title').innerHTML = `<i class="fa-solid fa-plus text-sky-600 mr-1.5"></i>新增 Day ${currentDay} 行程地點`;
+      document.getElementById('input-itin-title').value = '';
+      document.getElementById('input-itin-time').value = '';
+      document.getElementById('input-itin-desc').value = '';
+      document.getElementById('input-itin-comment').value = '';
+      document.getElementById('input-itin-map').value = '';
+      document.getElementById('input-itin-ticket').value = '';
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-itinerary-item').classList.remove('hidden');
+    }
+
+    function openEditItineraryModal(itemId) {
+      const data = getStoredData('itinerary', defaultItineraryData);
+      const dayData = data[currentDay];
+      if (!dayData) return;
+
+      const item = dayData.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      document.getElementById('edit-itin-id').value = itemId;
+      document.getElementById('itin-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-sky-600 mr-1.5"></i>編輯行程資訊與註解`;
+      document.getElementById('input-itin-title').value = item.title || '';
+      document.getElementById('input-itin-time').value = item.time || '';
+      document.getElementById('input-itin-desc').value = item.desc || '';
+      document.getElementById('input-itin-comment').value = item.comment || '';
+      document.getElementById('input-itin-map').value = item.map || '';
+      document.getElementById('input-itin-ticket').value = item.ticketLink || '';
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-itinerary-item').classList.remove('hidden');
+    }
+
+    function saveItineraryItem() {
+      const itemId = document.getElementById('edit-itin-id').value;
+      const title = document.getElementById('input-itin-title').value.trim();
+      const time = document.getElementById('input-itin-time').value.trim();
+      const desc = document.getElementById('input-itin-desc').value.trim();
+      const comment = document.getElementById('input-itin-comment').value.trim();
+      const map = document.getElementById('input-itin-map').value.trim();
+      const ticketLink = document.getElementById('input-itin-ticket').value.trim();
+
+      if (!title) {
+        showToast("請輸入行程標題");
+        return;
+      }
+
+      const data = getStoredData('itinerary', defaultItineraryData);
+      if (!data[currentDay]) data[currentDay] = { items: [] };
+
+      if (itemId) {
+        const item = data[currentDay].items.find(i => i.id === itemId);
+        if (item) {
+          item.title = title;
+          item.time = time;
+          item.desc = desc;
+          item.comment = comment;
+          item.map = map;
+          item.ticketLink = ticketLink;
+        }
+      } else {
+        data[currentDay].items.push({
+          id: `itin-${Date.now()}`,
+          title,
+          time,
+          desc,
+          comment,
+          map,
+          ticketLink
+        });
+      }
+
+      pushStateToCloud('itinerary', data);
+      closeModal();
+      showToast(itemId ? "行程資訊與註解已更新！" : "已成功新增行程地點！");
+    }
+
+    function moveItineraryOrder(index, direction) {
+      const data = getStoredData('itinerary', defaultItineraryData);
+      const items = data[currentDay].items;
+      const targetIndex = index + direction;
+      if (targetIndex >= 0 && targetIndex < items.length) {
+        const temp = items[index];
+        items[index] = items[targetIndex];
+        items[targetIndex] = temp;
+        pushStateToCloud('itinerary', data);
+      }
+    }
+
+    function deleteItineraryItem(itemId) {
+      const data = getStoredData('itinerary', defaultItineraryData);
+      data[currentDay].items = data[currentDay].items.filter(i => i.id !== itemId);
+      pushStateToCloud('itinerary', data);
+      showToast("已刪除該行程項目");
+    }
+
+    function openMoveDayModal(itemId, title) {
+      document.getElementById('move-item-id').value = itemId;
+      document.getElementById('move-item-name').textContent = title;
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-move-day').classList.remove('hidden');
+    }
+
+    function executeMoveDay(targetDay) {
+      const itemId = document.getElementById('move-item-id').value;
+      const data = getStoredData('itinerary', defaultItineraryData);
+      
+      let movedItem = null;
+      for (let d = 1; d <= 6; d++) {
+        const idx = data[d].items.findIndex(i => i.id === itemId);
+        if (idx !== -1) {
+          movedItem = data[d].items.splice(idx, 1)[0];
+          break;
+        }
+      }
+
+      if (movedItem) {
+        data[targetDay].items.push(movedItem);
+        pushStateToCloud('itinerary', data);
+        showToast(`已移動至 Day ${targetDay}`);
+      }
+      closeModal();
+    }
+
+    function renderPackingList() {
+      let globalPacking = getStoredData('packing', defaultPackingData);
+      // Rescue 修復：即使 localStorage / 雲端曾留下錯誤 packing 格式，也保證畫面可正常顯示。
+      if (!isValidPackingData(globalPacking)) {
+        globalPacking = getSafePackingData(globalPacking);
+        setStoredData('packing', globalPacking);
+      }
+      let personalCheckedState = {};
+      try { personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}') || {}; } catch (e) {}
+      const container = document.getElementById('packing-categories-list');
+      if (!container) return;
+
+      container.innerHTML = globalPacking.map(cat => `
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex justify-between items-center border-b border-slate-100 pb-1.5">
+            <h3 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-folder text-sky-500 mr-1.5"></i>${cat.title}</h3>
+            <button onclick="openAddPackingItemModal('${cat.id}')" class="text-[11px] text-sky-600 font-bold hover:underline">+ 新增物品</button>
+          </div>
+          <div class="space-y-1.5 text-xs">
+            ${cat.items.map(item => {
+              const isChecked = !!personalCheckedState[item.id];
+              return `
+                <div class="flex items-start justify-between">
+                  <label class="flex items-start space-x-2 cursor-pointer flex-1">
+                    <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePersonalPackingItem('${item.id}')" class="mt-0.5 text-sky-600 rounded">
+                    <div>
+                      <span class="font-medium ${isChecked ? 'completed-item text-slate-400' : 'text-slate-800'}">${item.name}</span>
+                      ${item.note ? `<p class="text-[10px] text-slate-400 mt-0.2">${item.note}</p>` : ''}
+                    </div>
+                  </label>
+                  <button onclick="deletePersonalPackingItem('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1" title="個人隱藏此項目"><i class="fa-regular fa-trash-can"></i></button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function togglePersonalPackingItem(itemId) {
+      const personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}');
+      personalCheckedState[itemId] = !personalCheckedState[itemId];
+      localStorage.setItem(`danang_${roomId}_packing_checked`, JSON.stringify(personalCheckedState));
+      renderPackingList();
+    }
+
+    function deletePersonalPackingItem(catId, itemId) {
+      const globalPacking = getStoredData('packing', defaultPackingData);
+      const cat = globalPacking.find(c => c.id === catId);
+      if (cat) {
+        cat.items = cat.items.filter(i => i.id !== itemId);
+        pushStateToCloud('packing', globalPacking);
+        showToast("已從清單移除");
+      }
+    }
+
+    function calculateProximityMatch(favItem) {
+      const name = favItem.name.toLowerCase();
+      if (name.includes('morning') || name.includes('會安') || name.includes('faifo') || name.includes('phượng')) {
+        return { day: 1, nearbyPoint: '會安古鎮', driveMinutes: '約 5 分鐘' };
+      } else if (name.includes('mộc') || name.includes('bé mặn') || name.includes('salem') || name.includes('cộng')) {
+        return { day: 3, nearbyPoint: 'Chi House 飯店 / 美溪沙灘', driveMinutes: '約 8 分鐘' };
+      } else if (name.includes('bà dưỡng') || name.includes('漢市場')) {
+        return { day: 5, nearbyPoint: '漢市場與粉紅教堂', driveMinutes: '約 10 分鐘' };
+      }
+      return { day: 3, nearbyPoint: '峴港市中心', driveMinutes: '約 12 分鐘' };
+    }
+
+    function getItemVotesBreakdown(item) {
+      let adults = 0, kids = 0, infants = 0;
+      if (item.voters && item.voters.length > 0) {
+        item.voters.forEach(v => {
+          adults += parseInt(v.adults) || 0;
+          kids += parseInt(v.kids) || 0;
+          infants += parseInt(v.infants) || 0;
+        });
+      } else {
+        adults = item.votes || 0;
+      }
+      const total = adults + kids + infants;
+      let parts = [];
+      if (adults > 0) parts.push(`${adults}大`);
+      if (kids > 0) parts.push(`${kids}小`);
+      if (infants > 0) parts.push(`${infants}嬰`);
+      const summaryStr = parts.length > 0 ? parts.join('') : '0人';
+      return { adults, kids, infants, total, summaryStr };
+    }
+
+    function formatVoterCount(v) {
+      if (v.adults !== undefined || v.kids !== undefined || v.infants !== undefined) {
+        let parts = [];
+        const a = parseInt(v.adults) || 0;
+        const k = parseInt(v.kids) || 0;
+        const i = parseInt(v.infants) || 0;
+        if (a > 0) parts.push(`${a}大`);
+        if (k > 0) parts.push(`${k}小`);
+        if (i > 0) parts.push(`${i}嬰`);
+        return parts.length > 0 ? parts.join('') : '1人';
+      }
+      return `+${v.count || 1}`;
+    }
+
+    function renderFavorites() {
+      const data = getStoredData('favorites', defaultFavoritesData);
+      const container = document.getElementById('favorites-categories-list');
+
+      container.innerHTML = data.map(cat => `
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+          <div class="flex justify-between items-center border-b border-slate-100 pb-1.5">
+            <div class="flex items-center space-x-1.5">
+              <h3 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-heart text-rose-500 mr-1"></i>${cat.title}</h3>
+              <button onclick="openEditFavCatModal('${cat.id}', '${cat.title}')" class="text-slate-400 hover:text-rose-600 text-xs px-1" title="修改類別名稱"><i class="fa-regular fa-pen-to-square"></i></button>
+            </div>
+            <button onclick="openAddFavItemModal('${cat.id}')" class="text-[11px] text-rose-600 font-bold hover:underline">+ 新增收藏</button>
+          </div>
+          <div class="space-y-2">
+            ${cat.items.map(item => {
+              const prox = calculateProximityMatch(item);
+              const voteInfo = getItemVotesBreakdown(item);
+              const votersText = (item.voters && item.voters.length > 0)
+                ? item.voters.map(v => `${v.name} (${formatVoterCount(v)})`).join('、')
+                : '';
+
+              return `
+                <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs space-y-1">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-2 cursor-pointer flex-1" onclick="toggleFavVisited('${cat.id}', '${item.id}')">
+                      <input type="checkbox" ${item.visited ? 'checked' : ''} class="mt-0.5 text-rose-500 rounded">
+                      <div>
+                        <div class="flex items-center space-x-1.5 flex-wrap gap-y-1">
+                          <p class="font-bold ${item.visited ? 'completed-item text-slate-400' : 'text-slate-800'} text-xs">${item.name}</p>
+                          ${voteInfo.total > 0 ? `<span class="text-[9px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.2 rounded-full border border-amber-200"><i class="fa-solid fa-fire text-amber-500 mr-0.5"></i>${voteInfo.summaryStr} 想去</span>` : ''}
+                        </div>
+                        ${item.note ? `<p class="text-[10px] text-slate-500 mt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-rose-400"></i>${item.note}</p>` : ''}
+                        ${votersText ? `<p class="text-[10px] text-amber-800 font-medium mt-0.5"><i class="fa-solid fa-users mr-1 text-amber-600"></i>想去名單：${votersText}</p>` : ''}
+                        <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-300"></i>建議 Day ${prox.day} (${prox.driveMinutes})</p>
+                      </div>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <button onclick="openVoteFavModal('${cat.id}', '${item.id}')" class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg hover:bg-rose-200 active:scale-95 transition">🙋‍ 我想去</button>
+                      <button onclick="openEditFavNoteModal('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1" title="修改備註"><i class="fa-regular fa-pen-to-square"></i></button>
+                      <button onclick="deleteFavItem('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1"><i class="fa-regular fa-trash-can"></i></button>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+
+      renderSouvenirsList();
+    }
+
+    function openVoteFavModal(catId, itemId) {
+      const data = getStoredData('favorites', defaultFavoritesData);
+      const cat = data.find(c => c.id === catId);
+      if (!cat) return;
+      const item = cat.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      document.getElementById('vote-fcat-id').value = catId;
+      document.getElementById('vote-fitem-id').value = itemId;
+      document.getElementById('vote-fitem-name-display').textContent = item.name;
+      document.getElementById('input-vote-name').value = '';
+      document.getElementById('input-vote-adults').value = '1';
+      document.getElementById('input-vote-kids').value = '0';
+      document.getElementById('input-vote-infants').value = '0';
+
+      renderCurrentVotersList(catId, itemId, item);
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-vote-fav').classList.remove('hidden');
+    }
+
+    function renderCurrentVotersList(catId, itemId, item) {
+      const container = document.getElementById('vote-current-list');
+      if (!container) return;
+
+      if (!item.voters || item.voters.length === 0) {
+        container.innerHTML = `<p class="text-[10px] text-slate-400">尚無投票紀錄</p>`;
+        return;
+      }
+
+      container.innerHTML = item.voters.map(v => `
+        <div class="flex justify-between items-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+          <span class="font-bold text-slate-700">${v.name} <span class="text-amber-600 font-bold">(${formatVoterCount(v)})</span></span>
+          <button onclick="removeFavVote('${catId}', '${itemId}', '${v.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1" title="刪除此投票"><i class="fa-regular fa-trash-can"></i></button>
+        </div>
+      `).join('');
+    }
+
+    function removeFavVote(catId, itemId, voterId) {
+      const data = getStoredData('favorites', defaultFavoritesData);
+      const cat = data.find(c => c.id === catId);
+      if (!cat) return;
+      const item = cat.items.find(i => i.id === itemId);
+      if (!item || !item.voters) return;
+
+      item.voters = item.voters.filter(v => v.id !== voterId);
+      item.votes = getItemVotesBreakdown(item).total;
+
+      pushStateToCloud('favorites', data);
+      renderCurrentVotersList(catId, itemId, item);
+      showToast("已刪除該筆投票記錄");
+    }
+
+    function saveFavVote() {
+      const catId = document.getElementById('vote-fcat-id').value;
+      const itemId = document.getElementById('vote-fitem-id').value;
+      const name = document.getElementById('input-vote-name').value.trim();
+      const adults = parseInt(document.getElementById('input-vote-adults').value) || 0;
+      const kids = parseInt(document.getElementById('input-vote-kids').value) || 0;
+      const infants = parseInt(document.getElementById('input-vote-infants').value) || 0;
+      const totalCount = adults + kids + infants;
+
+      if (!name) {
+        showToast("請輸入您的姓名");
+        return;
+      }
+
+      if (totalCount === 0) {
+        showToast("請至少選擇 1 位想去的人數");
+        return;
+      }
+
+      const data = getStoredData('favorites', defaultFavoritesData);
+      const cat = data.find(c => c.id === catId);
+      if (!cat) return;
+      const item = cat.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      if (!item.voters) item.voters = [];
+
+      const existingIndex = item.voters.findIndex(v => v.name.trim().toLowerCase() === name.toLowerCase());
+
+      if (existingIndex !== -1) {
+        item.voters[existingIndex].adults = adults;
+        item.voters[existingIndex].kids = kids;
+        item.voters[existingIndex].infants = infants;
+        item.voters[existingIndex].count = totalCount;
+        item.voters[existingIndex].name = name;
+        const countLabel = formatVoterCount({ adults, kids, infants });
+        showToast(`已更新 ${name} 的投票人數 (${countLabel})`);
+      } else {
+        item.voters.push({
+          id: `v-${Date.now()}`,
+          name: name,
+          adults: adults,
+          kids: kids,
+          infants: infants,
+          count: totalCount
+        });
+        const countLabel = formatVoterCount({ adults, kids, infants });
+        showToast(`已成功為 ${item.name} 投票 (${countLabel})`);
+      }
+
+      item.votes = getItemVotesBreakdown(item).total;
+
+      pushStateToCloud('favorites', data);
+      closeModal();
+    }
+
+    function toggleFavVisited(catId, itemId) {
+      const data = getStoredData('favorites', defaultFavoritesData);
+      const cat = data.find(c => c.id === catId);
+      if (cat) {
+        const item = cat.items.find(i => i.id === itemId);
+        if (item) item.visited = !item.visited;
+      }
+      pushStateToCloud('favorites', data);
+    }
+
+    function deleteFavItem(catId, itemId) {
+      const data = getStoredData('favorites', defaultFavoritesData);
+      const cat = data.find(c => c.id === catId);
+      if (cat) {
+        cat.items = cat.items.filter(i => i.id !== itemId);
+      }
+      pushStateToCloud('favorites', data);
+    }
+
+    function openEditFavCatModal(catId, currentTitle) {
+      document.getElementById('edit-fcat-target-id').value = catId;
+      document.getElementById('input-edit-fcat-title').value = currentTitle;
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-edit-fav-cat').classList.remove('hidden');
+    }
+
+    function saveEditedFavCat() {
+      const catId = document.getElementById('edit-fcat-target-id').value;
+      const newTitle = document.getElementById('input-edit-fcat-title').value.trim();
+      if (newTitle) {
+        const data = getStoredData('favorites', defaultFavoritesData);
+        const cat = data.find(c => c.id === catId);
+        if (cat) {
+          cat.title = newTitle;
+          pushStateToCloud('favorites', data);
+          showToast("類別名稱已更新並同步");
+        }
+      }
+      closeModal();
+    }
+
+    function openEditFavNoteModal(catId, itemId) {
+      const data = getStoredData('favorites', defaultFavoritesData);
+      const cat = data.find(c => c.id === catId);
+      if (!cat) return;
+      const item = cat.items.find(i => i.id === itemId);
+      if (!item) return;
+
+      document.getElementById('edit-fcat-id').value = catId;
+      document.getElementById('edit-fitem-id').value = itemId;
+      document.getElementById('edit-fitem-name-display').textContent = item.name;
+      document.getElementById('input-edit-fitem-note').value = item.note || '';
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-edit-fav-note').classList.remove('hidden');
+    }
+
+    function saveEditedFavNote() {
+      const catId = document.getElementById('edit-fcat-id').value;
+      const itemId = document.getElementById('edit-fitem-id').value;
+      const newNote = document.getElementById('input-edit-fitem-note').value.trim();
+
+      const data = getStoredData('favorites', defaultFavoritesData);
+      const cat = data.find(c => c.id === catId);
+      if (cat) {
+        const catItem = cat.items.find(i => i.id === itemId);
+        if (catItem) {
+          catItem.note = newNote;
+        }
+      }
+      pushStateToCloud('favorites', data);
+      closeModal();
+      showToast("備註已更新並同步");
+    }
+
+    function openSmartMatchModal() {
+      const favData = getStoredData('favorites', defaultFavoritesData);
+      const allFavs = [];
+      favData.forEach(cat => {
+        cat.items.forEach(item => {
+          allFavs.push({ ...item, catTitle: cat.title, prox: calculateProximityMatch(item), voteInfo: getItemVotesBreakdown(item) });
+        });
+      });
+
+      allFavs.sort((a, b) => (b.voteInfo.total || 0) - (a.voteInfo.total || 0));
+
+      const container = document.getElementById('smart-match-items-container');
+      container.innerHTML = allFavs.map((item, idx) => `
+        <div class="py-2.5 flex items-start justify-between space-x-2">
+          <label class="flex items-start space-x-2 cursor-pointer flex-1">
+            <input type="checkbox" value="${item.id}" class="smart-match-checkbox mt-0.5 text-rose-500 rounded">
+            <div>
+              <div class="flex items-center space-x-1.5 flex-wrap">
+                <span class="font-bold text-slate-800 text-xs">${item.name}</span>
+                ${idx === 0 && item.voteInfo.total > 0 ? '<span class="text-[9px] bg-amber-400 text-slate-900 font-extrabold px-1.5 py-0.2 rounded-full">🥇 人氣第一</span>' : ''}
+                ${item.voteInfo.total > 0 ? `<span class="text-[9px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded-full">${item.voteInfo.summaryStr} 想去</span>` : ''}
+              </div>
+              <p class="text-[10px] text-slate-500 mt-0.5">${item.note || '無備註'}</p>
+              <span class="text-[10px] text-sky-600 font-bold mt-0.5 block">📍 推薦排入 Day ${item.prox.day} (近 ${item.prox.nearbyPoint})</span>
+            </div>
+          </label>
+        </div>
+      `).join('');
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-smart-match').classList.remove('hidden');
+    }
+
+    function applySmartMatchSelection() {
+      const checkboxes = document.querySelectorAll('.smart-match-checkbox:checked');
+      const selectedIds = Array.from(checkboxes).map(cb => cb.value);
+
+      const favData = getStoredData('favorites', defaultFavoritesData);
+      const itineraryData = getStoredData('itinerary', defaultItineraryData);
+
+      selectedIds.forEach(id => {
+        let foundFav = null;
+        favData.forEach(cat => {
+          const item = cat.items.find(i => i.id === id);
+          if (item) foundFav = item;
+        });
+
+        if (foundFav) {
+          const prox = calculateProximityMatch(foundFav);
+          const day = prox.day;
+          const voteInfo = getItemVotesBreakdown(foundFav);
+          
+          const exists = itineraryData[day].items.some(i => i.favItemId === foundFav.id);
+          if (!exists) {
+            const voteText = voteInfo.total > 0 ? `<span class="text-amber-600 font-bold"><i class="fa-solid fa-fire text-amber-500 mr-1"></i>團員喜愛度：${voteInfo.summaryStr}</span><br>` : '';
+            itineraryData[day].items.push({
+              id: `fav-itin-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+              favItemId: foundFav.id,
+              time: '收藏推薦',
+              title: `❤️ ${foundFav.name}`,
+              desc: `${foundFav.note ? foundFav.note + '<br>' : ''}${voteText}<span class="text-rose-600 font-bold">📍 近 ${prox.nearbyPoint} (${prox.driveMinutes})</span>`,
+              isFav: true,
+              map: `https://maps.google.com/?q=${encodeURIComponent(foundFav.name)}`
+            });
+          }
+        }
+      });
+
+      pushStateToCloud('itinerary', itineraryData);
+      closeModal();
+      showToast("已成功將選擇的收藏地點排入行程！");
+    }
+
+    let currentNearbyList = [];
+
+    function openNearbyShopsModal() {
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-nearby-shops').classList.remove('hidden');
+      
+      const statusEl = document.getElementById('nearby-status-text');
+      const container = document.getElementById('nearby-shops-container');
+      const coordLabel = document.getElementById('map-coord-label');
+      const iframe = document.getElementById('google-map-iframe');
+
+      statusEl.textContent = "📍 正在讀取您的 GPS 定位...";
+      coordLabel.textContent = "定位中...";
+      container.innerHTML = `<div class="py-4 text-center text-slate-400 text-xs"><i class="fa-solid fa-spinner fa-spin mr-1"></i>定位中，請允許瀏覽器權限...</div>`;
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            statusEl.innerHTML = `✅ 定位成功！已鎖定位置 (緯度 ${lat.toFixed(3)}, 經度 ${lng.toFixed(3)})，比對周邊 10 分鐘步行店家：`;
+            coordLabel.textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+            
+            iframe.src = `https://maps.google.com/maps?q=${lat},${lng}+(我的位置)&t=&z=16&ie=UTF8&iwloc=&output=embed`;
+            
+            currentNearbyList = [
+              { id: 'near-1', name: 'Phở Sướng (附近人氣河粉)', note: '步行約 3 分鐘 (220m)', cat: '街頭小吃' },
+              { id: 'near-2', name: 'Highlands Coffee (高地咖啡)', note: '步行約 5 分鐘 (380m)', cat: '網美咖啡廳' },
+              { id: 'near-3', name: 'An Spa Wellness (舒壓按摩)', note: '步行約 7 分鐘 (520m)', cat: '舒壓按摩 (SPA)' },
+              { id: 'near-4', name: 'Bánh Mì Happy Bread', note: '步行約 9 分鐘 (710m)', cat: '街頭小吃' }
+            ];
+
+            renderNearbyList(container);
+          },
+          (error) => {
+            statusEl.innerHTML = `⚠️ 無法取得 GPS 定位，已預設以峴港市中心為您標記：`;
+            coordLabel.textContent = `峴港市中心`;
+            iframe.src = `https://maps.google.com/maps?q=Danang+restaurants&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+
+            currentNearbyList = [
+              { id: 'near-1', name: 'Phở Sướng (附近人氣河粉)', note: '步行約 3 分鐘 (220m)', cat: '街頭小吃' },
+              { id: 'near-2', name: 'Highlands Coffee (高地咖啡)', note: '步行約 5 分鐘 (380m)', cat: '網美咖啡廳' },
+              { id: 'near-3', name: 'An Spa Wellness (舒壓按摩)', note: '步行約 7 分鐘 (520m)', cat: '舒壓按摩 (SPA)' }
+            ];
+            renderNearbyList(container);
+          },
+          { timeout: 8000 }
+        );
+      } else {
+        statusEl.textContent = "您的瀏覽器不支援地理定位功能。";
+        iframe.src = `https://maps.google.com/maps?q=Danang+restaurants&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+        coordLabel.textContent = "峴港市";
+      }
+    }
+
+    function renderNearbyList(container) {
+      container.innerHTML = currentNearbyList.map(shop => `
+        <div class="py-2 flex items-start justify-between space-x-2">
+          <div class="flex items-start space-x-2 flex-1">
+            <i class="fa-solid fa-store text-rose-500 mt-0.5"></i>
+            <div>
+              <span class="font-bold text-slate-800 text-xs">${shop.name}</span>
+              <p class="text-[10px] text-emerald-600 font-medium mt-0.5"><i class="fa-solid fa-person-walking mr-1"></i>${shop.note}</p>
+              <span class="text-[9px] text-slate-400 mt-0.5 block">分類：${shop.cat}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderBudget() {
+      const fixedExpenses = getStoredData('fixedExpenses', defaultFixedExpensesData);
+      const tbody = document.getElementById('fixed-expenses-tbody');
+
+      let adultSubtotal = 0;
+      let kidSubtotal = 0;
+      let infantSubtotal = 0;
+
+      if (tbody) {
+        let rowsHtml = fixedExpenses.map(item => {
+          adultSubtotal += Number(item.adult) || 0;
+          kidSubtotal += Number(item.kid) || 0;
+          infantSubtotal += Number(item.infant) || 0;
+
+          return `
+            <tr>
+              <td class="py-1.5 font-medium text-slate-800">${item.name}</td>
+              <td class="py-1.5 text-right">$${Number(item.adult).toLocaleString()}</td>
+              <td class="py-1.5 text-right">$${Number(item.kid).toLocaleString()}</td>
+              <td class="py-1.5 text-right">$${Number(item.infant).toLocaleString()}</td>
+              <td class="py-1.5 text-center">
+                <div class="flex items-center justify-center space-x-1">
+                  <button onclick="openFixedExpenseModal('${item.id}')" class="text-slate-400 hover:text-amber-600 p-0.5" title="編輯"><i class="fa-solid fa-pen-to-square"></i></button>
+                  <button onclick="deleteFixedExpense('${item.id}')" class="text-slate-400 hover:text-rose-600 p-0.5" title="刪除"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        rowsHtml += `
+          <tr class="font-bold text-sky-700 bg-sky-50/50">
+            <td class="py-2 pl-1">小計 (固定開銷)</td>
+            <td class="py-2 text-right">$${adultSubtotal.toLocaleString()}</td>
+            <td class="py-2 text-right">$${kidSubtotal.toLocaleString()}</td>
+            <td class="py-2 text-right">$${infantSubtotal.toLocaleString()}</td>
+            <td></td>
+          </tr>
+        `;
+
+        tbody.innerHTML = rowsHtml;
+      }
+
+      const ticketsData = getStoredData('tickets', defaultTicketsData);
+      const container = document.getElementById('ticket-checklist');
+
+      container.innerHTML = ticketsData.map(item => `
+        <div class="py-1.5 border-b border-slate-50 last:border-0">
+          <div class="flex items-center justify-between">
+            <label class="flex items-center space-x-2 cursor-pointer flex-1">
+              <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleTicketCheck('${item.id}')" class="text-indigo-600 rounded">
+              <span class="font-medium text-slate-700">${item.name}</span>
+            </label>
+            <div class="flex items-center space-x-2">
+              <span class="font-bold text-slate-900">$${Number(item.price).toLocaleString()}</span>
+              <div class="flex items-center space-x-0.5 text-slate-400">
+                <button onclick="openTicketModal('${item.id}')" class="hover:text-indigo-600 p-0.5" title="編輯門票"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button onclick="deleteTicketItem('${item.id}')" class="hover:text-rose-600 p-0.5" title="刪除門票"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+            </div>
+          </div>
+          ${(item.note || item.link) ? `
+            <div class="pl-6 pt-0.5 flex items-center justify-between text-[10px] text-slate-500 gap-2 flex-wrap">
+              ${item.note ? `<span><i class="fa-regular fa-comment-dots mr-1 text-indigo-400"></i>${item.note}</span>` : '<span></span>'}
+              ${item.link ? `<a href="${item.link}" target="_blank" class="text-indigo-600 font-bold hover:underline"><i class="fa-solid fa-ticket mr-0.5"></i>開啟購票連結</a>` : ''}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+
+      const ticketsTotal = ticketsData.filter(i => i.checked).reduce((sum, i) => sum + Number(i.price || 0), 0);
+      const grandTotal = adultSubtotal + ticketsTotal;
+      const budgetLimit = 25000;
+      const remaining = budgetLimit - grandTotal;
+
+      document.getElementById('calc-adult-fixed').textContent = `$${adultSubtotal.toLocaleString()}`;
+      document.getElementById('calc-tickets-total').textContent = `$${ticketsTotal.toLocaleString()}`;
+      document.getElementById('calc-grand-total').textContent = `$${grandTotal.toLocaleString()}`;
+      document.getElementById('calc-remaining-budget').textContent = `$${remaining.toLocaleString()}`;
+    }
+
+    function openTicketModal(ticketId) {
+      if (ticketId) {
+        const list = getStoredData('tickets', defaultTicketsData);
+        const item = list.find(i => i.id === ticketId);
+        if (item) {
+          document.getElementById('edit-ticket-id').value = ticketId;
+          document.getElementById('ticket-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-500 mr-1.5"></i>編輯門票 / 活動`;
+          document.getElementById('input-ticket-name').value = item.name || '';
+          document.getElementById('input-ticket-price').value = item.price !== undefined ? item.price : 0;
+          document.getElementById('input-ticket-note').value = item.note || '';
+          document.getElementById('input-ticket-link').value = item.link || '';
+        }
+      } else {
+        document.getElementById('edit-ticket-id').value = '';
+        document.getElementById('ticket-modal-title').innerHTML = `<i class="fa-solid fa-ticket text-indigo-500 mr-1.5"></i>新增門票 / 活動`;
+        document.getElementById('input-ticket-name').value = '';
+        document.getElementById('input-ticket-price').value = '';
+        document.getElementById('input-ticket-note').value = '';
+        document.getElementById('input-ticket-link').value = '';
+      }
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-ticket-item').classList.remove('hidden');
+    }
+
+    function saveTicketItem() {
+      const editId = document.getElementById('edit-ticket-id').value;
+      const name = document.getElementById('input-ticket-name').value.trim();
+      const price = Number(document.getElementById('input-ticket-price').value) || 0;
+      const note = document.getElementById('input-ticket-note').value.trim();
+      const link = document.getElementById('input-ticket-link').value.trim();
+
+      if (!name) {
+        showToast("請輸入門票名稱");
+        return;
+      }
+
+      const list = getStoredData('tickets', defaultTicketsData);
+
+      if (editId) {
+        const item = list.find(i => i.id === editId);
+        if (item) {
+          item.name = name;
+          item.price = price;
+          item.note = note;
+          item.link = link;
+        }
+      } else {
+        list.push({
+          id: `t-${Date.now()}`,
+          name,
+          price,
+          note,
+          link,
+          checked: true
+        });
+      }
+
+      pushStateToCloud('tickets', list);
+      closeModal();
+      showToast(editId ? "門票資料已修改！" : "已新增門票項目！");
+    }
+
+    function deleteTicketItem(ticketId) {
+      let list = getStoredData('tickets', defaultTicketsData);
+      list = list.filter(i => i.id !== ticketId);
+      pushStateToCloud('tickets', list);
+      showToast("已刪除門票項目");
+    }
+
+    function openFixedExpenseModal(expenseId) {
+      if (expenseId) {
+        const list = getStoredData('fixedExpenses', defaultFixedExpensesData);
+        const item = list.find(i => i.id === expenseId);
+        if (item) {
+          document.getElementById('edit-fe-id').value = expenseId;
+          document.getElementById('fe-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-500 mr-1.5"></i>編輯固定開銷項目`;
+          document.getElementById('input-fe-name').value = item.name || '';
+          document.getElementById('input-fe-adult').value = item.adult !== undefined ? item.adult : 0;
+          document.getElementById('input-fe-kid').value = item.kid !== undefined ? item.kid : 0;
+          document.getElementById('input-fe-infant').value = item.infant !== undefined ? item.infant : 0;
+        }
+      } else {
+        document.getElementById('edit-fe-id').value = '';
+        document.getElementById('fe-modal-title').innerHTML = `<i class="fa-solid fa-coins text-amber-500 mr-1.5"></i>新增固定開銷項目`;
+        document.getElementById('input-fe-name').value = '';
+        document.getElementById('input-fe-adult').value = '';
+        document.getElementById('input-fe-kid').value = '';
+        document.getElementById('input-fe-infant').value = '';
+      }
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-fixed-expense').classList.remove('hidden');
+    }
+
+    function saveFixedExpense() {
+      const editId = document.getElementById('edit-fe-id').value;
+      const name = document.getElementById('input-fe-name').value.trim();
+      const adult = Number(document.getElementById('input-fe-adult').value) || 0;
+      const kid = Number(document.getElementById('input-fe-kid').value) || 0;
+      const infant = Number(document.getElementById('input-fe-infant').value) || 0;
+
+      if (!name) {
+        showToast("請輸入項目名稱");
+        return;
+      }
+
+      const list = getStoredData('fixedExpenses', defaultFixedExpensesData);
+
+      if (editId) {
+        const item = list.find(i => i.id === editId);
+        if (item) {
+          item.name = name;
+          item.adult = adult;
+          item.kid = kid;
+          item.infant = infant;
+        }
+      } else {
+        list.push({
+          id: `fe-${Date.now()}`,
+          name,
+          adult,
+          kid,
+          infant
+        });
+      }
+
+      pushStateToCloud('fixedExpenses', list);
+      closeModal();
+      showToast(editId ? "固定開銷已修改！" : "已新增固定開銷！");
+    }
+
+    function deleteFixedExpense(expenseId) {
+      let list = getStoredData('fixedExpenses', defaultFixedExpensesData);
+      list = list.filter(i => i.id !== expenseId);
+      pushStateToCloud('fixedExpenses', list);
+      showToast("已刪除該開銷項目");
+    }
+
+    function toggleTicketCheck(id) {
+      const data = getStoredData('tickets', defaultTicketsData);
+      const item = data.find(i => i.id === id);
+      if (item) item.checked = !item.checked;
+      pushStateToCloud('tickets', data);
+    }
+
+    function renderNotes() {
+      const saved = getStoredData('notes', '');
+      document.getElementById('group-notes-input').value = saved;
+      renderRoomsList();
+    }
+
+    function handleNotesInput() {
+      const val = document.getElementById('group-notes-input').value;
+      setStoredData('notes', val);
+      scheduleSectionPush('notes', val);
+    }
+
+    function renderRoomsList() {
+      const rooms = getStoredData('rooms', defaultRoomsData);
+      const container = document.getElementById('rooms-list-container');
+      if (!container) return;
+
+      if (!rooms || rooms.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">尚無房間分配資料，點擊上方按鈕新增！</div>`;
+        return;
+      }
+
+      container.innerHTML = rooms.map((room, idx) => `
+        <div class="p-3.5 bg-slate-50 rounded-xl border border-slate-200 space-y-2 text-xs">
+          <div class="flex justify-between items-start">
+            <div class="space-y-0.5">
+              <span class="text-[10px] font-bold bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">${room.hotel || '飯店'}</span>
+              <h4 class="font-bold text-slate-800 text-sm mt-1"><i class="fa-solid fa-door-closed text-indigo-500 mr-1"></i>房號：<span class="text-indigo-700 font-extrabold">${room.roomNum ? room.roomNum : '尚無房號'}</span></h4>
+            </div>
+            <div class="flex items-center space-x-1 text-slate-400">
+              ${idx > 0 ? `<button onclick="moveRoomOrder(${idx}, -1)" class="hover:text-indigo-600 p-1" title="上移"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
+              ${idx < rooms.length - 1 ? `<button onclick="moveRoomOrder(${idx}, 1)" class="hover:text-indigo-600 p-1" title="下移"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
+              <button onclick="openRoomModal('${room.id}')" class="hover:text-indigo-600 p-1" title="編輯房間"><i class="fa-regular fa-pen-to-square"></i></button>
+              <button onclick="deleteRoomItem('${room.id}')" class="hover:text-rose-600 p-1" title="刪除房間"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+          </div>
+          <div class="space-y-1 text-slate-600 border-t border-slate-100 pt-1.5">
+            <p><strong class="text-slate-700">入住人員：</strong>${room.guests || '未填寫'}</p>
+            ${room.roomType ? `<p><strong class="text-slate-700">房型：</strong>${room.roomType}</p>` : ''}
+            ${room.note ? `<p><strong class="text-slate-700">備註：</strong>${room.note}</p>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openRoomModal(roomId) {
+      if (roomId) {
+        const rooms = getStoredData('rooms', defaultRoomsData);
+        const room = rooms.find(r => r.id === roomId);
+        if (room) {
+          document.getElementById('edit-room-id').value = roomId;
+          document.getElementById('room-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-500 mr-1.5"></i>編輯房間分配`;
+          document.getElementById('input-room-hotel').value = room.hotel || '會安 Little Residence';
+          document.getElementById('input-room-guests').value = room.guests || '';
+          document.getElementById('input-room-num').value = room.roomNum || '';
+          document.getElementById('input-room-type').value = room.roomType || '';
+          document.getElementById('input-room-note').value = room.note || '';
+        }
+      } else {
+        document.getElementById('edit-room-id').value = '';
+        document.getElementById('room-modal-title').innerHTML = `<i class="fa-solid fa-bed text-indigo-500 mr-1.5"></i>新增房間分配`;
+        document.getElementById('input-room-hotel').value = '會安 Little Residence';
+        document.getElementById('input-room-guests').value = '';
+        document.getElementById('input-room-num').value = '';
+        document.getElementById('input-room-type').value = '';
+        document.getElementById('input-room-note').value = '';
+      }
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-room-assignment').classList.remove('hidden');
+    }
+
+    function saveRoomItem() {
+      const editId = document.getElementById('edit-room-id').value;
+      const hotel = document.getElementById('input-room-hotel').value;
+      const guests = document.getElementById('input-room-guests').value.trim();
+      const roomNum = document.getElementById('input-room-num').value.trim();
+      const roomType = document.getElementById('input-room-type').value.trim();
+      const note = document.getElementById('input-room-note').value.trim();
+
+      const rooms = getStoredData('rooms', defaultRoomsData);
+
+      if (editId) {
+        const room = rooms.find(r => r.id === editId);
+        if (room) {
+          room.hotel = hotel;
+          room.guests = guests;
+          room.roomNum = roomNum;
+          room.roomType = roomType;
+          room.note = note;
+        }
+      } else {
+        rooms.push({
+          id: `room-${Date.now()}`,
+          hotel,
+          guests,
+          roomNum,
+          roomType,
+          note
+        });
+      }
+
+      pushStateToCloud('rooms', rooms);
+      closeModal();
+      showToast(editId ? "房間分配資料已修改！" : "已新增房間分配！");
+    }
+
+    function moveRoomOrder(index, direction) {
+      const rooms = getStoredData('rooms', defaultRoomsData);
+      const targetIndex = index + direction;
+      if (targetIndex >= 0 && targetIndex < rooms.length) {
+        const temp = rooms[index];
+        rooms[index] = rooms[targetIndex];
+        rooms[targetIndex] = temp;
+        pushStateToCloud('rooms', rooms);
+      }
+    }
+
+    function deleteRoomItem(roomId) {
+      let rooms = getStoredData('rooms', defaultRoomsData);
+      rooms = rooms.filter(r => r.id !== roomId);
+      pushStateToCloud('rooms', rooms);
+      showToast("已刪除該房間資料");
+    }
+
+    function renderSouvenirsList() {
+      const souvenirs = getStoredData('souvenirs', defaultSouvenirsData);
+      const container = document.getElementById('souvenirs-list-container');
+      if (!container) return;
+
+      if (souvenirs.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-slate-400 text-xs">尚無伴手禮清單，點擊上方按鈕新增！</div>`;
+        return;
+      }
+
+      container.innerHTML = souvenirs.map(item => `
+        <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-start space-x-3">
+          ${item.img ? `<img src="${item.img}" alt="${item.name}" onerror="this.style.display='none'" class="w-16 h-16 object-cover rounded-lg border border-slate-200 shrink-0 bg-white">` : ''}
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-start">
+              <h4 class="font-bold text-slate-800 text-xs truncate">${item.name}</h4>
+              <div class="flex items-center space-x-1 pl-2">
+                <button onclick="openAddSouvenirModal('${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs" title="編輯伴手禮"><i class="fa-regular fa-pen-to-square"></i></button>
+                <button onclick="deleteSouvenir('${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs" title="刪除"><i class="fa-regular fa-trash-can"></i></button>
+              </div>
+            </div>
+            ${item.price ? `<p class="text-[11px] font-bold text-emerald-600 mt-0.5"><i class="fa-solid fa-tag mr-1"></i>理想價格：${item.price}</p>` : ''}
+            ${item.note ? `<p class="text-[10px] text-slate-500 mt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-rose-400"></i>${item.note}</p>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openAddSouvenirModal(souvId) {
+      if (souvId) {
+        const souvenirs = getStoredData('souvenirs', defaultSouvenirsData);
+        const souv = souvenirs.find(s => s.id === souvId);
+        if (souv) {
+          document.getElementById('edit-souv-id').value = souvId;
+          document.getElementById('souv-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-rose-500 mr-1.5"></i>編輯伴手禮資訊`;
+          document.getElementById('input-souv-name').value = souv.name || '';
+          document.getElementById('input-souv-price').value = souv.price || '';
+          document.getElementById('input-souv-img').value = souv.img || '';
+          document.getElementById('input-souv-note').value = souv.note || '';
+        }
+      } else {
+        document.getElementById('edit-souv-id').value = '';
+        document.getElementById('souv-modal-title').innerHTML = `<i class="fa-solid fa-gift text-rose-500 mr-1.5"></i>新增伴手禮 / 戰利品`;
+        document.getElementById('input-souv-name').value = '';
+        document.getElementById('input-souv-price').value = '';
+        document.getElementById('input-souv-img').value = '';
+        document.getElementById('input-souv-note').value = '';
+      }
+
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-add-souvenir').classList.remove('hidden');
+    }
+
+    function saveSouvenirItem() {
+      const souvId = document.getElementById('edit-souv-id').value;
+      const name = document.getElementById('input-souv-name').value.trim();
+      const price = document.getElementById('input-souv-price').value.trim();
+      const img = document.getElementById('input-souv-img').value.trim();
+      const note = document.getElementById('input-souv-note').value.trim();
+
+      if (name) {
+        const souvenirs = getStoredData('souvenirs', defaultSouvenirsData);
+        if (souvId) {
+          const souv = souvenirs.find(s => s.id === souvId);
+          if (souv) {
+            souv.name = name;
+            souv.price = price;
+            souv.img = img;
+            souv.note = note;
+          }
+        } else {
+          souvenirs.push({
+            id: `souv-${Date.now()}`,
+            name,
+            price,
+            img,
+            note
+          });
+        }
+
+        pushStateToCloud('souvenirs', souvenirs);
+        closeModal();
+        showToast(souvId ? "伴手禮資訊已修改！" : "已成功新增伴手禮項目！");
+      }
+    }
+
+    function deleteSouvenir(id) {
+      let souvenirs = getStoredData('souvenirs', defaultSouvenirsData);
+      souvenirs = souvenirs.filter(i => i.id !== id);
+      pushStateToCloud('souvenirs', souvenirs);
+      showToast("已刪除伴手禮項目");
+    }
+
+    function closeModal() {
+      document.getElementById('modal-backdrop').classList.add('hidden');
+      const modalIds = [
+        'modal-header-edit', 'modal-sync-room', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
+        'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
+        'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
+        'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
+        'modal-edit-fav-note', 'modal-vote-fav'
+      ];
+      modalIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+    }
+
+    function openSyncModal() {
+      document.getElementById('input-room-id').value = roomId;
+      document.getElementById('input-room-password').value = cloudPassword || '';
+      setCloudStatus(cloudConnected ? `已連線：${roomId}` : '尚未登入雲端房間', cloudConnected);
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-sync-room').classList.remove('hidden');
+    }
+
+    function openAddPackingCatModal() {
+      document.getElementById('input-pcat-title').value = '';
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-packing-cat').classList.remove('hidden');
+    }
+
+    function savePackingCat() {
+      const title = document.getElementById('input-pcat-title').value.trim();
+      if (title) {
+        const data = getStoredData('packing', defaultPackingData);
+        data.push({ id: `pcat-${Date.now()}`, title: title, items: [] });
+        pushStateToCloud('packing', data);
+        closeModal();
+      }
+    }
+
+    function openAddPackingItemModal(catId) {
+      document.getElementById('target-pcat-id').value = catId;
+      document.getElementById('input-pitem-name').value = '';
+      document.getElementById('input-pitem-note').value = '';
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-packing-item').classList.remove('hidden');
+    }
+
+    function savePackingItem() {
+      const catId = document.getElementById('target-pcat-id').value;
+      const name = document.getElementById('input-pitem-name').value.trim();
+      const note = document.getElementById('input-pitem-note').value.trim();
+
+      if (name) {
+        const data = getStoredData('packing', defaultPackingData);
+        const cat = data.find(c => c.id === catId);
+        if (cat) {
+          cat.items.push({ id: `pitem-${Date.now()}`, name, note });
+          pushStateToCloud('packing', data);
+        }
+        closeModal();
+      }
+    }
+
+    function openAddFavCatModal() {
+      document.getElementById('input-fcat-title').value = '';
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-fav-cat').classList.remove('hidden');
+    }
+
+    function saveFavCat() {
+      const title = document.getElementById('input-fcat-title').value.trim();
+      if (title) {
+        const data = getStoredData('favorites', defaultFavoritesData);
+        data.push({ id: `fcat-${Date.now()}`, title, items: [] });
+        pushStateToCloud('favorites', data);
+        closeModal();
+      }
+    }
+
+    function openAddFavItemModal(catId) {
+      document.getElementById('target-fcat-id').value = catId;
+      document.getElementById('input-fitem-name').value = '';
+      document.getElementById('input-fitem-note').value = '';
+      document.getElementById('fav-search-preview').classList.add('hidden');
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-fav-item').classList.remove('hidden');
+    }
+
+    function handleFavNameSearch() {
+      const val = document.getElementById('input-fitem-name').value.trim();
+      const preview = document.getElementById('fav-search-preview');
+      const mapLink = document.getElementById('fav-preview-map');
+
+      if (val.length >= 2) {
+        preview.classList.remove('hidden');
+        mapLink.href = `https://maps.google.com/?q=${encodeURIComponent(val)}`;
+      } else {
+        preview.classList.add('hidden');
+      }
+    }
+
+    function saveFavItem() {
+      const catId = document.getElementById('target-fcat-id').value;
+      const name = document.getElementById('input-fitem-name').value.trim();
+      const note = document.getElementById('input-fitem-note').value.trim();
+
+      if (name) {
+        const data = getStoredData('favorites', defaultFavoritesData);
+        const cat = data.find(c => c.id === catId);
+        if (cat) {
+          cat.items.push({ id: `fitem-${Date.now()}`, name, note, votes: 0, visited: false, voters: [] });
+          pushStateToCloud('favorites', data);
+        }
+        closeModal();
+      }
+    }
+
+    function refreshUI() {
+      renderHeaderInfo();
+      renderItinerary();
+      renderPackingList();
+      renderFavorites();
+      renderBudget();
+      renderNotes();
+      calculateCurrencyConversion();
+    }
+
+    window.onload = async function() {
+      document.getElementById('room-name-display').textContent = roomId;
+      fetchLiveExchangeRates();
+      refreshUI();
+      if (cloudPassword && cloudClient) {
+        const { data, error } = await cloudClient.rpc('get_trip_room', { p_room_id: roomId, p_password: cloudPassword });
+        if (!error && data !== null) {
+          applyRoomState(normalizeRoomStatePayload(data));
+          activateCloudRoom(roomId, cloudPassword);
+        } else {
+          sessionStorage.removeItem('perfect_cloud_password');
+          cloudPassword = '';
+        }
+      }
+    };
+  </script>
+</body>
+</html>
