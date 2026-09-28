@@ -48,8 +48,10 @@
         </button>
 
         <button onclick="openSyncModal()" class="text-[11px] bg-white/15 hover:bg-white/25 active:scale-95 transition backdrop-blur-md border border-white/20 px-2 py-1 rounded-full flex items-center gap-1 font-medium shrink-0">
-          <i class="fa-solid fa-cloud text-amber-300"></i>
+          <i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i>
           <span id="room-name-display">danang2026</span>
+          <span class="opacity-60">・</span>
+          <span id="cloud-header-status">尚未連線</span>
         </button>
       </div>
     </header>
@@ -1182,8 +1184,32 @@
       const el = document.getElementById('cloud-sync-status');
       if (el) {
         el.textContent = text;
-        el.className = `text-[10px] ${ok ? 'text-emerald-600' : 'text-slate-400'}`;
+        el.className = `text-[10px] ${ok ? 'text-emerald-600' : (text.includes('失敗') || text.includes('錯誤') ? 'text-rose-600' : 'text-slate-400')}`;
       }
+
+      const headerStatus = document.getElementById('cloud-header-status');
+      const headerIcon = document.getElementById('cloud-header-icon');
+      if (!headerStatus || !headerIcon) return;
+
+      let shortText = '尚未連線';
+      let iconClass = 'fa-solid fa-cloud text-slate-300';
+
+      if (text.includes('正在連線') || text.includes('正在登入')) {
+        shortText = '正在連線…';
+        iconClass = 'fa-solid fa-cloud-arrow-up text-amber-300';
+      } else if (text.includes('同步中')) {
+        shortText = '同步中…';
+        iconClass = 'fa-solid fa-cloud-arrow-up text-amber-300';
+      } else if (text.includes('失敗') || text.includes('錯誤')) {
+        shortText = '同步失敗';
+        iconClass = 'fa-solid fa-triangle-exclamation text-rose-300';
+      } else if (text.includes('已同步') || text.includes('已收到最新資料') || text.includes('已連線')) {
+        shortText = '已同步';
+        iconClass = 'fa-solid fa-cloud text-emerald-300';
+      }
+
+      headerStatus.textContent = shortText;
+      headerIcon.className = iconClass;
     }
 
     async function createCloudRoom() {
@@ -1314,6 +1340,7 @@
         ? cloudBaseState[key]
         : null;
       cloudSectionInFlight[key] = true;
+      setCloudStatus(`同步中：${roomId}…`, false);
 
       const { data: merged, error } = await cloudClient.rpc('update_trip_room_section_safe', {
         p_room_id: roomId,
@@ -1353,6 +1380,7 @@
       const { data, error } = await cloudClient.rpc('get_trip_room', { p_room_id: roomId, p_password: cloudPassword });
       if (error || data === null) {
         cloudPullBusy = false;
+        setCloudStatus('同步失敗：無法讀取雲端資料', false);
         if (!silent) showToast('雲端讀取失敗');
         return;
       }
@@ -1378,6 +1406,8 @@
       if (changed) {
         refreshUI();
         setCloudStatus(`已收到最新資料：${roomId}`, true);
+      } else {
+        setCloudStatus(`已同步：${roomId}`, true);
       }
     }
 
