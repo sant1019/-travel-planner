@@ -1141,6 +1141,9 @@
     const cloudSectionTimers = {};
     const cloudSectionPending = {};
     const cloudSectionInFlight = {};
+    // 固定每個區塊『開始修改當下』的雲端基準。
+    // 在同一批本機修改全部送完前，不允許 Realtime / polling 改寫這個 base。
+    const cloudSectionBases = {};
 
     function getStoredData(key, fallback) {
       try {
@@ -1325,6 +1328,15 @@
     // Supabase 的 update_trip_room_section_safe 做三方合併，避免多人同時新增互蓋。
     function scheduleSectionPush(key, data) {
       if (!cloudConnected || !cloudPassword || !cloudClient || cloudApplying) return;
+
+      // 只在這一輪本機修改的第一次記住 base。之後即使收到另一支手機的
+      // Realtime / polling，也不能把這個「修改前版本」換掉。
+      if (!Object.prototype.hasOwnProperty.call(cloudSectionBases, key)) {
+        cloudSectionBases[key] = Object.prototype.hasOwnProperty.call(cloudBaseState, key)
+          ? JSON.parse(JSON.stringify(cloudBaseState[key]))
+          : null;
+      }
+
       cloudSectionPending[key] = JSON.parse(JSON.stringify(data));
       clearTimeout(cloudSectionTimers[key]);
       cloudSectionTimers[key] = setTimeout(() => flushSectionPush(key), 250);
@@ -1336,9 +1348,9 @@
 
       const localData = cloudSectionPending[key];
       delete cloudSectionPending[key];
-      const baseData = Object.prototype.hasOwnProperty.call(cloudBaseState, key)
-        ? cloudBaseState[key]
-        : null;
+      const baseData = Object.prototype.hasOwnProperty.call(cloudSectionBases, key)
+        ? cloudSectionBases[key]
+        : (Object.prototype.hasOwnProperty.call(cloudBaseState, key) ? cloudBaseState[key] : null);
       cloudSectionInFlight[key] = true;
       setCloudStatus(`同步中：${roomId}…`, false);
 
@@ -1354,8 +1366,10 @@
 
       if (!error && merged !== null) {
         cloudBaseState[key] = JSON.parse(JSON.stringify(merged));
-        // 若送出期間沒有更晚的本機修改，才把伺服器合併結果套回畫面。
+        // 若送出期間沒有更晚的本機修改，這一輪修改才算真正結束；
+        // 此時才釋放固定 base，並把伺服器的合併結果套回畫面。
         if (!Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) {
+          delete cloudSectionBases[key];
           setStoredData(key, merged);
           refreshUI();
         }
