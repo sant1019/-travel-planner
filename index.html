@@ -1720,6 +1720,7 @@
     function renderPackingList() {
       const globalPacking = getStoredData('packing', defaultPackingData);
       const personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}');
+      const personalHiddenState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_hidden`) || '{}');
       const container = document.getElementById('packing-categories-list');
 
       container.innerHTML = globalPacking.map(cat => `
@@ -1729,7 +1730,7 @@
             <button onclick="openAddPackingItemModal('${cat.id}')" class="text-[11px] text-sky-600 font-bold hover:underline">+ 新增物品</button>
           </div>
           <div class="space-y-1.5 text-xs">
-            ${cat.items.map(item => {
+            ${cat.items.filter(item => !personalHiddenState[item.id]).map(item => {
               const isChecked = !!personalCheckedState[item.id];
               return `
                 <div class="flex items-start justify-between">
@@ -1757,13 +1758,18 @@
     }
 
     function deletePersonalPackingItem(catId, itemId) {
-      const globalPacking = getStoredData('packing', defaultPackingData);
-      const cat = globalPacking.find(c => c.id === catId);
-      if (cat) {
-        cat.items = cat.items.filter(i => i.id !== itemId);
-        pushStateToCloud('packing', globalPacking);
-        showToast("已從清單移除");
-      }
+      // 個人刪除：只記錄在這台裝置，不修改全團 packing 雲端資料。
+      const personalHiddenState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_hidden`) || '{}');
+      personalHiddenState[itemId] = true;
+      localStorage.setItem(`danang_${roomId}_packing_hidden`, JSON.stringify(personalHiddenState));
+
+      // 同時清掉這台裝置對該物品的勾選紀錄。
+      const personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}');
+      delete personalCheckedState[itemId];
+      localStorage.setItem(`danang_${roomId}_packing_checked`, JSON.stringify(personalCheckedState));
+
+      renderPackingList();
+      showToast("已從我的清單移除");
     }
 
     function calculateProximityMatch(favItem) {
@@ -1826,7 +1832,7 @@
             <button onclick="openAddFavItemModal('${cat.id}')" class="text-[11px] text-rose-600 font-bold hover:underline">+ 新增收藏</button>
           </div>
           <div class="space-y-2">
-            ${cat.items.map(item => {
+            ${cat.items.filter(item => !personalHiddenState[item.id]).map(item => {
               const prox = calculateProximityMatch(item);
               const voteInfo = getItemVotesBreakdown(item);
               const votersText = (item.voters && item.voters.length > 0)
