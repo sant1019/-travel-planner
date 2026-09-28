@@ -1166,26 +1166,49 @@
       return state;
     }
 
-    function isEmptyPackingData(value) {
-      return Array.isArray(value) && value.length === 0;
+    function isValidPackingData(value) {
+      return Array.isArray(value) && value.length > 0 && value.every(cat =>
+        cat && typeof cat === 'object' &&
+        typeof cat.id === 'string' &&
+        typeof cat.title === 'string' &&
+        Array.isArray(cat.items)
+      );
     }
 
-    function applyRoomState(state) {
-      if (!state || typeof state !== 'object') return;
+    function getSafePackingData(value) {
+      if (isValidPackingData(value)) return value;
+      const local = getStoredData('packing', null);
+      if (isValidPackingData(local)) return local;
+      return JSON.parse(JSON.stringify(defaultPackingData));
+    }
+
+    function normalizeRoomStatePayload(payload) {
+      let state = payload;
+      if (typeof state === 'string') {
+        try { state = JSON.parse(state); } catch (e) { return {}; }
+      }
+      if (Array.isArray(state) && state.length === 1 && state[0] && typeof state[0] === 'object') {
+        state = state[0].state ?? state[0].data ?? state[0];
+      }
+      return (state && typeof state === 'object' && !Array.isArray(state)) ? state : {};
+    }
+
+    function applyRoomState(payload) {
+      const state = normalizeRoomStatePayload(payload);
       cloudApplying = true;
       CLOUD_KEYS.forEach(key => {
         if (!Object.prototype.hasOwnProperty.call(state, key)) return;
-        // V5 修復：舊版多人同步曾可能把 packing 寫成空陣列。
-        // 空 packing 不再覆蓋既有清單；若本機也沒有資料，就使用內建完整必備清單。
-        if (key === 'packing' && isEmptyPackingData(state[key])) {
-          const localRaw = localStorage.getItem(`danang_${roomId}_packing`);
-          if (localRaw === null) setStoredData('packing', defaultPackingData);
+        // Rescue 修復：packing 只有在格式完整時才允許覆蓋本機。
+        // 可攔截 []、null、{}、字串及舊版異常資料，避免必備清單整片空白。
+        if (key === 'packing' && !isValidPackingData(state[key])) {
+          setStoredData('packing', getSafePackingData(state[key]));
           return;
         }
         setStoredData(key, state[key]);
       });
       cloudApplying = false;
       cloudBaseState = JSON.parse(JSON.stringify(state || {}));
+      cloudBaseState.packing = getSafePackingData(state.packing);
       lastCloudSnapshot = JSON.stringify(state);
       refreshUI();
     }
@@ -1372,7 +1395,7 @@
       CLOUD_KEYS.forEach(key => {
         if (!Object.prototype.hasOwnProperty.call(remote, key)) return;
         // V5 修復：忽略雲端意外出現的空 packing，避免每 3 秒輪詢又把清單清空。
-        if (key === 'packing' && isEmptyPackingData(remote[key])) return;
+        if (key === 'packing' && !isValidPackingData(remote[key])) return;
         // 本機正在修改/送出這個區塊時，不用輪詢結果蓋掉它；RPC 完成後會取得合併結果。
         if (Object.prototype.hasOwnProperty.call(cloudSectionPending, key) || cloudSectionInFlight[key]) return;
         const remoteJson = JSON.stringify(remote[key]);
@@ -1685,9 +1708,16 @@
     }
 
     function renderPackingList() {
-      const globalPacking = getStoredData('packing', defaultPackingData);
-      const personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}');
+      let globalPacking = getStoredData('packing', defaultPackingData);
+      // Rescue 修復：即使 localStorage / 雲端曾留下錯誤 packing 格式，也保證畫面可正常顯示。
+      if (!isValidPackingData(globalPacking)) {
+        globalPacking = getSafePackingData(globalPacking);
+        setStoredData('packing', globalPacking);
+      }
+      let personalCheckedState = {};
+      try { personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}') || {}; } catch (e) {}
       const container = document.getElementById('packing-categories-list');
+      if (!container) return;
 
       container.innerHTML = globalPacking.map(cat => `
         <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
@@ -2751,7 +2781,7 @@
       if (cloudPassword && cloudClient) {
         const { data, error } = await cloudClient.rpc('get_trip_room', { p_room_id: roomId, p_password: cloudPassword });
         if (!error && data !== null) {
-          applyRoomState(data || {});
+          applyRoomState(normalizeRoomStatePayload(data));
           activateCloudRoom(roomId, cloudPassword);
         } else {
           sessionStorage.removeItem('perfect_cloud_password');
@@ -2761,3 +2791,4 @@
     };
   </script>
 </body>
+</html>
