@@ -144,15 +144,10 @@
 
       <!-- Add New Itinerary Item Button -->
       <div id="organizer-add-itinerary-wrap" class="pt-1 hidden space-y-2">
-        <button onclick="openSmartMatchModal()" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
-          <i class="fa-solid fa-bolt"></i>
-          <span>固定行程的智慧安排</span>
+        <button onclick="openFixedPlannerModal()" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-wand-magic-sparkles"></i><span>固定行程設定與智慧排程</span>
         </button>
-        <p class="text-[10px] text-slate-400 text-center">依既有固定行程位置，比對收藏景點並建議安排日期</p>
-        <button onclick="openAddItineraryModal()" class="w-full bg-white border border-sky-200 text-sky-700 hover:bg-sky-50 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
-          <i class="fa-solid fa-plus text-sky-600"></i>
-          <span id="add-itin-btn-label">新增 Day 1 行程地點</span>
-        </button>
+        <p class="text-[10px] text-slate-400 text-center">一次輸入所有固定活動，再依日期／星期／時間限制與地點安排 Day 1～Day 6</p>
       </div>
     </section>
 
@@ -552,6 +547,37 @@
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
         <button onclick="saveTicketItem()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-semibold">儲存門票</button>
       </div>
+    </div>
+
+    <!-- Fixed Itinerary Smart Planner Modal -->
+    <div id="modal-fixed-planner" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-extrabold text-slate-800"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>固定行程設定與智慧排程</h3>
+      <p class="text-[10px] text-slate-500">先一次建立所有固定活動。排程前會查證營業時間／表演場次；查不到就標示「尚未確認」，不會猜測。</p>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10px] text-amber-800"><b>優先順序：</b>指定日期／星期與場次 → 營業時間 → 已訂時間 → 地點鄰近。</div>
+      <div id="fixed-planner-list" class="space-y-2"></div>
+      <button onclick="openFixedActivityEditor()" class="w-full border border-sky-200 bg-sky-50 text-sky-700 font-bold py-2.5 rounded-xl text-xs">＋ 新增固定活動</button>
+
+      <div id="fixed-activity-editor" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
+        <input type="hidden" id="fixed-edit-id">
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">活動／店家名稱</label>
+          <input id="fixed-name" oninput="previewFixedMap()" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs" placeholder="例如：會安回憶秀">
+          <div id="fixed-map-preview" class="hidden mt-2"><a id="fixed-map-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[11px] text-sky-700 font-bold">📍 先用 Google Maps 確認地點</a></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">日期限制</label><select id="fixed-date-rule" class="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white"><option value="flexible">日期皆可</option><option value="specific">指定日期</option><option value="weekday">指定星期</option></select></div>
+          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">日期／星期</label><input id="fixed-date-value" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="12/9 或 星期三"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">已訂／偏好時間</label><input id="fixed-time" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="20:00"></div>
+          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">停留時間</label><input id="fixed-duration" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="2 小時"></div>
+        </div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：票已訂、只能晚場"></textarea></div>
+        <div class="flex gap-2"><button onclick="cancelFixedActivityEditor()" class="flex-1 bg-white border border-slate-200 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveFixedActivity()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
+      </div>
+
+      <button onclick="startFixedScheduleResearch()" class="w-full bg-indigo-600 text-white font-extrabold py-3 rounded-xl text-xs">🔎 查證營業／場次並產生智慧排程</button>
+      <p class="text-[10px] text-slate-400 text-center">尚未啟用網路查證後端前，不會用假資料產生排程。</p>
+      <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs">關閉</button>
     </div>
 
     <!-- Edit/Add Itinerary Item Modal -->
@@ -1792,6 +1818,47 @@
       });
     }
 
+    function getFixedActivities() { return getStoredData('fixedActivities', []); }
+
+    function openFixedPlannerModal() {
+      if (!isOrganizer()) return showToast('只有主辦人可以設定固定行程');
+      closeModal();
+      renderFixedPlannerList();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-fixed-planner').classList.remove('hidden');
+    }
+
+    function renderFixedPlannerList() {
+      const box=document.getElementById('fixed-planner-list'); if(!box) return;
+      const list=getFixedActivities();
+      if(!list.length){box.innerHTML='<div class="text-center text-xs text-slate-400 py-4 border border-dashed border-slate-200 rounded-xl">尚未建立固定活動</div>';return;}
+      box.innerHTML=list.map(x=>`<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="flex justify-between gap-2"><div class="min-w-0"><div class="font-extrabold text-xs">${x.name}</div><div class="text-[10px] text-slate-500 mt-1">${x.dateRule==='flexible'?'日期皆可':(x.dateValue||'有限制')}${x.time?'・'+x.time:''}${x.duration?'・停留 '+x.duration:''}</div>${x.note?`<div class="text-[10px] text-amber-700 mt-1">⚠️ ${x.note}</div>`:''}<div class="text-[10px] text-slate-400 mt-1">網路查證：${x.researchStatus||'尚未查證'}</div></div><div class="shrink-0"><button onclick="openFixedActivityEditor('${x.id}')" class="text-sky-600 p-1">✎</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500 p-1">🗑</button></div></div></div>`).join('');
+    }
+
+    function openFixedActivityEditor(id='') {
+      document.getElementById('fixed-activity-editor').classList.remove('hidden');
+      const x=getFixedActivities().find(v=>v.id===id);
+      document.getElementById('fixed-edit-id').value=id;
+      document.getElementById('fixed-name').value=x?.name||'';
+      document.getElementById('fixed-date-rule').value=x?.dateRule||'flexible';
+      document.getElementById('fixed-date-value').value=x?.dateValue||'';
+      document.getElementById('fixed-time').value=x?.time||'';
+      document.getElementById('fixed-duration').value=x?.duration||'';
+      document.getElementById('fixed-note').value=x?.note||'';
+      previewFixedMap();
+    }
+    function cancelFixedActivityEditor(){document.getElementById('fixed-activity-editor').classList.add('hidden');}
+    function previewFixedMap(){const name=document.getElementById('fixed-name')?.value.trim()||'';const box=document.getElementById('fixed-map-preview'),link=document.getElementById('fixed-map-link');if(name.length>=2){link.href=buildAutoMapLink(name);box.classList.remove('hidden')}else box.classList.add('hidden');}
+    function saveFixedActivity(){
+      const name=document.getElementById('fixed-name').value.trim(); if(!name)return showToast('請輸入活動或店家名稱');
+      const id=document.getElementById('fixed-edit-id').value,list=getFixedActivities(),old=list.find(x=>x.id===id);
+      const data={id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),time:document.getElementById('fixed-time').value.trim(),duration:document.getElementById('fixed-duration').value.trim(),note:document.getElementById('fixed-note').value.trim(),map:buildAutoMapLink(name),researchStatus:old?.researchStatus||'尚未查證'};
+      const idx=list.findIndex(x=>x.id===id); if(idx>=0)list[idx]=data;else list.push(data);
+      pushStateToCloud('fixedActivities',list);cancelFixedActivityEditor();renderFixedPlannerList();showToast('固定活動已儲存');
+    }
+    function deleteFixedActivity(id){pushStateToCloud('fixedActivities',getFixedActivities().filter(x=>x.id!==id));renderFixedPlannerList();showToast('固定活動已刪除');}
+    async function startFixedScheduleResearch(){if(!getFixedActivities().length)return showToast('請先新增固定活動');showToast('尚需啟用網路查證後端，未使用假資料排程');}
+
     function buildAutoMapLink(title) {
       const cleanTitle = String(title || '')
         .replace(/[❤️✈️🚗🏨🛶🏛️🎭🚣⛰️🍽️🏰⛩️🛍️🐉📍]/gu, '')
@@ -2991,7 +3058,7 @@
       if (!force && memberModal && !memberModal.classList.contains('hidden') && !currentMember) return;
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
-        'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
+        'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
