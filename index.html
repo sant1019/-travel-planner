@@ -139,10 +139,19 @@
       <!-- Weather Forecast Header -->
       <div id="weather-banner" class="bg-gradient-to-r from-blue-500 to-sky-400 text-white p-3 rounded-2xl shadow-sm space-y-1"></div>
 
+      <!-- Organizer Smart Arrangement -->
+      <div id="organizer-smart-itinerary-wrap" class="hidden">
+        <button onclick="openSmartMatchModal()" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
+          <i class="fa-solid fa-bolt"></i>
+          <span>固定行程的智慧安排</span>
+        </button>
+        <p class="text-[10px] text-slate-400 text-center mt-1">依既有固定行程位置，比對收藏景點並建議安排日期</p>
+      </div>
+
       <!-- Itinerary List -->
       <div id="itinerary-items-container" class="space-y-3"></div>
 
-      <!-- Add New Itinerary Item Button: organizer only -->
+      <!-- Add New Itinerary Item Button -->
       <div id="organizer-add-itinerary-wrap" class="pt-1 hidden">
         <button onclick="openAddItineraryModal()" class="w-full bg-white border border-sky-200 text-sky-700 hover:bg-sky-50 font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm transition active:scale-95">
           <i class="fa-solid fa-plus text-sky-600"></i>
@@ -1771,8 +1780,19 @@
     }
 
     function updateItineraryPermissions() {
-      const addWrap = document.getElementById('organizer-add-itinerary-wrap');
-      if (addWrap) addWrap.classList.toggle('hidden', !isOrganizer());
+      const organizerOnlyIds = ['organizer-add-itinerary-wrap', 'organizer-smart-itinerary-wrap'];
+      organizerOnlyIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !isOrganizer());
+      });
+    }
+
+    function buildAutoMapLink(title) {
+      const cleanTitle = String(title || '')
+        .replace(/[❤️✈️🚗🏨🛶🏛️🎭🚣⛰️🍽️🏰⛩️🛍️🐉📍]/gu, '')
+        .trim();
+      if (!cleanTitle) return '';
+      return `https://maps.google.com/?q=${encodeURIComponent(cleanTitle)}`;
     }
 
     function renderItinerary() {
@@ -1802,7 +1822,7 @@
       const container = document.getElementById('itinerary-items-container');
 
       if (dayData.items.length === 0) {
-        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-100 text-center text-slate-400 text-xs">當天尚無行程點，可點擊下方按鈕新增或將收藏景點排入！</div>`;
+        container.innerHTML = `<div class="bg-white p-8 rounded-2xl border border-slate-100 text-center text-slate-400 text-xs">當天尚無團體行程；主辦人可新增或使用智慧安排。</div>`;
         return;
       }
 
@@ -1890,7 +1910,8 @@
       const time = document.getElementById('input-itin-time').value.trim();
       const desc = document.getElementById('input-itin-desc').value.trim();
       const comment = document.getElementById('input-itin-comment').value.trim();
-      const map = document.getElementById('input-itin-map').value.trim();
+      const mapInput = document.getElementById('input-itin-map').value.trim();
+      const map = mapInput || buildAutoMapLink(title);
       const ticketLink = document.getElementById('input-itin-ticket').value.trim();
 
       if (!title) {
@@ -2376,6 +2397,7 @@
     }
 
     function applySmartMatchSelection() {
+      if (!isOrganizer()) return showToast('智慧安排正式行程僅限主辦人使用');
       const checkboxes = document.querySelectorAll('.smart-match-checkbox:checked');
       const selectedIds = Array.from(checkboxes).map(cb => cb.value);
 
