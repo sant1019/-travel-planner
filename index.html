@@ -1127,7 +1127,7 @@
     const cloudClient = (window.supabase && window.supabase.createClient)
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
       : null;
-    let cloudPassword = sessionStorage.getItem('perfect_cloud_password') || '';
+    let cloudPassword = localStorage.getItem('perfect_cloud_password') || sessionStorage.getItem('perfect_cloud_password') || '';
     let cloudConnected = false;
     let cloudPushTimer = null;
     let cloudPollTimer = null;
@@ -1166,49 +1166,14 @@
       return state;
     }
 
-    function isValidPackingData(value) {
-      return Array.isArray(value) && value.length > 0 && value.every(cat =>
-        cat && typeof cat === 'object' &&
-        typeof cat.id === 'string' &&
-        typeof cat.title === 'string' &&
-        Array.isArray(cat.items)
-      );
-    }
-
-    function getSafePackingData(value) {
-      if (isValidPackingData(value)) return value;
-      const local = getStoredData('packing', null);
-      if (isValidPackingData(local)) return local;
-      return JSON.parse(JSON.stringify(defaultPackingData));
-    }
-
-    function normalizeRoomStatePayload(payload) {
-      let state = payload;
-      if (typeof state === 'string') {
-        try { state = JSON.parse(state); } catch (e) { return {}; }
-      }
-      if (Array.isArray(state) && state.length === 1 && state[0] && typeof state[0] === 'object') {
-        state = state[0].state ?? state[0].data ?? state[0];
-      }
-      return (state && typeof state === 'object' && !Array.isArray(state)) ? state : {};
-    }
-
-    function applyRoomState(payload) {
-      const state = normalizeRoomStatePayload(payload);
+    function applyRoomState(state) {
+      if (!state || typeof state !== 'object') return;
       cloudApplying = true;
       CLOUD_KEYS.forEach(key => {
-        if (!Object.prototype.hasOwnProperty.call(state, key)) return;
-        // Rescue 修復：packing 只有在格式完整時才允許覆蓋本機。
-        // 可攔截 []、null、{}、字串及舊版異常資料，避免必備清單整片空白。
-        if (key === 'packing' && !isValidPackingData(state[key])) {
-          setStoredData('packing', getSafePackingData(state[key]));
-          return;
-        }
-        setStoredData(key, state[key]);
+        if (Object.prototype.hasOwnProperty.call(state, key)) setStoredData(key, state[key]);
       });
       cloudApplying = false;
       cloudBaseState = JSON.parse(JSON.stringify(state || {}));
-      cloudBaseState.packing = getSafePackingData(state.packing);
       lastCloudSnapshot = JSON.stringify(state);
       refreshUI();
     }
@@ -1260,58 +1225,60 @@
       const password = passwordInput.value;
       const loginBtn = document.querySelector('#modal-sync-room button[onclick="joinCloudRoom()"]');
 
-      if (newRoom.length < 4) { setCloudStatus('請輸入至少 4 個字元的房間名稱'); roomInput.focus(); return; }
-      if (password.length < 6) { setCloudStatus('請輸入房間密碼（至少 6 個字元）'); passwordInput.focus(); return; }
-      if (!cloudClient) { setCloudStatus('Supabase 載入失敗，請確認網路'); return; }
+      // V3：錯誤直接顯示在視窗內，避免 Toast 被 modal 遮住，看起來像「按了沒反應」
+      if (newRoom.length < 4) {
+        setCloudStatus('請輸入至少 4 個字元的房間名稱');
+        roomInput.focus();
+        return;
+      }
+      if (password.length < 6) {
+        setCloudStatus('請輸入房間密碼（至少 6 個字元）');
+        passwordInput.focus();
+        return;
+      }
+      if (!cloudClient) {
+        setCloudStatus('Supabase 載入失敗，請確認網路');
+        return;
+      }
 
       const originalText = loginBtn ? loginBtn.textContent : '';
-      if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = '登入中…'; loginBtn.classList.add('opacity-60'); }
+      if (loginBtn) {
+        loginBtn.disabled = true;
+        loginBtn.textContent = '登入中…';
+        loginBtn.classList.add('opacity-60');
+      }
       setCloudStatus('正在登入雲端房間…');
 
       try {
-        const result = await cloudClient.rpc('get_trip_room', { p_room_id: newRoom, p_password: password });
-        const data = result ? result.data : null;
-        const error = result ? result.error : new Error('Supabase 沒有回傳結果');
+        const { data, error } = await cloudClient.rpc('get_trip_room', {
+          p_room_id: newRoom,
+          p_password: password
+        });
 
         if (error) {
           console.error('get_trip_room error:', error);
-          const msg = error.message || error.details || error.hint || '未知錯誤';
-          setCloudStatus('登入失敗：' + msg);
+          setCloudStatus('登入失敗：請確認房間名稱、密碼與網路');
           return;
         }
-        if (data === null || data === false) {
+        if (data === null) {
           setCloudStatus('房間不存在或密碼錯誤');
           return;
         }
 
-        // 先完成連線狀態，再載入資料。即使舊資料格式有單一欄位異常，也不會讓整個登入被判定失敗。
+        roomId = newRoom;
+        applyRoomState(data || {});
         activateCloudRoom(newRoom, password);
-
-        let state = data;
-        if (typeof state === 'string') {
-          try { state = JSON.parse(state); } catch (e) { state = {}; }
-        }
-        if (Array.isArray(state) && state.length === 1 && state[0] && typeof state[0] === 'object') {
-          state = state[0].state ?? state[0].data ?? state[0];
-        }
-        if (state && typeof state === 'object' && !Array.isArray(state)) {
-          try {
-            applyRoomState(state);
-          } catch (applyErr) {
-            console.error('applyRoomState error:', applyErr);
-            setCloudStatus(`已連線：${newRoom}（資料載入中）`, true);
-          }
-        }
-
         closeModal();
         showToast('雲端同步已連線');
-        setTimeout(() => pullCloudState(true), 300);
       } catch (err) {
         console.error('joinCloudRoom exception:', err);
-        const msg = err && err.message ? err.message : String(err || '未知錯誤');
-        setCloudStatus('登入發生錯誤：' + msg);
+        setCloudStatus('登入發生錯誤，請稍後再試');
       } finally {
-        if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = originalText || '登入同步'; loginBtn.classList.remove('opacity-60'); }
+        if (loginBtn) {
+          loginBtn.disabled = false;
+          loginBtn.textContent = originalText || '登入同步';
+          loginBtn.classList.remove('opacity-60');
+        }
       }
     }
 
@@ -1321,6 +1288,7 @@
       cloudConnected = true;
       localStorage.setItem('danang_room_id', roomId);
       sessionStorage.setItem('perfect_cloud_password', password);
+      localStorage.setItem('perfect_cloud_password', password);
       const display = document.getElementById('room-name-display');
       if (display) display.textContent = roomId;
       setCloudStatus(`已連線：${roomId}`, true);
@@ -1394,8 +1362,6 @@
       cloudApplying = true;
       CLOUD_KEYS.forEach(key => {
         if (!Object.prototype.hasOwnProperty.call(remote, key)) return;
-        // V5 修復：忽略雲端意外出現的空 packing，避免每 3 秒輪詢又把清單清空。
-        if (key === 'packing' && !isValidPackingData(remote[key])) return;
         // 本機正在修改/送出這個區塊時，不用輪詢結果蓋掉它；RPC 完成後會取得合併結果。
         if (Object.prototype.hasOwnProperty.call(cloudSectionPending, key) || cloudSectionInFlight[key]) return;
         const remoteJson = JSON.stringify(remote[key]);
@@ -1708,16 +1674,9 @@
     }
 
     function renderPackingList() {
-      let globalPacking = getStoredData('packing', defaultPackingData);
-      // Rescue 修復：即使 localStorage / 雲端曾留下錯誤 packing 格式，也保證畫面可正常顯示。
-      if (!isValidPackingData(globalPacking)) {
-        globalPacking = getSafePackingData(globalPacking);
-        setStoredData('packing', globalPacking);
-      }
-      let personalCheckedState = {};
-      try { personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}') || {}; } catch (e) {}
+      const globalPacking = getStoredData('packing', defaultPackingData);
+      const personalCheckedState = JSON.parse(localStorage.getItem(`danang_${roomId}_packing_checked`) || '{}');
       const container = document.getElementById('packing-categories-list');
-      if (!container) return;
 
       container.innerHTML = globalPacking.map(cat => `
         <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
@@ -2775,18 +2734,41 @@
     }
 
     window.onload = async function() {
-      document.getElementById('room-name-display').textContent = roomId;
+      const roomDisplay = document.getElementById('room-name-display');
+      if (roomDisplay) roomDisplay.textContent = roomId;
       fetchLiveExchangeRates();
       refreshUI();
+
+      // 房間名稱只是上次使用紀錄；只有 Supabase 驗證成功後才算真正連線。
+      cloudConnected = false;
       if (cloudPassword && cloudClient) {
-        const { data, error } = await cloudClient.rpc('get_trip_room', { p_room_id: roomId, p_password: cloudPassword });
-        if (!error && data !== null) {
-          applyRoomState(normalizeRoomStatePayload(data));
-          activateCloudRoom(roomId, cloudPassword);
-        } else {
-          sessionStorage.removeItem('perfect_cloud_password');
-          cloudPassword = '';
+        setCloudStatus(`正在重新連線：${roomId}…`);
+        try {
+          const { data, error } = await cloudClient.rpc('get_trip_room', {
+            p_room_id: roomId,
+            p_password: cloudPassword
+          });
+          if (!error && data !== null) {
+            // 先以雲端最新狀態覆蓋本機，再正式啟動 polling / realtime。
+            applyRoomState(data || {});
+            activateCloudRoom(roomId, cloudPassword);
+            setCloudStatus(`已連線：${roomId}`, true);
+          } else {
+            sessionStorage.removeItem('perfect_cloud_password');
+            localStorage.removeItem('perfect_cloud_password');
+            cloudPassword = '';
+            cloudConnected = false;
+            setCloudStatus('尚未連線：請重新登入房間');
+          }
+        } catch (err) {
+          console.error('auto reconnect error:', err);
+          cloudConnected = false;
+          setCloudStatus('雲端暫時無法連線，請稍後重試');
         }
+      } else if (!cloudPassword) {
+        setCloudStatus('尚未連線：請登入房間');
+      } else {
+        setCloudStatus('Supabase 載入失敗，請確認網路');
       }
     };
   </script>
