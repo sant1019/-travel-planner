@@ -291,7 +291,7 @@
           <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 班機</label>
           <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">🏨 住宿</label>
           <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-weather" type="checkbox" onchange="saveInfoVisibility()">☀️ 天氣</label>
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-shuttle" type="checkbox" onchange="saveInfoVisibility()">🚐 接駁車</label>
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-shuttle" type="checkbox" onchange="saveInfoVisibility()">🚐 交通接駁</label>
         </div>
       </div>
       <div id="info-dynamic-sections" class="space-y-3"></div>
@@ -401,10 +401,10 @@
         </div>
       </div>
 
-      <!-- 機場包車接駁資訊 -->
+      <!-- 交通接駁資訊 -->
       <div class="hidden bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
         <h3 class="text-xs font-bold text-slate-800 flex items-center">
-          <i class="fa-solid fa-van-shuttle text-sky-600 mr-1.5"></i>機場包車接駁資訊
+          <i class="fa-solid fa-van-shuttle text-sky-600 mr-1.5"></i>交通接駁資訊
         </h3>
         <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs space-y-1 text-slate-700">
           <p class="font-bold text-slate-900">得佳富租賃有限公司 (包車司機：阿得)</p>
@@ -1259,6 +1259,7 @@
       } catch (e) {}
       renderMemberIdentity();
       updateItineraryPermissions();
+      renderInfoPage();
     }
 
     function renderMemberIdentity() {
@@ -1640,6 +1641,7 @@
       currentMember = loadStoredMember(newRoom);
       renderMemberIdentity();
       updateItineraryPermissions();
+      renderInfoPage();
 
       // 房間一驗證成功就獨立啟動成員身分檢查，
       // 不再等待後續 pullCloudState，避免同步流程阻擋暱稱視窗。
@@ -2028,13 +2030,13 @@
       if(v.flight)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">✈️ 班機資訊</h3>${infoEditButton('flight')}</div><div class="mt-2 space-y-1"><p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜${escapeHtml(c.flight.outboundDate)} ${escapeHtml(c.flight.outboundTime)}</p><p>🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜${escapeHtml(c.flight.returnDate)} ${escapeHtml(c.flight.returnTime)}</p></div></div>`;
       if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
       if(v.weather)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">☀️ 天氣資訊</h3></div><p class="mt-2 text-slate-600">行程頁會依 Day 1～Day 6 顯示氣候預報與穿搭建議。</p><button onclick="switchTab('itinerary')" class="mt-2 text-sky-600 font-bold">查看每日天氣 →</button></div>`;
-      if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 機場包車接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
+      if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 交通接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
       box.innerHTML=h;
     }
     function openInfoEdit(type){
       if(!isOrganizer())return showToast('只有主辦人可以編輯資訊'); const c=getInfoConfig();
-      const defs={flight:[['outboundNo','去程班機'],['outboundDate','去程日期'],['outboundTime','去程時間'],['returnNo','回程班機'],['returnDate','回程日期'],['returnTime','回程時間']],hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
-      document.getElementById('info-edit-type').value=type; document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯接駁車資訊'}[type]||'編輯資訊';
+      const defs={flight:[['outboundNo','去程班機'],['outboundDate','去程日期'],['outboundTime','去程時間'],['returnNo','回程班機'],['returnDate','回程日期'],['returnTime','回程時間']],hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
+      document.getElementById('info-edit-type').value=type; document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊'}[type]||'編輯資訊';
       document.getElementById('info-edit-fields').innerHTML=(defs[type]||[]).map(([k,l])=>`<div><label class="text-[11px] font-bold text-slate-600 block mb-1">${l}</label><input data-info-key="${k}" value="${escapeHtml(c[type][k]||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs"></div>`).join('');
       openModal('modal-info-edit');
     }
