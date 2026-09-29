@@ -149,10 +149,6 @@
         </button>
         <p class="text-[10px] text-slate-400 text-center">一次輸入所有固定活動，再依日期／星期／時間限制與地點安排 Day 1～Day 6</p>
 
-        <button onclick="openSmartMatchModal()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
-          <i class="fa-solid fa-bolt"></i><span>智慧新增行程</span>
-        </button>
-        <p class="text-[10px] text-slate-400 text-center">從收藏景點中勾選想加入的地點，由智慧排行程功能建議日期後加入行程</p>
       </div>
     </section>
 
@@ -442,16 +438,35 @@
         <input type="text" id="input-header-title" placeholder="例如：峴港會安" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
       <div>
-        <label class="text-[11px] font-bold text-slate-600 block mb-1">天數行程：</label>
-        <input type="text" id="input-header-duration" placeholder="例如：6D5N" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
-      </div>
-      <div>
-        <label class="text-[11px] font-bold text-slate-600 block mb-1">團員總人數：</label>
-        <input type="text" id="input-header-headcount" placeholder="例如：14大2小1嬰" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">旅遊人數：</label>
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <label class="block text-[10px] text-slate-500 mb-1">大人</label>
+            <input type="number" id="input-header-adults" min="0" step="1" inputmode="numeric" pattern="[0-9]*" oninput="sanitizeHeaderCount(this)" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs text-center focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-500 mb-1">兒童</label>
+            <input type="number" id="input-header-children" min="0" step="1" inputmode="numeric" pattern="[0-9]*" oninput="sanitizeHeaderCount(this)" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs text-center focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-500 mb-1">嬰兒</label>
+            <input type="number" id="input-header-infants" min="0" step="1" inputmode="numeric" pattern="[0-9]*" oninput="sanitizeHeaderCount(this)" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs text-center focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">旅遊日期：</label>
-        <input type="text" id="input-header-dates" placeholder="例如：2026/12/07 - 12/12" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] text-slate-500 mb-1">開始日期</label>
+            <input type="date" id="input-header-start-date" onchange="updateHeaderEditDerived()" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-500 mb-1">結束日期</label>
+            <input type="date" id="input-header-end-date" onchange="updateHeaderEditDerived()" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-sky-500 focus:outline-none">
+          </div>
+        </div>
+        <p id="header-date-summary" class="text-[10px] text-sky-600 font-bold mt-1.5"></p>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">團體標籤：</label>
@@ -936,6 +951,11 @@
 
     const defaultHeaderInfo = {
       title: '峴港會安',
+      adults: 14,
+      children: 2,
+      infants: 1,
+      startDate: '2026-12-07',
+      endDate: '2026-12-12',
       duration: '6D5N',
       headcount: '14大2小1嬰',
       dates: '2026/12/07 - 12/12',
@@ -957,13 +977,87 @@
       if (groupTagEl) groupTagEl.textContent = info.groupTag || '必去景點';
     }
 
+    function parseHeaderHeadcount(info) {
+      if (Number.isFinite(Number(info?.adults)) || Number.isFinite(Number(info?.children)) || Number.isFinite(Number(info?.infants))) {
+        return {
+          adults: Math.max(0, parseInt(info.adults || 0, 10) || 0),
+          children: Math.max(0, parseInt(info.children || 0, 10) || 0),
+          infants: Math.max(0, parseInt(info.infants || 0, 10) || 0)
+        };
+      }
+      const raw = String(info?.headcount || '');
+      return {
+        adults: parseInt((raw.match(/(\d+)\s*大/) || [])[1] || 14, 10),
+        children: parseInt((raw.match(/(\d+)\s*小/) || [])[1] || 2, 10),
+        infants: parseInt((raw.match(/(\d+)\s*嬰/) || [])[1] || 1, 10)
+      };
+    }
+
+    function parseHeaderDates(info) {
+      if (info?.startDate && info?.endDate) return { startDate: info.startDate, endDate: info.endDate };
+      const raw = String(info?.dates || '');
+      const m = raw.match(/(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})\s*-\s*(?:(\d{4})[\/-])?(\d{1,2})[\/-](\d{1,2})/);
+      if (!m) return { startDate: '2026-12-07', endDate: '2026-12-12' };
+      const y1 = m[1], y2 = m[4] || y1;
+      return {
+        startDate: `${y1}-${String(m[2]).padStart(2,'0')}-${String(m[3]).padStart(2,'0')}`,
+        endDate: `${y2}-${String(m[5]).padStart(2,'0')}-${String(m[6]).padStart(2,'0')}`
+      };
+    }
+
+    function formatHeaderDateRange(startDate, endDate) {
+      if (!startDate || !endDate) return '';
+      const s = new Date(`${startDate}T00:00:00`);
+      const e = new Date(`${endDate}T00:00:00`);
+      if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime())) return '';
+      const sy = s.getFullYear();
+      const sm = String(s.getMonth()+1).padStart(2,'0');
+      const sd = String(s.getDate()).padStart(2,'0');
+      const ey = e.getFullYear();
+      const em = String(e.getMonth()+1).padStart(2,'0');
+      const ed = String(e.getDate()).padStart(2,'0');
+      return sy === ey ? `${sy}/${sm}/${sd} - ${em}/${ed}` : `${sy}/${sm}/${sd} - ${ey}/${em}/${ed}`;
+    }
+
+    function calculateHeaderDuration(startDate, endDate) {
+      if (!startDate || !endDate) return '';
+      const s = new Date(`${startDate}T00:00:00`);
+      const e = new Date(`${endDate}T00:00:00`);
+      const diff = Math.round((e - s) / 86400000);
+      if (!Number.isFinite(diff) || diff < 0) return '';
+      return `${diff + 1}D${diff}N`;
+    }
+
+    function sanitizeHeaderCount(el) {
+      const n = Math.max(0, parseInt(String(el.value || '').replace(/\D/g, ''), 10) || 0);
+      el.value = String(n);
+    }
+
+    function updateHeaderEditDerived() {
+      const s = document.getElementById('input-header-start-date');
+      const e = document.getElementById('input-header-end-date');
+      const summary = document.getElementById('header-date-summary');
+      if (!s || !e) return;
+      if (s.value) e.min = s.value;
+      if (s.value && e.value && e.value < s.value) e.value = s.value;
+      const range = formatHeaderDateRange(s.value, e.value);
+      const duration = calculateHeaderDuration(s.value, e.value);
+      if (summary) summary.textContent = range && duration ? `${range}・${duration}` : '';
+    }
+
     function openHeaderEditModal() {
       const info = getStoredData('headerInfo', defaultHeaderInfo);
+      const counts = parseHeaderHeadcount(info);
+      const dates = parseHeaderDates(info);
+
       document.getElementById('input-header-title').value = info.title || '';
-      document.getElementById('input-header-duration').value = info.duration || '';
-      document.getElementById('input-header-headcount').value = info.headcount || '';
-      document.getElementById('input-header-dates').value = info.dates || '';
+      document.getElementById('input-header-adults').value = counts.adults;
+      document.getElementById('input-header-children').value = counts.children;
+      document.getElementById('input-header-infants').value = counts.infants;
+      document.getElementById('input-header-start-date').value = dates.startDate;
+      document.getElementById('input-header-end-date').value = dates.endDate;
       document.getElementById('input-header-grouptag').value = info.groupTag || '';
+      updateHeaderEditDerived();
 
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -972,16 +1066,30 @@
 
     function saveHeaderData() {
       const title = document.getElementById('input-header-title').value.trim();
-      const duration = document.getElementById('input-header-duration').value.trim();
-      const headcount = document.getElementById('input-header-headcount').value.trim();
-      const dates = document.getElementById('input-header-dates').value.trim();
+      const adults = Math.max(0, parseInt(document.getElementById('input-header-adults').value || '0', 10) || 0);
+      const children = Math.max(0, parseInt(document.getElementById('input-header-children').value || '0', 10) || 0);
+      const infants = Math.max(0, parseInt(document.getElementById('input-header-infants').value || '0', 10) || 0);
+      const startDate = document.getElementById('input-header-start-date').value;
+      const endDate = document.getElementById('input-header-end-date').value;
       const groupTag = document.getElementById('input-header-grouptag').value.trim();
+
+      if (!startDate || !endDate) return showToast('請選擇開始與結束日期');
+      if (endDate < startDate) return showToast('結束日期不能早於開始日期');
+
+      const duration = calculateHeaderDuration(startDate, endDate);
+      const headcount = `${adults}大${children}小${infants}嬰`;
+      const dates = formatHeaderDateRange(startDate, endDate);
 
       const newInfo = {
         title: title || '峴港會安',
-        duration: duration || '6D5N',
-        headcount: headcount || '14大2小1嬰',
-        dates: dates || '2026/12/07 - 12/12',
+        adults,
+        children,
+        infants,
+        startDate,
+        endDate,
+        duration,
+        headcount,
+        dates,
         groupTag: groupTag || '必去景點'
       };
 
@@ -2006,6 +2114,109 @@
       }
     }
 
+
+    // 航空公司選位／餐點提醒規則（由先前版本恢復）
+    const AIRLINE_RULES = {
+      JX: {
+        name: '星宇航空',
+        meal: { startDays: 21, cutoffHours: 24, text: '星饗宴於班機起飛前21天開放預訂，一般航班於起飛前24小時截止；往返台中航線為起飛前48小時截止。' },
+        seat: { freeHours: 48, text: '完成購票後可依票價產品免費或付費預選；起飛前48小時至3小時可免費選標準或前區座位。' }
+      },
+      BR: {
+        name: '長榮航空',
+        meal: { startDays: 21, cutoffHours: 24, text: '符合資格的網路選餐一般於起飛前21天開放、24小時前截止；實際供應依艙等與航線。' },
+        seat: { freeHours: null, text: '購票後至起飛前12小時可免費或付費預選座位；是否免費依票價產品與座位種類。' }
+      },
+      CI: {
+        name: '中華航空',
+        meal: { startDays: 21, cutoffHours: 24, text: '符合資格的商務艙／豪華經濟艙主菜一般於起飛前21天開放、24小時前截止；部分返台航點為48小時前截止。全艙等特別餐一般最晚24小時前。' },
+        seat: { freeHours: null, text: '預選座位是否免費依票價產品與座位種類；官方網站／App可於起飛前360天至50小時購買優選座位。' }
+      },
+      IT: {
+        name: '台灣虎航',
+        meal: { startDays: null, cutoffHours: null, text: '餐點屬加購服務，請以該筆訂單可加購時間為準。' },
+        seat: { freeHours: null, text: '座位屬加購服務，請以訂單／票價方案顯示為準。' }
+      },
+      VZ: { name: '泰越捷航空', meal: null, seat: null },
+      VN: { name: '越南航空', meal: null, seat: null },
+      SQ: { name: '新加坡航空', meal: null, seat: null },
+      CX: { name: '國泰航空', meal: null, seat: null },
+      JL: { name: '日本航空', meal: null, seat: null },
+      NH: { name: '全日空', meal: null, seat: null },
+      KE: { name: '大韓航空', meal: null, seat: null },
+      OZ: { name: '韓亞航空', meal: null, seat: null }
+    };
+
+    function identifyAirline(flightNumber) {
+      const code = String(flightNumber || '').trim().toUpperCase().replace(/\s+/g, '').match(/^([A-Z0-9]{2})/);
+      if (!code) return { code: '', name: '尚未辨識航空公司', meal: null, seat: null };
+      return AIRLINE_RULES[code[1]] || { code: code[1], name: `${code[1]} 航空公司（規則尚未內建）`, meal: null, seat: null };
+    }
+
+    function shiftFlightTime(datetime, amount, unit) {
+      const d = new Date(datetime);
+      if (Number.isNaN(d.getTime())) return null;
+      if (unit === 'days') d.setDate(d.getDate() - amount);
+      else d.setHours(d.getHours() - amount);
+      return d;
+    }
+
+    function formatFlightDate(d) {
+      if (!d) return '—';
+      const wd = ['日','一','二','三','四','五','六'][d.getDay()];
+      const pad = n => String(n).padStart(2, '0');
+      return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} (${wd}) ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function normalizeFlightDateTime(dateText, timeText, fallbackISO='') {
+      const time = String(timeText || '').trim() || '00:00';
+      const raw = String(dateText || '').trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return `${raw}T${time}`;
+      if (/^\d{4}\/\d{1,2}\/\d{1,2}$/.test(raw)) {
+        const [y,m,d] = raw.split('/');
+        return `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}T${time}`;
+      }
+      if (/^\d{1,2}\/\d{1,2}$/.test(raw)) {
+        const [m,d] = raw.split('/');
+        const header = getStoredData('headerInfo', defaultHeaderInfo);
+        const fallbackYear = String(fallbackISO || header.startDate || header.endDate || new Date().getFullYear()).slice(0,4);
+        return `${fallbackYear}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}T${time}`;
+      }
+      return '';
+    }
+
+    function buildFlightReminderHtml(number, dateText, timeText, fallbackISO='') {
+      const airline = identifyAirline(number);
+      const datetime = normalizeFlightDateTime(dateText, timeText, fallbackISO);
+      const depart = datetime ? new Date(datetime) : null;
+      let mealHtml = '🍱 預選餐點：<b>此航空公司規則尚未內建</b>';
+      let seatHtml = '💺 選位：<b>此航空公司規則尚未內建</b>';
+
+      if (airline.meal) {
+        if (depart && !Number.isNaN(depart.getTime()) && airline.meal.cutoffHours) {
+          const start = airline.meal.startDays ? formatFlightDate(shiftFlightTime(datetime, airline.meal.startDays, 'days')) : null;
+          const cutoff = formatFlightDate(shiftFlightTime(datetime, airline.meal.cutoffHours, 'hours'));
+          mealHtml = `🍱 預選餐點：${start ? `<b>${start}</b> 起；` : ''}截止 <b>${cutoff}</b><div class="text-[9px] text-indigo-500 mt-0.5">${escapeHtml(airline.meal.text)}</div>`;
+        } else {
+          mealHtml = `🍱 預選餐點：<b>依訂單可加購狀態</b><div class="text-[9px] text-indigo-500 mt-0.5">${escapeHtml(airline.meal.text)}</div>`;
+        }
+      }
+
+      if (airline.seat) {
+        if (depart && !Number.isNaN(depart.getTime()) && airline.seat.freeHours) {
+          const free = formatFlightDate(shiftFlightTime(datetime, airline.seat.freeHours, 'hours'));
+          seatHtml = `💺 免費選位：<b>${free}</b> 起<div class="text-[9px] text-indigo-500 mt-0.5">${escapeHtml(airline.seat.text)}</div>`;
+        } else {
+          seatHtml = `💺 選位：<b>依票價產品／訂單狀態</b><div class="text-[9px] text-indigo-500 mt-0.5">${escapeHtml(airline.seat.text)}</div>`;
+        }
+      }
+
+      return `<div class="bg-indigo-50 border border-indigo-100 rounded-xl p-2.5 mt-2">
+        <div class="font-extrabold text-indigo-800">${escapeHtml(String(number || '').toUpperCase())}｜${escapeHtml(airline.name)}</div>
+        <div class="mt-1 space-y-1 text-[10px] text-slate-700">${mealHtml}<div>${seatHtml}</div></div>
+      </div>`;
+    }
+
     const defaultInfoConfig = {
       visibility: { flight:true, hotel:true, weather:true, shuttle:true },
       flight: { outboundNo:'JX703', outboundDate:'12/07', outboundTime:'15:20', returnNo:'JX704', returnDate:'12/12', returnTime:'18:25' },
@@ -2027,7 +2238,19 @@
       [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!isOrganizer();}});
       const box=document.getElementById('info-dynamic-sections'); if(!box)return;
       let h='';
-      if(v.flight)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">✈️ 班機資訊</h3>${infoEditButton('flight')}</div><div class="mt-2 space-y-1"><p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜${escapeHtml(c.flight.outboundDate)} ${escapeHtml(c.flight.outboundTime)}</p><p>🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜${escapeHtml(c.flight.returnDate)} ${escapeHtml(c.flight.returnTime)}</p></div></div>`;
+      if(v.flight){
+        const headerInfo = getStoredData('headerInfo', defaultHeaderInfo);
+        h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs">
+          <div class="flex justify-between"><h3 class="font-bold">✈️ 班機資訊</h3>${infoEditButton('flight')}</div>
+          <div class="mt-2 space-y-1">
+            <p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜${escapeHtml(c.flight.outboundDate)} ${escapeHtml(c.flight.outboundTime)}</p>
+            ${buildFlightReminderHtml(c.flight.outboundNo,c.flight.outboundDate,c.flight.outboundTime,headerInfo.startDate)}
+            <p class="pt-1">🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜${escapeHtml(c.flight.returnDate)} ${escapeHtml(c.flight.returnTime)}</p>
+            ${buildFlightReminderHtml(c.flight.returnNo,c.flight.returnDate,c.flight.returnTime,headerInfo.endDate)}
+          </div>
+          <p class="text-[9px] text-slate-400 mt-2">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
+        </div>`;
+      }
       if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
       if(v.weather)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">☀️ 天氣資訊</h3></div><p class="mt-2 text-slate-600">行程頁會依 Day 1～Day 6 顯示氣候預報與穿搭建議。</p><button onclick="switchTab('itinerary')" class="mt-2 text-sky-600 font-bold">查看每日天氣 →</button></div>`;
       if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 交通接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
@@ -2038,7 +2261,9 @@
       const defs={flight:[['outboundNo','去程班機'],['outboundDate','去程日期'],['outboundTime','去程時間'],['returnNo','回程班機'],['returnDate','回程日期'],['returnTime','回程時間']],hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
       document.getElementById('info-edit-type').value=type; document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊'}[type]||'編輯資訊';
       document.getElementById('info-edit-fields').innerHTML=(defs[type]||[]).map(([k,l])=>`<div><label class="text-[11px] font-bold text-slate-600 block mb-1">${l}</label><input data-info-key="${k}" value="${escapeHtml(c[type][k]||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs"></div>`).join('');
-      openModal('modal-info-edit');
+      closeModal(true);
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-info-edit').classList.remove('hidden');
     }
     function saveInfoEdit(){
       const type=document.getElementById('info-edit-type').value,c=getInfoConfig(); if(!c[type])return;
@@ -3245,7 +3470,7 @@
       if (!force && memberModal && !memberModal.classList.contains('hidden') && !currentMember) return;
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
-        'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
+        'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
