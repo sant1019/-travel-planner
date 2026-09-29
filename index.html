@@ -30,7 +30,14 @@
 
   <div class="sticky top-0 z-50 shadow-sm bg-white">
     <!-- Top Navigation Header -->
-    <header class="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 text-white">
+    <header class="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 text-white relative">
+      <div class="max-w-md mx-auto px-4 pt-1">
+        <div class="flex justify-end">
+          <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
+            測試版 FC-01｜班機日曆
+          </span>
+        </div>
+      </div>
       <div class="max-w-md mx-auto px-4 py-2 flex items-center justify-between">
         <!-- 整合為單一按鈕（隱藏外框，簡潔美觀） -->
         <button onclick="openHeaderEditModal()" class="flex flex-col gap-0.5 text-left hover:bg-white/10 p-1.5 -ml-1.5 rounded-xl transition active:scale-95 group">
