@@ -34,7 +34,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-02｜班機抵達時間
+            測試版 FC-03｜抵達日曆基準
           </span>
         </div>
       </div>
@@ -2401,8 +2401,8 @@
         const header=getStoredData('headerInfo',defaultHeaderInfo);
         const outDate=normalizeDateValue(f.outboundDate,header.startDate);
         const retDate=normalizeDateValue(f.returnDate,header.endDate);
-        const outArrivalDate=normalizeDateValue(f.outboundArrivalDate,outDate||header.startDate);
-        const retArrivalDate=normalizeDateValue(f.returnArrivalDate,retDate||header.endDate);
+        const outArrivalDate=normalizeDateValue(f.outboundArrivalDate,outDate||header.startDate) || outDate || header.startDate || '';
+        const retArrivalDate=normalizeDateValue(f.returnArrivalDate,retDate||header.endDate) || retDate || header.endDate || '';
         fieldsBox.innerHTML=`
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程班機</label><input data-info-key="outboundNo" value="${escapeHtml(f.outboundNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
           <div class="grid grid-cols-2 gap-2">
@@ -2410,7 +2410,7 @@
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛時間</label><input data-info-key="outboundTime" type="time" value="${escapeHtml(f.outboundTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達日期</label><input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="date" value="${outArrivalDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達日期</label><input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="date" min="${outDate || header.startDate || ''}" value="${outArrivalDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達時間</label><input data-info-key="outboundArrivalTime" type="time" value="${escapeHtml(f.outboundArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
 
@@ -2420,7 +2420,7 @@
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛時間</label><input data-info-key="returnTime" type="time" value="${escapeHtml(f.returnTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達日期</label><input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="date" value="${retArrivalDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達日期</label><input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="date" min="${retDate || header.endDate || ''}" value="${retArrivalDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達時間</label><input data-info-key="returnArrivalTime" type="time" value="${escapeHtml(f.returnArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>`;
         setupInfoFlightDateHelpers();
