@@ -1586,7 +1586,8 @@
 
         if (error) {
           console.error('get_trip_room error:', error);
-          setCloudStatus('登入失敗：請確認房間名稱、密碼與網路');
+          const detail = error.message || error.details || error.hint || error.code || '未知錯誤';
+          setCloudStatus(`登入失敗：${detail}`);
           return;
         }
         if (data === null) {
@@ -1602,7 +1603,8 @@
         setTimeout(() => ensureMemberIdentity(true), 150);
       } catch (err) {
         console.error('joinCloudRoom exception:', err);
-        setCloudStatus('登入發生錯誤，請稍後再試');
+        const detail = err?.message || String(err) || '未知錯誤';
+        setCloudStatus(`登入發生錯誤：${detail}`);
       } finally {
         if (loginBtn) {
           loginBtn.disabled = false;
