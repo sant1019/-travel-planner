@@ -115,7 +115,7 @@
   <main class="max-w-md mx-auto px-4 pt-3 space-y-4">
 
     <!-- Toast Notification Banner -->
-    <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs px-3.5 py-1.5 rounded-full shadow-lg pointer-events-none transition duration-300 opacity-0 transform translate-y-[-10px] flex items-center space-x-1.5">
+    <div id="toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-slate-900/90 text-white text-xs px-3.5 py-1.5 rounded-full shadow-lg pointer-events-none transition duration-300 opacity-0 transform translate-y-[-10px] flex items-center space-x-1.5">
       <i class="fa-solid fa-circle-check text-emerald-400"></i>
       <span id="toast-text">已更新</span>
     </div>
@@ -575,8 +575,9 @@
         <div class="flex gap-2"><button onclick="cancelFixedActivityEditor()" class="flex-1 bg-white border border-slate-200 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveFixedActivity()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
       </div>
 
-      <button onclick="startFixedScheduleResearch()" class="w-full bg-indigo-600 text-white font-extrabold py-3 rounded-xl text-xs">🔎 查證營業／場次並產生智慧排程</button>
-      <p class="text-[10px] text-slate-400 text-center">尚未啟用網路查證後端前，不會用假資料產生排程。</p>
+      <button id="fixed-research-btn" onclick="startFixedScheduleResearch()" class="w-full bg-indigo-600 text-white font-extrabold py-3 rounded-xl text-xs">🔎 查證營業／場次並產生智慧排程</button>
+      <div id="fixed-research-result" class="hidden rounded-xl border border-indigo-100 bg-indigo-50 p-3 text-[10px] text-slate-700 space-y-1"></div>
+      <p class="text-[10px] text-slate-400 text-center">查證結果以 Edge Function 回傳資料為準；查不到的資訊會保留為「尚未確認」，不會自行猜測。</p>
       <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs">關閉</button>
     </div>
 
@@ -1196,7 +1197,7 @@
 
     const SUPABASE_URL = 'https://gasrxuamehwtkhyurdas.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_q5DrYXs0g4baNMBTiKeEwA_zllswl4F';
-    const CLOUD_KEYS = ['headerInfo','itinerary','packing','favorites','tickets','fixedExpenses','rooms','souvenirs','notes'];
+    const CLOUD_KEYS = ['headerInfo','itinerary','packing','favorites','tickets','fixedExpenses','rooms','souvenirs','notes','fixedActivities'];
     const cloudClient = (window.supabase && window.supabase.createClient)
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
       : null;
@@ -1857,7 +1858,90 @@
       pushStateToCloud('fixedActivities',list);cancelFixedActivityEditor();renderFixedPlannerList();showToast('固定活動已儲存');
     }
     function deleteFixedActivity(id){pushStateToCloud('fixedActivities',getFixedActivities().filter(x=>x.id!==id));renderFixedPlannerList();showToast('固定活動已刪除');}
-    async function startFixedScheduleResearch(){if(!getFixedActivities().length)return showToast('請先新增固定活動');showToast('尚需啟用網路查證後端，未使用假資料排程');}
+    async function startFixedScheduleResearch() {
+      if (!isOrganizer()) return showToast('只有主辦人可以執行智慧排程');
+      const activities = getFixedActivities();
+      if (!activities.length) return showToast('請先新增固定活動');
+      if (!cloudClient) return showToast('Supabase 載入失敗，請確認網路');
+
+      const btn = document.getElementById('fixed-research-btn');
+      const resultBox = document.getElementById('fixed-research-result');
+      const originalText = btn?.innerHTML || '';
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.add('opacity-60');
+        btn.innerHTML = '⏳ 正在查證營業時間與場次…';
+      }
+      if (resultBox) {
+        resultBox.classList.remove('hidden');
+        resultBox.innerHTML = '<div class="font-bold text-indigo-700">正在連線查證後端…</div>';
+      }
+
+      try {
+        const { data, error } = await cloudClient.functions.invoke('research-fixed-itinerary', {
+          body: {
+            activities,
+            roomId,
+            trip: {
+              destination: document.getElementById('header-display-title')?.textContent?.trim() || '峴港會安',
+              dates: document.getElementById('header-display-dates')?.textContent?.trim() || '2026/12/07 - 12/12'
+            }
+          }
+        });
+
+        if (error) throw error;
+        if (!data || !Array.isArray(data.activities)) {
+          throw new Error('後端回傳格式不完整');
+        }
+
+        const returnedById = new Map(data.activities.map(x => [String(x.id || ''), x]));
+        const merged = activities.map(old => {
+          const r = returnedById.get(String(old.id)) || {};
+          return {
+            ...old,
+            researchStatus: r.researchStatus || r.status || old.researchStatus || '尚未確認',
+            research: r
+          };
+        });
+
+        pushStateToCloud('fixedActivities', merged);
+        renderFixedPlannerList();
+
+        const verified = data.activities.filter(x =>
+          ['verified','confirmed','ok'].includes(String(x.researchStatus || x.status || '').toLowerCase())
+        ).length;
+        const unverified = data.activities.length - verified;
+
+        if (resultBox) {
+          const lines = data.activities.map(x => {
+            const status = x.researchStatus || x.status || 'unverified';
+            const mark = ['verified','confirmed','ok'].includes(String(status).toLowerCase()) ? '✅' : '⚠️';
+            const note = x.explanation || x.note || x.message || '';
+            return `<div>${mark} <b>${escapeHtml(x.name || '未命名活動')}</b>：${escapeHtml(String(status))}${note ? `・${escapeHtml(String(note))}` : ''}</div>`;
+          }).join('');
+          resultBox.innerHTML =
+            `<div class="font-extrabold text-indigo-800 mb-1">查證完成：${verified} 筆已確認、${unverified} 筆尚未確認</div>` +
+            lines;
+        }
+
+        showToast('固定行程查證完成');
+      } catch (err) {
+        console.error('research-fixed-itinerary failed:', err);
+        const message = err?.context?.status === 401
+          ? 'Edge Function 驗證未通過（401）'
+          : (err?.message || '無法連線查證後端');
+        if (resultBox) {
+          resultBox.innerHTML = `<div class="font-bold text-rose-600">❌ ${escapeHtml(message)}</div><div class="mt-1 text-slate-500">固定活動資料沒有被刪除，也沒有使用假資料排程。</div>`;
+        }
+        showToast(message);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.classList.remove('opacity-60');
+          btn.innerHTML = originalText || '🔎 查證營業／場次並產生智慧排程';
+        }
+      }
+    }
 
     function buildAutoMapLink(title) {
       const cleanTitle = String(title || '')
