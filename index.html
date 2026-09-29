@@ -148,11 +148,6 @@
           <i class="fa-solid fa-wand-magic-sparkles"></i><span>固定行程設定與智慧排程</span>
         </button>
         <p class="text-[10px] text-slate-400 text-center">一次輸入所有固定活動，再依日期／星期／時間限制與地點安排 Day 1～Day 6</p>
-
-        <button onclick="openSmartMatchModal()" class="w-full bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
-          <i class="fa-solid fa-bolt"></i><span>智慧新增行程</span>
-        </button>
-        <p class="text-[10px] text-slate-400 text-center">從收藏景點中勾選想加入的地點，由智慧排行程功能建議日期後加入行程</p>
       </div>
     </section>
 
@@ -1833,7 +1828,10 @@
     }
 
     function isOrganizer() {
-      return !!(currentMember && currentMember.role === 'organizer');
+      // currentMember 在雲端重新連線/同步期間可能短暫為 null。
+      // 此時改讀本機已驗證過的成員身分，避免主辦人按鈕被錯誤隱藏。
+      const member = currentMember || loadStoredMember(roomId);
+      return !!(member && member.role === 'organizer');
     }
 
     function updateItineraryPermissions() {
