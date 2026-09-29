@@ -278,6 +278,18 @@
     </section>
 
     <section id="page-info" class="page-content hidden space-y-3">
+      <!-- 資訊顯示設定 -->
+      <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-2xl shadow-sm space-y-2">
+        <div class="flex items-center justify-between"><h2 class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-sliders mr-1.5"></i>資訊顯示設定</h2><span class="text-[9px] text-indigo-500">全團同步</span></div>
+        <p class="text-[10px] text-indigo-600">選擇資訊頁要顯示的內容；主辦人可編輯班機、住宿與接駁資料。</p>
+        <div class="grid grid-cols-2 gap-2 text-[11px] font-bold text-slate-700">
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 班機</label>
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">🏨 住宿</label>
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-weather" type="checkbox" onchange="saveInfoVisibility()">☀️ 天氣</label>
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-shuttle" type="checkbox" onchange="saveInfoVisibility()">🚐 接駁車</label>
+        </div>
+      </div>
+      <div id="info-dynamic-sections" class="space-y-3"></div>
       <!-- 實時匯率換匯計算器 -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
@@ -366,7 +378,7 @@
       </div>
 
       <!-- 星宇航空選位提醒 -->
-      <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-2xl shadow-md space-y-2">
+      <div class="hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-2xl shadow-md space-y-2">
         <h2 class="text-xs font-bold flex items-center">
           <i class="fa-solid fa-plane-circle-check text-amber-300 mr-1.5 text-sm"></i>星宇航空選位 & 預選餐點時間表
         </h2>
@@ -385,7 +397,7 @@
       </div>
 
       <!-- 機場包車接駁資訊 -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
+      <div class="hidden bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2">
         <h3 class="text-xs font-bold text-slate-800 flex items-center">
           <i class="fa-solid fa-van-shuttle text-sky-600 mr-1.5"></i>機場包車接駁資訊
         </h3>
@@ -397,7 +409,7 @@
       </div>
 
       <!-- 飯店資訊 -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
+      <div class="hidden bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-2 text-xs">
         <h3 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-hotel text-indigo-500 mr-1.5"></i>住宿飯店資訊</h3>
         <div class="space-y-2">
           <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
@@ -495,6 +507,14 @@
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
         <button onclick="saveMemberNickname()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">儲存暱稱</button>
       </div>
+    </div>
+
+    <!-- Info Edit Modal -->
+    <div id="modal-info-edit" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 id="info-edit-title" class="text-sm font-bold text-slate-800">編輯資訊</h3>
+      <input type="hidden" id="info-edit-type">
+      <div id="info-edit-fields" class="space-y-2"></div>
+      <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveInfoEdit()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
     </div>
 
     <!-- Edit/Add Fixed Expense Modal -->
@@ -1197,7 +1217,7 @@
 
     const SUPABASE_URL = 'https://gasrxuamehwtkhyurdas.supabase.co';
     const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_q5DrYXs0g4baNMBTiKeEwA_zllswl4F';
-    const CLOUD_KEYS = ['headerInfo','itinerary','packing','favorites','tickets','fixedExpenses','rooms','souvenirs','notes','fixedActivities'];
+    const CLOUD_KEYS = ['headerInfo','itinerary','packing','favorites','tickets','fixedExpenses','rooms','souvenirs','notes','fixedActivities','infoConfig'];
     const cloudClient = (window.supabase && window.supabase.createClient)
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
       : null;
@@ -1941,6 +1961,46 @@
           btn.innerHTML = originalText || '🔎 查證營業／場次並產生智慧排程';
         }
       }
+    }
+
+    const defaultInfoConfig = {
+      visibility: { flight:true, hotel:true, weather:true, shuttle:true },
+      flight: { outboundNo:'JX703', outboundDate:'12/07', outboundTime:'15:20', returnNo:'JX704', returnDate:'12/12', returnTime:'18:25' },
+      hotel: { h1Dates:'12/07 - 12/09 (2晚)', h1Name:'Little Residence A Boutique Hotel & Spa', h2Dates:'12/09 - 12/12 (3晚)', h2Name:'Chi House Danang Hotel and Apartment' },
+      shuttle: { company:'得佳富租賃有限公司', driver:'阿得', phone1:'0972-922097', phone2:'04-25668678', line:'0972922097' }
+    };
+    function getInfoConfig(){
+      const x=getStoredData('infoConfig',defaultInfoConfig)||{};
+      return {visibility:{...defaultInfoConfig.visibility,...(x.visibility||{})},flight:{...defaultInfoConfig.flight,...(x.flight||{})},hotel:{...defaultInfoConfig.hotel,...(x.hotel||{})},shuttle:{...defaultInfoConfig.shuttle,...(x.shuttle||{})}};
+    }
+    function saveInfoVisibility(){
+      if(!isOrganizer()){ renderInfoPage(); return showToast('只有主辦人可以修改資訊顯示設定'); }
+      const c=getInfoConfig(); c.visibility={flight:!!document.getElementById('toggle-info-flight')?.checked,hotel:!!document.getElementById('toggle-info-hotel')?.checked,weather:!!document.getElementById('toggle-info-weather')?.checked,shuttle:!!document.getElementById('toggle-info-shuttle')?.checked};
+      pushStateToCloud('infoConfig',c); renderInfoPage(); showToast('資訊顯示設定已更新');
+    }
+    function infoEditButton(type){return isOrganizer()?`<button onclick="openInfoEdit('${type}')" class="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded-lg">✏️ 編輯</button>`:'';}
+    function renderInfoPage(){
+      const c=getInfoConfig(),v=c.visibility;
+      [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!isOrganizer();}});
+      const box=document.getElementById('info-dynamic-sections'); if(!box)return;
+      let h='';
+      if(v.flight)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">✈️ 班機資訊</h3>${infoEditButton('flight')}</div><div class="mt-2 space-y-1"><p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜${escapeHtml(c.flight.outboundDate)} ${escapeHtml(c.flight.outboundTime)}</p><p>🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜${escapeHtml(c.flight.returnDate)} ${escapeHtml(c.flight.returnTime)}</p></div></div>`;
+      if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
+      if(v.weather)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">☀️ 天氣資訊</h3></div><p class="mt-2 text-slate-600">行程頁會依 Day 1～Day 6 顯示氣候預報與穿搭建議。</p><button onclick="switchTab('itinerary')" class="mt-2 text-sky-600 font-bold">查看每日天氣 →</button></div>`;
+      if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 機場包車接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
+      box.innerHTML=h;
+    }
+    function openInfoEdit(type){
+      if(!isOrganizer())return showToast('只有主辦人可以編輯資訊'); const c=getInfoConfig();
+      const defs={flight:[['outboundNo','去程班機'],['outboundDate','去程日期'],['outboundTime','去程時間'],['returnNo','回程班機'],['returnDate','回程日期'],['returnTime','回程時間']],hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
+      document.getElementById('info-edit-type').value=type; document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯接駁車資訊'}[type]||'編輯資訊';
+      document.getElementById('info-edit-fields').innerHTML=(defs[type]||[]).map(([k,l])=>`<div><label class="text-[11px] font-bold text-slate-600 block mb-1">${l}</label><input data-info-key="${k}" value="${escapeHtml(c[type][k]||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs"></div>`).join('');
+      openModal('modal-info-edit');
+    }
+    function saveInfoEdit(){
+      const type=document.getElementById('info-edit-type').value,c=getInfoConfig(); if(!c[type])return;
+      document.querySelectorAll('#info-edit-fields [data-info-key]').forEach(e=>c[type][e.dataset.infoKey]=e.value.trim());
+      pushStateToCloud('infoConfig',c); closeModal(); renderInfoPage(); showToast('資訊已更新');
     }
 
     function buildAutoMapLink(title) {
@@ -3269,6 +3329,7 @@
       renderBudget();
       renderNotes();
       calculateCurrencyConversion();
+      renderInfoPage();
     }
 
     window.onload = async function() {
