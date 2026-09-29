@@ -2370,16 +2370,100 @@
     }
     function openInfoEdit(type){
       if(!isOrganizer())return showToast('只有主辦人可以編輯資訊'); const c=getInfoConfig();
-      const defs={flight:[['outboundNo','去程班機'],['outboundDate','去程日期'],['outboundTime','去程時間'],['returnNo','回程班機'],['returnDate','回程日期'],['returnTime','回程時間']],hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
-      document.getElementById('info-edit-type').value=type; document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊'}[type]||'編輯資訊';
-      document.getElementById('info-edit-fields').innerHTML=(defs[type]||[]).map(([k,l])=>`<div><label class="text-[11px] font-bold text-slate-600 block mb-1">${l}</label><input data-info-key="${k}" value="${escapeHtml(c[type][k]||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs"></div>`).join('');
+      const defs={hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
+      document.getElementById('info-edit-type').value=type;
+      document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊'}[type]||'編輯資訊';
+
+      const fieldsBox = document.getElementById('info-edit-fields');
+      if(type==='flight'){
+        const f=c.flight||{};
+        const normalizeDateValue=(v,fallback='')=>{
+          const raw=String(v||'').trim();
+          if(/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+          const m1=raw.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+          if(m1) return `${m1[1]}-${String(m1[2]).padStart(2,'0')}-${String(m1[3]).padStart(2,'0')}`;
+          const m2=raw.match(/^(\d{1,2})[\/-](\d{1,2})$/);
+          if(m2){
+            const year=String(fallback||getStoredData('headerInfo',defaultHeaderInfo).startDate||new Date().getFullYear()).slice(0,4);
+            return `${year}-${String(m2[1]).padStart(2,'0')}-${String(m2[2]).padStart(2,'0')}`;
+          }
+          return '';
+        };
+        const header=getStoredData('headerInfo',defaultHeaderInfo);
+        const outDate=normalizeDateValue(f.outboundDate,header.startDate);
+        const retDate=normalizeDateValue(f.returnDate,header.endDate);
+        fieldsBox.innerHTML=`
+          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程班機</label><input data-info-key="outboundNo" value="${escapeHtml(f.outboundNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程日期</label><input id="info-flight-out-date" data-info-key="outboundDate" type="date" value="${outDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程時間</label><input data-info-key="outboundTime" type="time" value="${escapeHtml(f.outboundTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+          </div>
+          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程班機</label><input data-info-key="returnNo" value="${escapeHtml(f.returnNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程日期</label><input id="info-flight-return-date" data-info-key="returnDate" type="date" value="${retDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程時間</label><input data-info-key="returnTime" type="time" value="${escapeHtml(f.returnTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+          </div>`;
+        setupInfoFlightDateHelpers();
+      } else {
+        fieldsBox.innerHTML=(defs[type]||[]).map(([k,l])=>`<div><label class="text-[11px] font-bold text-slate-600 block mb-1">${l}</label><input data-info-key="${k}" value="${escapeHtml(c[type][k]||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs"></div>`).join('');
+      }
+
       closeModal(true);
       document.getElementById('modal-backdrop').classList.remove('hidden');
       document.getElementById('modal-info-edit').classList.remove('hidden');
     }
+
+    function setupInfoFlightDateHelpers(){
+      const out=document.getElementById('info-flight-out-date');
+      const ret=document.getElementById('info-flight-return-date');
+      if(!out||!ret) return;
+
+      const seedReturnFromOutbound=()=>{
+        if(!out.value) return;
+        ret.min=out.value;
+        if(!ret.value || ret.dataset.autoSeed==='1' || ret.value<out.value){
+          ret.value=out.value;
+          ret.dataset.autoSeed='1';
+        }
+      };
+
+      out.addEventListener('change',seedReturnFromOutbound);
+      out.addEventListener('input',seedReturnFromOutbound);
+
+      const prepareReturnCalendar=()=>{
+        if(!out.value) return;
+        ret.min=out.value;
+        if(!ret.value){
+          ret.value=out.value;
+          ret.dataset.autoSeed='1';
+        }
+      };
+
+      ret.addEventListener('pointerdown',prepareReturnCalendar,{capture:true});
+      ret.addEventListener('touchstart',prepareReturnCalendar,{capture:true,passive:true});
+      ret.addEventListener('focus',prepareReturnCalendar);
+
+      ret.addEventListener('input',()=>{ ret.dataset.autoSeed='0'; });
+      ret.addEventListener('change',()=>{ ret.dataset.autoSeed='0'; });
+
+      if(out.value){
+        ret.min=out.value;
+        if(!ret.value){
+          ret.value=out.value;
+          ret.dataset.autoSeed='1';
+        }
+      }
+    }
+
     function saveInfoEdit(){
       const type=document.getElementById('info-edit-type').value,c=getInfoConfig(); if(!c[type])return;
-      document.querySelectorAll('#info-edit-fields [data-info-key]').forEach(e=>c[type][e.dataset.infoKey]=e.value.trim());
+      document.querySelectorAll('#info-edit-fields [data-info-key]').forEach(e=>{
+        let v=e.value.trim();
+        if(type==='flight' && (e.dataset.infoKey==='outboundDate' || e.dataset.infoKey==='returnDate') && /^\d{4}-\d{2}-\d{2}$/.test(v)){
+          v=v.replaceAll('-','/');
+        }
+        c[type][e.dataset.infoKey]=v;
+      });
       pushStateToCloud('infoConfig',c); closeModal(); renderInfoPage(); showToast('資訊已更新');
     }
 
