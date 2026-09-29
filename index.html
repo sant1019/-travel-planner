@@ -34,7 +34,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-04｜自訂抵達日曆
+            測試版 FC-05｜抵達時間驗證
           </span>
         </div>
       </div>
@@ -2407,7 +2407,7 @@
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程班機</label><input data-info-key="outboundNo" value="${escapeHtml(f.outboundNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
           <div class="grid grid-cols-2 gap-2">
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛日期</label><input id="info-flight-out-date" data-info-key="outboundDate" type="date" value="${outDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛時間</label><input data-info-key="outboundTime" type="time" value="${escapeHtml(f.outboundTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛時間</label><input id="info-flight-out-time" data-info-key="outboundTime" type="time" value="${escapeHtml(f.outboundTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -2415,13 +2415,13 @@
               <button type="button" id="info-flight-out-arrival-date-btn" onclick="openFlightArrivalCalendar('out')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${outArrivalDate ? outArrivalDate.replaceAll('-','/') : '選擇日期'}</button>
               <input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="hidden" value="${outArrivalDate}">
             </div>
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達時間</label><input data-info-key="outboundArrivalTime" type="time" value="${escapeHtml(f.outboundArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達時間</label><input id="info-flight-out-arrival-time" data-info-key="outboundArrivalTime" type="time" value="${escapeHtml(f.outboundArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
 
           <div class="border-t border-slate-100 pt-2 mt-1"><label class="text-[11px] font-bold text-slate-600 block mb-1">回程班機</label><input data-info-key="returnNo" value="${escapeHtml(f.returnNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
           <div class="grid grid-cols-2 gap-2">
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛日期</label><input id="info-flight-return-date" data-info-key="returnDate" type="date" value="${retDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛時間</label><input data-info-key="returnTime" type="time" value="${escapeHtml(f.returnTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛時間</label><input id="info-flight-return-time" data-info-key="returnTime" type="time" value="${escapeHtml(f.returnTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
           <div class="grid grid-cols-2 gap-2">
             <div>
@@ -2429,7 +2429,7 @@
               <button type="button" id="info-flight-return-arrival-date-btn" onclick="openFlightArrivalCalendar('return')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${retArrivalDate ? retArrivalDate.replaceAll('-','/') : '選擇日期'}</button>
               <input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="hidden" value="${retArrivalDate}">
             </div>
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達時間</label><input data-info-key="returnArrivalTime" type="time" value="${escapeHtml(f.returnArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達時間</label><input id="info-flight-return-arrival-time" data-info-key="returnArrivalTime" type="time" value="${escapeHtml(f.returnArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
           <div id="flight-arrival-calendar" class="hidden mt-2 border border-slate-200 rounded-2xl p-3 bg-slate-50">
             <div class="flex items-center justify-between mb-2">
@@ -2568,6 +2568,28 @@
       document.getElementById('flight-arrival-calendar')?.classList.add('hidden');
     }
 
+
+    function validateFlightLegChronology(prefix){
+      const isOut = prefix === 'out';
+      const depDate = document.getElementById(isOut ? 'info-flight-out-date' : 'info-flight-return-date')?.value || '';
+      const depTime = document.getElementById(isOut ? 'info-flight-out-time' : 'info-flight-return-time')?.value || '';
+      const arrDate = document.getElementById(isOut ? 'info-flight-out-arrival-date' : 'info-flight-return-arrival-date')?.value || '';
+      const arrTime = document.getElementById(isOut ? 'info-flight-out-arrival-time' : 'info-flight-return-arrival-time')?.value || '';
+
+      if(!depDate || !depTime || !arrDate || !arrTime) return true;
+
+      const dep = new Date(`${depDate}T${depTime}:00`);
+      const arr = new Date(`${arrDate}T${arrTime}:00`);
+
+      if(Number.isNaN(dep.getTime()) || Number.isNaN(arr.getTime())) return true;
+
+      if(arr <= dep){
+        showToast(`${isOut ? '去程' : '回程'}抵達時間必須晚於起飛時間`);
+        return false;
+      }
+      return true;
+    }
+
     function saveInfoEdit(){
       const type=document.getElementById('info-edit-type').value,c=getInfoConfig(); if(!c[type])return;
 
@@ -2579,6 +2601,9 @@
 
         if(outDep && outArr && outArr < outDep) return showToast('去程抵達日期不能早於起飛日期');
         if(retDep && retArr && retArr < retDep) return showToast('回程抵達日期不能早於起飛日期');
+
+        if(!validateFlightLegChronology('out')) return;
+        if(!validateFlightLegChronology('return')) return;
       }
 
       document.querySelectorAll('#info-edit-fields [data-info-key]').forEach(e=>{
