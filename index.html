@@ -34,7 +34,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-05｜抵達時間驗證
+            測試版 FC-06｜日期格式統一
           </span>
         </div>
       </div>
@@ -2304,6 +2304,24 @@
       return '';
     }
 
+
+    function formatDateZh(value) {
+      const raw = String(value || '').trim();
+      let y='', m='', d='';
+      let mt = raw.match(/^(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})$/);
+      if (mt) {
+        y = mt[1]; m = Number(mt[2]); d = Number(mt[3]);
+      } else {
+        mt = raw.match(/^(\d{1,2})[\/-](\d{1,2})$/);
+        if (mt) {
+          const info = getStoredData('headerInfo', defaultHeaderInfo);
+          y = String(info?.startDate || info?.endDate || new Date().getFullYear()).slice(0,4);
+          m = Number(mt[1]); d = Number(mt[2]);
+        }
+      }
+      return y ? `${y}年${m}月${d}日` : raw;
+    }
+
     function buildFlightReminderHtml(number, dateText, timeText, fallbackISO='') {
       const airline = identifyAirline(number);
       const datetime = normalizeFlightDateTime(dateText, timeText, fallbackISO);
@@ -2362,11 +2380,11 @@
         h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs">
           <div class="flex justify-between"><h3 class="font-bold">✈️ 班機資訊</h3>${infoEditButton('flight')}</div>
           <div class="mt-2 space-y-1">
-            <p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜起飛 ${escapeHtml(c.flight.outboundDate)} ${escapeHtml(c.flight.outboundTime)}</p>
-            ${(c.flight.outboundArrivalDate||c.flight.outboundArrivalTime)?`<p class="text-slate-500">　抵達 ${escapeHtml(c.flight.outboundArrivalDate||'')} ${escapeHtml(c.flight.outboundArrivalTime||'')}</p>`:''}
+            <p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜起飛 ${escapeHtml(formatDateZh(c.flight.outboundDate))} ${escapeHtml(c.flight.outboundTime)}</p>
+            ${(c.flight.outboundArrivalDate||c.flight.outboundArrivalTime)?`<p class="text-slate-500">　抵達 ${escapeHtml(formatDateZh(c.flight.outboundArrivalDate||''))} ${escapeHtml(c.flight.outboundArrivalTime||'')}</p>`:''}
             ${buildFlightReminderHtml(c.flight.outboundNo,c.flight.outboundDate,c.flight.outboundTime,headerInfo.startDate)}
-            <p class="pt-1">🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜起飛 ${escapeHtml(c.flight.returnDate)} ${escapeHtml(c.flight.returnTime)}</p>
-            ${(c.flight.returnArrivalDate||c.flight.returnArrivalTime)?`<p class="text-slate-500">　抵達 ${escapeHtml(c.flight.returnArrivalDate||'')} ${escapeHtml(c.flight.returnArrivalTime||'')}</p>`:''}
+            <p class="pt-1">🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜起飛 ${escapeHtml(formatDateZh(c.flight.returnDate))} ${escapeHtml(c.flight.returnTime)}</p>
+            ${(c.flight.returnArrivalDate||c.flight.returnArrivalTime)?`<p class="text-slate-500">　抵達 ${escapeHtml(formatDateZh(c.flight.returnArrivalDate||''))} ${escapeHtml(c.flight.returnArrivalTime||'')}</p>`:''}
             ${buildFlightReminderHtml(c.flight.returnNo,c.flight.returnDate,c.flight.returnTime,headerInfo.endDate)}
           </div>
           <p class="text-[9px] text-slate-400 mt-2">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
@@ -2412,7 +2430,7 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達日期</label>
-              <button type="button" id="info-flight-out-arrival-date-btn" onclick="openFlightArrivalCalendar('out')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${outArrivalDate ? outArrivalDate.replaceAll('-','/') : '選擇日期'}</button>
+              <button type="button" id="info-flight-out-arrival-date-btn" onclick="openFlightArrivalCalendar('out')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${outArrivalDate ? formatDateZh(outArrivalDate) : '選擇日期'}</button>
               <input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="hidden" value="${outArrivalDate}">
             </div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達時間</label><input id="info-flight-out-arrival-time" data-info-key="outboundArrivalTime" type="time" value="${escapeHtml(f.outboundArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
@@ -2426,7 +2444,7 @@
           <div class="grid grid-cols-2 gap-2">
             <div>
               <label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達日期</label>
-              <button type="button" id="info-flight-return-arrival-date-btn" onclick="openFlightArrivalCalendar('return')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${retArrivalDate ? retArrivalDate.replaceAll('-','/') : '選擇日期'}</button>
+              <button type="button" id="info-flight-return-arrival-date-btn" onclick="openFlightArrivalCalendar('return')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${retArrivalDate ? formatDateZh(retArrivalDate) : '選擇日期'}</button>
               <input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="hidden" value="${retArrivalDate}">
             </div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達時間</label><input id="info-flight-return-arrival-time" data-info-key="returnArrivalTime" type="time" value="${escapeHtml(f.returnArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
@@ -2472,7 +2490,7 @@
           if(!departure.value) return;
           if(!arrival.value || arrival.value < departure.value){
             arrival.value=departure.value;
-            button.textContent=departure.value.replaceAll('-','/');
+            button.textContent=formatDateZh(departure.value);
           }
         };
 
@@ -2503,7 +2521,7 @@
       if(!arrival.value || arrival.value < departure.value){
         arrival.value = departure.value;
         const btn = document.getElementById(mode==='out' ? 'info-flight-out-arrival-date-btn' : 'info-flight-return-arrival-date-btn');
-        if(btn) btn.textContent = departure.value.replaceAll('-','/');
+        if(btn) btn.textContent = formatDateZh(departure.value);
       }
 
       calendar.classList.remove('hidden');
@@ -2564,7 +2582,7 @@
       const arrival=document.getElementById(arrivalId);
       const button=document.getElementById(buttonId);
       if(arrival) arrival.value=val;
-      if(button) button.textContent=val.replaceAll('-','/');
+      if(button) button.textContent=formatDateZh(val);
       document.getElementById('flight-arrival-calendar')?.classList.add('hidden');
     }
 
