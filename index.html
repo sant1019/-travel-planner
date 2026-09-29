@@ -34,7 +34,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-03｜抵達日曆基準
+            測試版 FC-04｜自訂抵達日曆
           </span>
         </div>
       </div>
@@ -2410,7 +2410,11 @@
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛時間</label><input data-info-key="outboundTime" type="time" value="${escapeHtml(f.outboundTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達日期</label><input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="date" min="${outDate || header.startDate || ''}" value="${outArrivalDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達日期</label>
+              <button type="button" id="info-flight-out-arrival-date-btn" onclick="openFlightArrivalCalendar('out')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${outArrivalDate ? outArrivalDate.replaceAll('-','/') : '選擇日期'}</button>
+              <input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="hidden" value="${outArrivalDate}">
+            </div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達時間</label><input data-info-key="outboundArrivalTime" type="time" value="${escapeHtml(f.outboundArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
 
@@ -2420,8 +2424,24 @@
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛時間</label><input data-info-key="returnTime" type="time" value="${escapeHtml(f.returnTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達日期</label><input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="date" min="${retDate || header.endDate || ''}" value="${retArrivalDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div>
+              <label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達日期</label>
+              <button type="button" id="info-flight-return-arrival-date-btn" onclick="openFlightArrivalCalendar('return')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${retArrivalDate ? retArrivalDate.replaceAll('-','/') : '選擇日期'}</button>
+              <input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="hidden" value="${retArrivalDate}">
+            </div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達時間</label><input data-info-key="returnArrivalTime" type="time" value="${escapeHtml(f.returnArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+          </div>
+          <div id="flight-arrival-calendar" class="hidden mt-2 border border-slate-200 rounded-2xl p-3 bg-slate-50">
+            <div class="flex items-center justify-between mb-2">
+              <button type="button" onclick="changeFlightArrivalCalendarMonth(-1)" class="w-8 h-8 rounded-lg bg-white border border-slate-200">‹</button>
+              <div id="flight-arrival-calendar-month" class="text-xs font-extrabold text-slate-700"></div>
+              <button type="button" onclick="changeFlightArrivalCalendarMonth(1)" class="w-8 h-8 rounded-lg bg-white border border-slate-200">›</button>
+            </div>
+            <div class="grid grid-cols-7 text-center text-[9px] font-bold text-slate-400 mb-1">
+              <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
+            </div>
+            <div id="flight-arrival-calendar-days" class="grid grid-cols-7 gap-1"></div>
+            <p id="flight-arrival-calendar-tip" class="text-[10px] text-sky-600 font-bold mt-2"></p>
           </div>`;
         setupInfoFlightDateHelpers();
       } else {
@@ -2433,52 +2453,134 @@
       document.getElementById('modal-info-edit').classList.remove('hidden');
     }
 
+    let flightArrivalCalendarCursor = new Date();
+    let flightArrivalCalendarMode = 'out';
+
     function setupInfoFlightDateHelpers(){
       const pairs = [
-        ['info-flight-out-date','info-flight-out-arrival-date'],
-        ['info-flight-return-date','info-flight-return-arrival-date']
+        ['info-flight-out-date','info-flight-out-arrival-date','info-flight-out-arrival-date-btn'],
+        ['info-flight-return-date','info-flight-return-arrival-date','info-flight-return-arrival-date-btn']
       ];
 
-      pairs.forEach(([departureId, arrivalId])=>{
+      pairs.forEach(([departureId,arrivalId,buttonId])=>{
         const departure=document.getElementById(departureId);
         const arrival=document.getElementById(arrivalId);
-        if(!departure||!arrival) return;
+        const button=document.getElementById(buttonId);
+        if(!departure||!arrival||!button) return;
 
-        const seedArrivalFromDeparture=(force=false)=>{
+        const syncIfInvalid=()=>{
           if(!departure.value) return;
-          arrival.min=departure.value;
-          const isAuto=arrival.dataset.autoSeed==='1';
-          if(!arrival.value || arrival.value<departure.value || (force && isAuto)){
+          if(!arrival.value || arrival.value < departure.value){
             arrival.value=departure.value;
-            arrival.dataset.autoSeed='1';
+            button.textContent=departure.value.replaceAll('-','/');
           }
         };
 
-        departure.addEventListener('input',()=>seedArrivalFromDeparture(true));
-        departure.addEventListener('change',()=>seedArrivalFromDeparture(true));
-
-        const prepareArrivalCalendar=()=>{
-          if(!departure.value) return;
-          arrival.min=departure.value;
-          if(!arrival.value){
-            arrival.value=departure.value;
-            arrival.dataset.autoSeed='1';
-          }
-        };
-
-        arrival.addEventListener('pointerdown',prepareArrivalCalendar,{capture:true});
-        arrival.addEventListener('touchstart',prepareArrivalCalendar,{capture:true,passive:true});
-        arrival.addEventListener('focus',prepareArrivalCalendar);
-
-        arrival.addEventListener('input',()=>{ arrival.dataset.autoSeed='0'; });
-        arrival.addEventListener('change',()=>{ arrival.dataset.autoSeed='0'; });
-
-        seedArrivalFromDeparture(false);
+        departure.addEventListener('input',syncIfInvalid);
+        departure.addEventListener('change',syncIfInvalid);
+        syncIfInvalid();
       });
+    }
+
+    function openFlightArrivalCalendar(mode){
+      flightArrivalCalendarMode = mode;
+      const departureId = mode==='out' ? 'info-flight-out-date' : 'info-flight-return-date';
+      const arrivalId = mode==='out' ? 'info-flight-out-arrival-date' : 'info-flight-return-arrival-date';
+      const departure = document.getElementById(departureId);
+      const arrival = document.getElementById(arrivalId);
+      const calendar = document.getElementById('flight-arrival-calendar');
+      if(!departure || !arrival || !calendar) return;
+
+      if(!departure.value){
+        showToast('請先選擇起飛日期');
+        return;
+      }
+
+      // 每次開啟都「強制」從起飛日期所在月份開始，不讀現在月份。
+      const base = new Date(`${departure.value}T00:00:00`);
+      flightArrivalCalendarCursor = new Date(base.getFullYear(), base.getMonth(), 1);
+
+      if(!arrival.value || arrival.value < departure.value){
+        arrival.value = departure.value;
+        const btn = document.getElementById(mode==='out' ? 'info-flight-out-arrival-date-btn' : 'info-flight-return-arrival-date-btn');
+        if(btn) btn.textContent = departure.value.replaceAll('-','/');
+      }
+
+      calendar.classList.remove('hidden');
+      renderFlightArrivalCalendar();
+      setTimeout(()=>calendar.scrollIntoView({behavior:'smooth',block:'nearest'}),50);
+    }
+
+    function changeFlightArrivalCalendarMonth(delta){
+      flightArrivalCalendarCursor = new Date(
+        flightArrivalCalendarCursor.getFullYear(),
+        flightArrivalCalendarCursor.getMonth()+delta,
+        1
+      );
+      renderFlightArrivalCalendar();
+    }
+
+    function renderFlightArrivalCalendar(){
+      const daysBox=document.getElementById('flight-arrival-calendar-days');
+      const monthLabel=document.getElementById('flight-arrival-calendar-month');
+      const tip=document.getElementById('flight-arrival-calendar-tip');
+      if(!daysBox || !monthLabel) return;
+
+      const departureId = flightArrivalCalendarMode==='out' ? 'info-flight-out-date' : 'info-flight-return-date';
+      const arrivalId = flightArrivalCalendarMode==='out' ? 'info-flight-out-arrival-date' : 'info-flight-return-arrival-date';
+      const departure=document.getElementById(departureId);
+      const arrival=document.getElementById(arrivalId);
+      if(!departure || !arrival) return;
+
+      const y=flightArrivalCalendarCursor.getFullYear();
+      const m=flightArrivalCalendarCursor.getMonth();
+      monthLabel.textContent=`${y} 年 ${m+1} 月`;
+
+      const first=new Date(y,m,1);
+      const last=new Date(y,m+1,0);
+      let html='';
+      for(let i=0;i<first.getDay();i++) html+='<span></span>';
+
+      for(let d=1;d<=last.getDate();d++){
+        const val=ymdLocal(new Date(y,m,d));
+        const disabled=val < departure.value;
+        const selected=val===arrival.value;
+        const cls=disabled
+          ? 'bg-slate-100 text-slate-300 cursor-not-allowed'
+          : selected
+            ? 'bg-sky-600 text-white'
+            : 'bg-white text-slate-600 hover:bg-sky-50';
+
+        html += `<button type="button" ${disabled?'disabled':''} onclick="pickFlightArrivalDate('${val}')" class="h-8 rounded-lg text-[10px] font-bold ${cls}">${d}</button>`;
+      }
+
+      daysBox.innerHTML=html;
+      if(tip) tip.textContent=`抵達日期不能早於起飛日 ${departure.value.replaceAll('-','/')}`;
+    }
+
+    function pickFlightArrivalDate(val){
+      const arrivalId = flightArrivalCalendarMode==='out' ? 'info-flight-out-arrival-date' : 'info-flight-return-arrival-date';
+      const buttonId = flightArrivalCalendarMode==='out' ? 'info-flight-out-arrival-date-btn' : 'info-flight-return-arrival-date-btn';
+      const arrival=document.getElementById(arrivalId);
+      const button=document.getElementById(buttonId);
+      if(arrival) arrival.value=val;
+      if(button) button.textContent=val.replaceAll('-','/');
+      document.getElementById('flight-arrival-calendar')?.classList.add('hidden');
     }
 
     function saveInfoEdit(){
       const type=document.getElementById('info-edit-type').value,c=getInfoConfig(); if(!c[type])return;
+
+      if(type==='flight'){
+        const outDep=document.getElementById('info-flight-out-date')?.value||'';
+        const outArr=document.getElementById('info-flight-out-arrival-date')?.value||'';
+        const retDep=document.getElementById('info-flight-return-date')?.value||'';
+        const retArr=document.getElementById('info-flight-return-arrival-date')?.value||'';
+
+        if(outDep && outArr && outArr < outDep) return showToast('去程抵達日期不能早於起飛日期');
+        if(retDep && retArr && retArr < retDep) return showToast('回程抵達日期不能早於起飛日期');
+      }
+
       document.querySelectorAll('#info-edit-fields [data-info-key]').forEach(e=>{
         let v=e.value.trim();
         if(type==='flight' && ['outboundDate','outboundArrivalDate','returnDate','returnArrivalDate'].includes(e.dataset.infoKey) && /^\d{4}-\d{2}-\d{2}$/.test(v)){
