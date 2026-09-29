@@ -34,7 +34,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-01｜班機日曆
+            測試版 FC-02｜班機抵達時間
           </span>
         </div>
       </div>
@@ -2338,7 +2338,7 @@
 
     const defaultInfoConfig = {
       visibility: { flight:true, hotel:true, weather:true, shuttle:true },
-      flight: { outboundNo:'JX703', outboundDate:'12/07', outboundTime:'15:20', returnNo:'JX704', returnDate:'12/12', returnTime:'18:25' },
+      flight: { outboundNo:'JX703', outboundDate:'12/07', outboundTime:'15:20', outboundArrivalDate:'12/07', outboundArrivalTime:'17:15', returnNo:'JX704', returnDate:'12/12', returnTime:'18:25', returnArrivalDate:'12/12', returnArrivalTime:'' },
       hotel: { h1Dates:'12/07 - 12/09 (2晚)', h1Name:'Little Residence A Boutique Hotel & Spa', h2Dates:'12/09 - 12/12 (3晚)', h2Name:'Chi House Danang Hotel and Apartment' },
       shuttle: { company:'得佳富租賃有限公司', driver:'阿得', phone1:'0972-922097', phone2:'04-25668678', line:'0972922097' }
     };
@@ -2362,9 +2362,11 @@
         h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs">
           <div class="flex justify-between"><h3 class="font-bold">✈️ 班機資訊</h3>${infoEditButton('flight')}</div>
           <div class="mt-2 space-y-1">
-            <p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜${escapeHtml(c.flight.outboundDate)} ${escapeHtml(c.flight.outboundTime)}</p>
+            <p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜起飛 ${escapeHtml(c.flight.outboundDate)} ${escapeHtml(c.flight.outboundTime)}</p>
+            ${(c.flight.outboundArrivalDate||c.flight.outboundArrivalTime)?`<p class="text-slate-500">　抵達 ${escapeHtml(c.flight.outboundArrivalDate||'')} ${escapeHtml(c.flight.outboundArrivalTime||'')}</p>`:''}
             ${buildFlightReminderHtml(c.flight.outboundNo,c.flight.outboundDate,c.flight.outboundTime,headerInfo.startDate)}
-            <p class="pt-1">🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜${escapeHtml(c.flight.returnDate)} ${escapeHtml(c.flight.returnTime)}</p>
+            <p class="pt-1">🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜起飛 ${escapeHtml(c.flight.returnDate)} ${escapeHtml(c.flight.returnTime)}</p>
+            ${(c.flight.returnArrivalDate||c.flight.returnArrivalTime)?`<p class="text-slate-500">　抵達 ${escapeHtml(c.flight.returnArrivalDate||'')} ${escapeHtml(c.flight.returnArrivalTime||'')}</p>`:''}
             ${buildFlightReminderHtml(c.flight.returnNo,c.flight.returnDate,c.flight.returnTime,headerInfo.endDate)}
           </div>
           <p class="text-[9px] text-slate-400 mt-2">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
@@ -2399,16 +2401,27 @@
         const header=getStoredData('headerInfo',defaultHeaderInfo);
         const outDate=normalizeDateValue(f.outboundDate,header.startDate);
         const retDate=normalizeDateValue(f.returnDate,header.endDate);
+        const outArrivalDate=normalizeDateValue(f.outboundArrivalDate,outDate||header.startDate);
+        const retArrivalDate=normalizeDateValue(f.returnArrivalDate,retDate||header.endDate);
         fieldsBox.innerHTML=`
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程班機</label><input data-info-key="outboundNo" value="${escapeHtml(f.outboundNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程日期</label><input id="info-flight-out-date" data-info-key="outboundDate" type="date" value="${outDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程時間</label><input data-info-key="outboundTime" type="time" value="${escapeHtml(f.outboundTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛日期</label><input id="info-flight-out-date" data-info-key="outboundDate" type="date" value="${outDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛時間</label><input data-info-key="outboundTime" type="time" value="${escapeHtml(f.outboundTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
-          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程班機</label><input data-info-key="returnNo" value="${escapeHtml(f.returnNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
           <div class="grid grid-cols-2 gap-2">
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程日期</label><input id="info-flight-return-date" data-info-key="returnDate" type="date" value="${retDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
-            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程時間</label><input data-info-key="returnTime" type="time" value="${escapeHtml(f.returnTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達日期</label><input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="date" value="${outArrivalDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達時間</label><input data-info-key="outboundArrivalTime" type="time" value="${escapeHtml(f.outboundArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+          </div>
+
+          <div class="border-t border-slate-100 pt-2 mt-1"><label class="text-[11px] font-bold text-slate-600 block mb-1">回程班機</label><input data-info-key="returnNo" value="${escapeHtml(f.returnNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛日期</label><input id="info-flight-return-date" data-info-key="returnDate" type="date" value="${retDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛時間</label><input data-info-key="returnTime" type="time" value="${escapeHtml(f.returnTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達日期</label><input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="date" value="${retArrivalDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
+            <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達時間</label><input data-info-key="returnArrivalTime" type="time" value="${escapeHtml(f.returnArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>`;
         setupInfoFlightDateHelpers();
       } else {
@@ -2421,52 +2434,54 @@
     }
 
     function setupInfoFlightDateHelpers(){
-      const out=document.getElementById('info-flight-out-date');
-      const ret=document.getElementById('info-flight-return-date');
-      if(!out||!ret) return;
+      const pairs = [
+        ['info-flight-out-date','info-flight-out-arrival-date'],
+        ['info-flight-return-date','info-flight-return-arrival-date']
+      ];
 
-      const seedReturnFromOutbound=()=>{
-        if(!out.value) return;
-        ret.min=out.value;
-        if(!ret.value || ret.dataset.autoSeed==='1' || ret.value<out.value){
-          ret.value=out.value;
-          ret.dataset.autoSeed='1';
-        }
-      };
+      pairs.forEach(([departureId, arrivalId])=>{
+        const departure=document.getElementById(departureId);
+        const arrival=document.getElementById(arrivalId);
+        if(!departure||!arrival) return;
 
-      out.addEventListener('change',seedReturnFromOutbound);
-      out.addEventListener('input',seedReturnFromOutbound);
+        const seedArrivalFromDeparture=(force=false)=>{
+          if(!departure.value) return;
+          arrival.min=departure.value;
+          const isAuto=arrival.dataset.autoSeed==='1';
+          if(!arrival.value || arrival.value<departure.value || (force && isAuto)){
+            arrival.value=departure.value;
+            arrival.dataset.autoSeed='1';
+          }
+        };
 
-      const prepareReturnCalendar=()=>{
-        if(!out.value) return;
-        ret.min=out.value;
-        if(!ret.value){
-          ret.value=out.value;
-          ret.dataset.autoSeed='1';
-        }
-      };
+        departure.addEventListener('input',()=>seedArrivalFromDeparture(true));
+        departure.addEventListener('change',()=>seedArrivalFromDeparture(true));
 
-      ret.addEventListener('pointerdown',prepareReturnCalendar,{capture:true});
-      ret.addEventListener('touchstart',prepareReturnCalendar,{capture:true,passive:true});
-      ret.addEventListener('focus',prepareReturnCalendar);
+        const prepareArrivalCalendar=()=>{
+          if(!departure.value) return;
+          arrival.min=departure.value;
+          if(!arrival.value){
+            arrival.value=departure.value;
+            arrival.dataset.autoSeed='1';
+          }
+        };
 
-      ret.addEventListener('input',()=>{ ret.dataset.autoSeed='0'; });
-      ret.addEventListener('change',()=>{ ret.dataset.autoSeed='0'; });
+        arrival.addEventListener('pointerdown',prepareArrivalCalendar,{capture:true});
+        arrival.addEventListener('touchstart',prepareArrivalCalendar,{capture:true,passive:true});
+        arrival.addEventListener('focus',prepareArrivalCalendar);
 
-      if(out.value){
-        ret.min=out.value;
-        if(!ret.value){
-          ret.value=out.value;
-          ret.dataset.autoSeed='1';
-        }
-      }
+        arrival.addEventListener('input',()=>{ arrival.dataset.autoSeed='0'; });
+        arrival.addEventListener('change',()=>{ arrival.dataset.autoSeed='0'; });
+
+        seedArrivalFromDeparture(false);
+      });
     }
 
     function saveInfoEdit(){
       const type=document.getElementById('info-edit-type').value,c=getInfoConfig(); if(!c[type])return;
       document.querySelectorAll('#info-edit-fields [data-info-key]').forEach(e=>{
         let v=e.value.trim();
-        if(type==='flight' && (e.dataset.infoKey==='outboundDate' || e.dataset.infoKey==='returnDate') && /^\d{4}-\d{2}-\d{2}$/.test(v)){
+        if(type==='flight' && ['outboundDate','outboundArrivalDate','returnDate','returnArrivalDate'].includes(e.dataset.infoKey) && /^\d{4}-\d{2}-\d{2}$/.test(v)){
           v=v.replaceAll('-','/');
         }
         c[type][e.dataset.infoKey]=v;
