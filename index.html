@@ -69,6 +69,27 @@
     #page-itinerary button[onclick^="deleteItineraryItem"] { margin-left: 12px; min-width: 28px; min-height: 28px; }
     .info-choice-disabled { background: #e2e8f0 !important; color: #94a3b8 !important; border-color: #cbd5e1 !important; cursor: not-allowed; filter: grayscale(1); }
     #modal-airport-transfer input[type="datetime-local"] { -webkit-appearance: none; appearance: none; box-sizing: border-box; min-width: 0; height: 36px; min-height: 36px; padding: 8px; line-height: 18px; }
+    /* FC-17: header presentation only; existing IDs and handlers retained. */
+    .trip-header { background: linear-gradient(115deg, #124a63 0%, #1a365b 58%, #293557 100%); }
+    .trip-header-inner { padding: 10px 18px 14px; }
+    .trip-version { display: block; font-size: 9px; font-weight: 600; letter-spacing: .08em; color: #b3c8d8; line-height: 14px; }
+    .trip-room { display: flex; align-items: center; gap: 7px; width: 100%; min-height: 30px; padding: 2px 0 5px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.13); font-size: 11px; color: #d7e5ee; }
+    .trip-room-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 44%; }
+    .trip-room-divider { width: 1px; height: 10px; background: rgba(255,255,255,.25); flex-shrink: 0; }
+    .trip-sync-status { font-size: 10px; white-space: nowrap; }
+    .trip-member { padding: 2px 7px; border-radius: 6px; background: rgba(255,255,255,.10); font-size: 10px; max-width: 22%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .trip-room-arrow { margin-left: auto; font-size: 9px; opacity: .55; }
+    .trip-heading { display: flex; flex-direction: column; gap: 6px; width: 100%; padding-top: 11px; text-align: left; }
+    .trip-title-row { display: flex; align-items: center; gap: 10px; }
+    .trip-title { font-size: 23px; line-height: 1.25; font-weight: 800; letter-spacing: .02em; overflow-wrap: anywhere; }
+    .trip-edit-icon { font-size: 10px; color: #acc2d5; flex-shrink: 0; }
+    .trip-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 8px; font-size: 10px; line-height: 18px; color: #d7e5ee; font-variant-numeric: tabular-nums; }
+    .trip-dates { white-space: nowrap; }
+    .trip-detail { border-left: 1px solid rgba(255,255,255,.25); padding-left: 8px; white-space: nowrap; }
+    .trip-tagline { color: #aac5d6; font-size: 10px; line-height: 14px; }
+    .trip-tagline:empty { display: none; }
+    .trip-room:active, .trip-heading:active { opacity: .8; }
+    .trip-room:focus-visible, .trip-heading:focus-visible { outline: 2px solid #9bd6e2; outline-offset: 3px; border-radius: 4px; }
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
@@ -76,34 +97,28 @@
 
   <div class="sticky top-0 z-50 shadow-sm bg-white">
     <!-- Top Navigation Header -->
-    <header class="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 text-white relative">
-      <div class="max-w-md mx-auto px-4 pt-1">
-        <div class="flex justify-start">
-          <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-16｜版面精簡與門票權限
-          </span>
-        </div>
-      </div>
-      <div class="max-w-md mx-auto px-4 py-2 flex flex-col gap-1">
-        <button onclick="openSyncModal()" class="self-start max-w-full flex-wrap text-[11px] bg-white/15 hover:bg-white/25 active:scale-95 transition backdrop-blur-md border border-white/20 px-2 py-1 rounded-full flex items-center gap-1 font-medium shrink-0">
+    <header class="trip-header text-white relative">
+      <div class="max-w-md mx-auto trip-header-inner">
+        <span id="test-version-badge" class="trip-version">FC-17 · 旅程首頁</span>
+        <button onclick="openSyncModal()" class="trip-room" aria-label="房間登入與同步設定">
           <i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i>
-          <span id="room-name-display">danang2026</span>
-          <span class="opacity-60">・</span>
-          <span id="cloud-header-status">尚未連線</span>
-          <span id="member-header-badge" onclick="event.stopPropagation(); openMemberSettingsModal()" class="hidden ml-1 bg-white/20 hover:bg-white/30 active:scale-95 cursor-pointer px-1.5 py-0.5 rounded-full text-[9px] font-bold" title="成員設定"></span>
+          <span id="room-name-display" class="trip-room-name">danang2026</span>
+          <span class="trip-room-divider"></span>
+          <span id="cloud-header-status" class="trip-sync-status">尚未連線</span>
+          <span id="member-header-badge" onclick="event.stopPropagation(); openMemberSettingsModal()" class="hidden trip-member" title="成員設定"></span>
+          <i class="fa-solid fa-angle-right trip-room-arrow" aria-hidden="true"></i>
         </button>
-        <button onclick="openHeaderEditModal()" class="w-full flex flex-col gap-1 text-left hover:bg-white/10 px-0 py-1.5 rounded-xl transition active:scale-95 group">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="text-base font-extrabold tracking-tight flex items-center gap-1">✈️ <span id="header-display-title">峴港會安</span></span>
-            <span id="header-display-duration" class="bg-white/20 px-1.5 py-0.2 rounded text-[10px] font-bold">6D5N</span>
-            <span id="header-display-headcount" class="text-[10px] bg-sky-400/30 text-sky-100 border border-sky-300/30 px-2 py-0.2 rounded-full font-medium">14大2小1嬰</span>
-            <i class="fa-solid fa-pencil text-[9px] text-amber-300 group-hover:scale-110 transition ml-0.5 opacity-80"></i>
+        <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
+          <div class="trip-title-row">
+            <span id="header-display-title" class="trip-title">峴港會安</span>
+            <i class="fa-solid fa-pencil trip-edit-icon" aria-hidden="true"></i>
           </div>
-          <div class="flex items-center flex-wrap gap-1 text-[10px] text-sky-100/90 font-medium">
-            <span id="header-display-dates">2026/12/07 - 12/12</span>
-            <span>｜</span>
-            <span id="header-display-grouptag">必去景點</span>
+          <div class="trip-meta">
+            <span id="header-display-dates" class="trip-dates">2026/12/07 - 12/12</span>
+            <span id="header-display-duration" class="trip-detail">6D5N</span>
+            <span id="header-display-headcount" class="trip-detail">14大2小1嬰</span>
           </div>
+          <span id="header-display-grouptag" class="trip-tagline">必去景點</span>
         </button>
       </div>
     </header>
