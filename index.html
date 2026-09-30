@@ -78,34 +78,32 @@
     <!-- Top Navigation Header -->
     <header class="bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-700 text-white relative">
       <div class="max-w-md mx-auto px-4 pt-1">
-        <div class="flex justify-end">
+        <div class="flex justify-start">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-15｜個人資訊、門票試算與固定活動
+            測試版 FC-16｜版面精簡與門票權限
           </span>
         </div>
       </div>
-      <div class="max-w-md mx-auto px-4 py-2 flex items-center justify-between">
-        <!-- 整合為單一按鈕（隱藏外框，簡潔美觀） -->
-        <button onclick="openHeaderEditModal()" class="flex flex-col gap-0.5 text-left hover:bg-white/10 p-1.5 -ml-1.5 rounded-xl transition active:scale-95 group">
-          <div class="flex items-center gap-1.5 flex-wrap">
-            <span class="text-xs font-extrabold tracking-tight flex items-center gap-1">✈️ <span id="header-display-title">峴港會安</span></span>
-            <span id="header-display-duration" class="bg-white/20 px-1.5 py-0.2 rounded text-[10px] font-bold">6D5N</span>
-            <span id="header-display-headcount" class="text-[10px] bg-sky-400/30 text-sky-100 border border-sky-300/30 px-2 py-0.2 rounded-full font-medium">14大2小1嬰</span>
-            <i class="fa-solid fa-pencil text-[9px] text-amber-300 group-hover:scale-110 transition ml-0.5 opacity-80"></i>
-          </div>
-          <div class="flex items-center gap-1 text-[10px] text-sky-100/90 font-medium">
-            <span id="header-display-dates">2026/12/07 - 12/12</span>
-            <span>｜</span>
-            <span id="header-display-grouptag">必去景點</span>
-          </div>
-        </button>
-
-        <button onclick="openSyncModal()" class="text-[11px] bg-white/15 hover:bg-white/25 active:scale-95 transition backdrop-blur-md border border-white/20 px-2 py-1 rounded-full flex items-center gap-1 font-medium shrink-0">
+      <div class="max-w-md mx-auto px-4 py-2 flex flex-col gap-1">
+        <button onclick="openSyncModal()" class="self-start max-w-full flex-wrap text-[11px] bg-white/15 hover:bg-white/25 active:scale-95 transition backdrop-blur-md border border-white/20 px-2 py-1 rounded-full flex items-center gap-1 font-medium shrink-0">
           <i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i>
           <span id="room-name-display">danang2026</span>
           <span class="opacity-60">・</span>
           <span id="cloud-header-status">尚未連線</span>
           <span id="member-header-badge" onclick="event.stopPropagation(); openMemberSettingsModal()" class="hidden ml-1 bg-white/20 hover:bg-white/30 active:scale-95 cursor-pointer px-1.5 py-0.5 rounded-full text-[9px] font-bold" title="成員設定"></span>
+        </button>
+        <button onclick="openHeaderEditModal()" class="w-full flex flex-col gap-1 text-left hover:bg-white/10 px-0 py-1.5 rounded-xl transition active:scale-95 group">
+          <div class="flex items-center gap-1.5 flex-wrap">
+            <span class="text-base font-extrabold tracking-tight flex items-center gap-1">✈️ <span id="header-display-title">峴港會安</span></span>
+            <span id="header-display-duration" class="bg-white/20 px-1.5 py-0.2 rounded text-[10px] font-bold">6D5N</span>
+            <span id="header-display-headcount" class="text-[10px] bg-sky-400/30 text-sky-100 border border-sky-300/30 px-2 py-0.2 rounded-full font-medium">14大2小1嬰</span>
+            <i class="fa-solid fa-pencil text-[9px] text-amber-300 group-hover:scale-110 transition ml-0.5 opacity-80"></i>
+          </div>
+          <div class="flex items-center flex-wrap gap-1 text-[10px] text-sky-100/90 font-medium">
+            <span id="header-display-dates">2026/12/07 - 12/12</span>
+            <span>｜</span>
+            <span id="header-display-grouptag">必去景點</span>
+          </div>
         </button>
       </div>
     </header>
@@ -306,16 +304,15 @@
 
     <section id="page-info" class="page-content hidden space-y-3">
       <!-- 資訊顯示設定 -->
-      <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-2xl shadow-sm space-y-2">
+      <div class="bg-indigo-50 border border-indigo-100 px-2.5 py-2 rounded-xl space-y-1.5">
         <div class="flex items-center justify-between"><h2 class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-sliders mr-1.5"></i>資訊顯示設定</h2><span class="text-[9px] text-indigo-500">個人顯示設定</span></div>
-        <p class="text-[10px] text-indigo-600">選擇資訊頁要顯示的內容；主辦人可編輯班機、住宿與接駁資料。</p>
-        <div class="grid grid-cols-2 gap-2 text-[11px] font-bold text-slate-700">
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-weather" type="checkbox" onchange="saveInfoVisibility()">☀️ 天氣</label>
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-exchange" type="checkbox" onchange="saveInfoVisibility()">💱 換匯</label>
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-reminders" type="checkbox" onchange="saveInfoVisibility()">📌 提醒事項</label>
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 航班</label>
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-shuttle" type="checkbox" onchange="saveInfoVisibility()">🚐 交通接駁</label>
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">🏨 住宿</label>
+        <div class="grid grid-cols-3 gap-1 text-[10px] font-medium text-slate-700">
+          <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-weather" type="checkbox" onchange="saveInfoVisibility()">☀️ 天氣</label>
+          <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-exchange" type="checkbox" onchange="saveInfoVisibility()">💱 換匯</label>
+          <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-reminders" type="checkbox" onchange="saveInfoVisibility()">📌 提醒事項</label>
+          <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 航班</label>
+          <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-shuttle" type="checkbox" onchange="saveInfoVisibility()">🚐 交通接駁</label>
+          <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">🏨 住宿</label>
         </div>
       </div>
       <div id="info-weather-section"></div>
@@ -3455,10 +3452,10 @@
             </label>
             <div class="flex items-center space-x-2">
               <span class="font-bold text-slate-900">$${Number(item.price).toLocaleString()}</span>
-              <div class="flex items-center space-x-0.5 text-slate-400">
+              ${isOrganizer()?`<div class="flex items-center space-x-0.5 text-slate-400">
                 <button onclick="openTicketModal('${item.id}')" class="hover:text-indigo-600 p-0.5" title="編輯門票"><i class="fa-solid fa-pen-to-square"></i></button>
                 <button onclick="deleteTicketItem('${item.id}')" class="hover:text-rose-600 p-0.5" title="刪除門票"><i class="fa-solid fa-trash-can"></i></button>
-              </div>
+              </div>`:''}
             </div>
           </div>
           ${(item.note || item.link) ? `
@@ -3481,6 +3478,8 @@
     }
 
     function openTicketModal(ticketId) {
+      if(!requireRoom())return;
+      if(ticketId && !isOrganizer())return showToast('只有主辦人可以修改門票資料');
       if (ticketId) {
         const list = getStoredData('tickets', defaultTicketsData);
         const item = list.find(i => i.id === ticketId);
@@ -3509,6 +3508,7 @@
     function saveTicketItem() {
       if (!requireRoom()) return;
       const editId = document.getElementById('edit-ticket-id').value;
+      if(editId && !isOrganizer())return showToast('只有主辦人可以修改門票資料');
       const name = document.getElementById('input-ticket-name').value.trim();
       const price = Number(document.getElementById('input-ticket-price').value) || 0;
       const note = document.getElementById('input-ticket-note').value.trim();
@@ -3547,6 +3547,8 @@
 
     function deleteTicketItem(ticketId) {
       if (!requireRoom()) return;
+      if(!isOrganizer())return showToast('只有主辦人可以刪除門票項目');
+      if(!confirm('確定刪除這個門票項目嗎？刪除後會同步至全體成員。'))return;
       let list = getStoredData('tickets', defaultTicketsData);
       list = list.filter(i => i.id !== ticketId);
       pushStateToCloud('tickets', list);
