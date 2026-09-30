@@ -68,6 +68,7 @@
     #page-budget td:not(:first-child), #page-budget [id^="calc-"] { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; font-weight: 600; white-space: nowrap; }
     #page-itinerary button[onclick^="deleteItineraryItem"] { margin-left: 12px; min-width: 28px; min-height: 28px; }
     .info-choice-disabled { background: #e2e8f0 !important; color: #94a3b8 !important; border-color: #cbd5e1 !important; cursor: not-allowed; filter: grayscale(1); }
+    #modal-airport-transfer input[type="datetime-local"] { -webkit-appearance: none; appearance: none; box-sizing: border-box; min-width: 0; height: 36px; min-height: 36px; padding: 8px; line-height: 18px; }
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
@@ -79,7 +80,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-13｜精簡成員登入畫面
+            測試版 FC-14｜期程連動、提醒與接駁
           </span>
         </div>
       </div>
@@ -135,32 +136,8 @@
 
     <!-- Sticky Day Selector Bar -->
     <div id="sticky-day-bar" class="max-w-md mx-auto px-4 py-2 border-b border-slate-100 bg-slate-50/90 backdrop-blur-md hidden">
-      <div class="grid grid-cols-6 gap-1">
-        <button onclick="selectDay(1)" id="day-btn-1" class="day-btn py-1.5 px-1 rounded-xl text-center bg-sky-600 text-white shadow-sm transition">
-          <span class="block text-xs font-extrabold leading-tight">D1</span>
-          <span class="block text-[9px] opacity-90 leading-tight mt-0.5">12/7</span>
-        </button>
-        <button onclick="selectDay(2)" id="day-btn-2" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
-          <span class="block text-xs font-extrabold leading-tight">D2</span>
-          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/8</span>
-        </button>
-        <button onclick="selectDay(3)" id="day-btn-3" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
-          <span class="block text-xs font-extrabold leading-tight">D3</span>
-          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/9</span>
-        </button>
-        <button onclick="selectDay(4)" id="day-btn-4" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
-          <span class="block text-xs font-extrabold leading-tight">D4</span>
-          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/10</span>
-        </button>
-        <button onclick="selectDay(5)" id="day-btn-5" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
-          <span class="block text-xs font-extrabold leading-tight">D5</span>
-          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/11</span>
-        </button>
-        <button onclick="selectDay(6)" id="day-btn-6" class="day-btn py-1.5 px-1 rounded-xl text-center bg-white text-slate-600 border border-slate-200 transition">
-          <span class="block text-xs font-extrabold leading-tight">D6</span>
-          <span class="block text-[9px] opacity-75 leading-tight mt-0.5">12/12</span>
-        </button>
-      </div>
+      <div id="trip-day-buttons" class="flex gap-1 overflow-x-auto no-scrollbar"></div>
+
     </div>
   </div>
 
@@ -199,7 +176,7 @@
         <button onclick="openFixedPlannerModal()" class="w-full bg-gradient-to-r from-amber-400 to-orange-500 text-white font-extrabold py-3 px-4 rounded-2xl text-xs flex items-center justify-center gap-2 shadow-sm transition active:scale-95">
           <i class="fa-solid fa-wand-magic-sparkles"></i><span>固定行程設定與智慧排程</span>
         </button>
-        <p class="text-[10px] text-slate-400 text-center">一次輸入所有固定活動，再依日期／星期／時間限制與地點安排 Day 1～Day 6</p>
+        <p class="text-[10px] text-slate-400 text-center">一次輸入固定活動，再依本次旅程期程設定日期與時間限制</p>
 
       </div>
     </section>
@@ -406,26 +383,7 @@
         </div>
       </div>
 
-      <!-- 越南入境線上聲明 (PAI) 提醒卡片 -->
-      <div class="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4 shadow-sm space-y-3">
-        <div class="flex items-start gap-3">
-          <span class="text-2xl">🇻🇳</span>
-          <div class="space-y-1">
-            <h3 class="font-bold text-amber-900 text-xs">越南入境線上聲明 (PAI)</h3>
-            <p class="text-[11px] text-amber-800 leading-relaxed">
-              請全團旅客於 <strong class="text-rose-600 bg-amber-100 px-1 py-0.5 rounded">2026/12/04 (四) 起</strong>（即出發前 3 天內）完成線上申報。
-            </p>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2 pt-0.5">
-          <a href="https://prearrival.immigration.gov.vn" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold py-2 px-2.5 rounded-xl shadow-sm flex items-center justify-center gap-1.5 text-center transition">
-            <i class="fa-solid fa-arrow-up-right-from-square"></i> 官方填寫網址
-          </a>
-          <a href="https://youtu.be/-xYclU_TXEo?si=7RLVBd1m0ziLFSpm" target="_blank" class="bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold py-2 px-2.5 rounded-xl shadow-sm flex items-center justify-center gap-1.5 text-center transition">
-            <i class="fa-brands fa-youtube"></i> 填寫教學影片
-          </a>
-        </div>
-      </div>
+      <div id="info-reminders" class="space-y-3"></div>
 
       <!-- 星宇航空選位提醒 -->
       <div class="hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-2xl shadow-md space-y-2">
@@ -600,6 +558,48 @@
       <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveInfoEdit()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
     </div>
 
+    <div id="modal-airport-transfer" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <div><h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-van-shuttle text-sky-600 mr-1.5"></i>交通接駁安排</h3></div>
+      <p class="text-[10px] text-slate-500">可用於包車、親友接送或自駕分車。車次名稱、人員及上車地點都可自行設定。</p>
+      <div class="grid grid-cols-3 gap-1">
+        <label class="text-[10px] border rounded-xl p-2 text-center"><input type="radio" name="transfer-type" value="outbound"> 去程</label>
+        <label class="text-[10px] border rounded-xl p-2 text-center"><input type="radio" name="transfer-type" value="inbound"> 回程</label>
+        <label class="text-[10px] border rounded-xl p-2 text-center"><input type="radio" name="transfer-type" value="both" checked> 去回都有</label>
+      </div>
+      <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 space-y-2">
+        <div class="font-bold text-[11px] text-slate-700">店家／統一聯絡資訊（選填）</div>
+        <input id="transfer-provider-name" class="w-full p-2 border rounded-lg text-[11px]" placeholder="店家名稱，例如：得佳富租賃有限公司">
+        <div class="grid grid-cols-2 gap-2"><input id="transfer-provider-contact" class="w-full p-2 border rounded-lg text-[11px]" placeholder="聯絡人／司機"><input id="transfer-provider-phone" class="w-full p-2 border rounded-lg text-[11px]" placeholder="電話"></div>
+        <input id="transfer-provider-line" class="w-full p-2 border rounded-lg text-[11px]" placeholder="LINE／其他聯絡方式">
+        <textarea id="transfer-provider-note" rows="2" class="w-full p-2 border rounded-lg text-[11px]" placeholder="店家備註"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <div><label class="text-[10px] font-bold text-slate-600">去程目的地</label><input id="transfer-airport-out" class="w-full p-2 border rounded-xl text-[11px]" placeholder="例如：桃園機場二航廈"></div>
+        <div><label class="text-[10px] font-bold text-slate-600">回程出發地</label><input id="transfer-airport-back" class="w-full p-2 border rounded-xl text-[11px]" placeholder="例如：桃園機場二航廈"></div>
+      </div>
+      <div><label class="text-[10px] font-bold text-slate-600">預計抵達目的地時間</label><input id="transfer-target-datetime" type="datetime-local" class="w-full p-2 border rounded-xl text-[11px]"><p id="transfer-target-hint" class="text-[9px] text-sky-600 mt-1">搭機時建議需提前2小時抵達機場</p></div>
+      <div><label class="text-[10px] font-bold text-slate-600">回程集合出發日期與時間（可自行指定）</label><input id="transfer-return-datetime" type="datetime-local" class="w-full p-2 border rounded-xl text-[11px]"><p class="text-[9px] text-sky-600 mt-1">未指定時，搭機依回程抵達後 30 分鐘估算；未搭機請自行填寫。</p></div>
+      <div class="grid grid-cols-2 gap-2">
+        <div><label class="text-[10px] font-bold text-slate-600">每站預留</label><div class="flex"><input id="transfer-stop-min" type="number" value="15" min="0" step="5" class="w-full p-2 border rounded-xl text-[11px]"><span class="text-[10px] ml-1 self-center">分</span></div></div>
+        <div><label class="text-[10px] font-bold text-slate-600">最後一站→目的地</label><div class="flex"><input id="transfer-drive-min" type="number" value="150" min="0" step="5" class="w-full p-2 border rounded-xl text-[11px]"><span class="text-[10px] ml-1 self-center">分</span></div></div>
+      </div>
+      <p class="text-[9px] text-amber-600 bg-amber-50 p-2 rounded-lg">各站時間依你填寫的車程與停留分鐘估算，可在這裡修改。</p>
+      <div class="border-t border-slate-100 pt-3 space-y-3">
+        <div class="text-[11px] font-extrabold text-slate-700"><i class="fa-solid fa-car-side text-sky-600 mr-1"></i>車次安排</div>
+        <div id="transfer-vehicle-editors" class="space-y-3"></div>
+        <button type="button" onclick="addTransferVehicleEditor()" class="w-full border-2 border-dashed border-sky-200 bg-sky-50 text-sky-700 py-2.5 rounded-xl text-[11px] font-extrabold">＋ 新增車次</button>
+      </div>
+      <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs">取消</button><button type="button" onclick="deleteAirportTransferPlan()" class="text-rose-600 text-xs px-2">移除安排</button><button onclick="saveAirportTransferPlan()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存並加入行程</button></div>
+    </div>
+
+    <div id="modal-reminder-edit" class="hidden bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl max-h-[85vh] overflow-y-auto">
+      <h3 class="text-sm font-bold">編輯提醒事項</h3><input id="reminder-edit-id" type="hidden">
+      <label class="text-xs block">標題<input id="reminder-title" class="w-full border rounded-xl p-2 mt-1" placeholder="提醒標題"></label>
+      <label class="text-xs block">提醒內容<textarea id="reminder-body" rows="4" class="w-full border rounded-xl p-2 mt-1"></textarea></label>
+      <label class="text-xs block">資訊連結<input id="reminder-link" type="url" class="w-full border rounded-xl p-2 mt-1" placeholder="https://…"></label>
+      <label class="text-xs block">影片連結<input id="reminder-video" type="url" class="w-full border rounded-xl p-2 mt-1" placeholder="https://…"></label>
+      <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 bg-slate-100 p-2 rounded-xl text-xs">取消</button><button onclick="saveInfoReminder()" class="flex-1 bg-indigo-600 text-white p-2 rounded-xl text-xs">儲存</button></div>
+    </div>
     <!-- Edit/Add Fixed Expense Modal -->
     <div id="modal-fixed-expense" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
       <h3 id="fe-modal-title" class="text-sm font-bold text-slate-800"><i class="fa-solid fa-coins text-amber-500 mr-1.5"></i>新增固定開銷項目</h3>
@@ -731,14 +731,8 @@
       <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-calendar-plus text-sky-600 mr-1.5"></i>移動行程至其他天</h3>
       <input type="hidden" id="move-item-id">
       <p class="text-xs font-medium text-slate-600" id="move-item-name"></p>
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <button onclick="executeMoveDay(1)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 1 (12/7)</button>
-        <button onclick="executeMoveDay(2)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 2 (12/8)</button>
-        <button onclick="executeMoveDay(3)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 3 (12/9)</button>
-        <button onclick="executeMoveDay(4)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 4 (12/10)</button>
-        <button onclick="executeMoveDay(5)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 5 (12/11)</button>
-        <button onclick="executeMoveDay(6)" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day 6 (12/12)</button>
-      </div>
+      <div id="move-day-buttons" class="grid grid-cols-2 gap-2 text-xs"></div>
+
       <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium mt-1">取消</button>
     </div>
 
@@ -945,7 +939,7 @@
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">您的姓名 / 稱呼：</label>
-        <input type="text" id="input-vote-name" placeholder="例如：阿偉、小美" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
+        <input type="text" id="input-vote-name" readonly aria-readonly="true" placeholder="登入成員暱稱" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">同行想去人數：</label>
@@ -2097,6 +2091,7 @@
     }
 
     function selectDay(day) {
+      if(day<1 || day>getTripDays().length)return;
       currentDay = day;
       document.querySelectorAll('.day-btn').forEach(btn => {
         btn.classList.remove('bg-sky-600', 'text-white', 'shadow-sm');
@@ -2183,11 +2178,12 @@
       const data=getStoredData('itinerary',defaultItineraryData);
       const existing=Object.entries(data).find(([day,x])=>x.items?.some(i=>i.fixedActivityId===id));
       if(existing)return showToast('已安排至 Day '+existing[0]);
-      const validDays=Object.keys(data).filter(day=>Array.isArray(data[day]?.items));
+      const validDays=getTripDays().map((_,i)=>String(i+1));
       const day=prompt('排入哪一天？請輸入 Day 編號（'+validDays.join('、')+'）',validDays[0]);if(day===null)return;
       if(!validDays.includes(day.trim()))return showToast('請輸入有效的 Day 編號');
       const verified=['verified','confirmed','ok'].includes(String(activity.researchStatus).toLowerCase());
       if(!confirm((verified?'':'此活動營業時間／場次尚未確認。\n')+'請確認 Day '+day+' 符合日期限制：'+(activity.dateValue||'日期皆可')+'，確定排入？'))return;
+      if(!data[day.trim()])data[day.trim()]={items:[]};
       data[day.trim()].items.push({id:'fixed-itin-'+Date.now(),fixedActivityId:id,title:activity.name,time:activity.time||'待確認',desc:escapeHtml([activity.note,activity.duration ? '停留 '+activity.duration : '',verified?'':'營業時間／場次尚未確認'].filter(Boolean).join('；')),map:buildAutoMapLink(activity.name)});
       pushStateToCloud('itinerary',data);showToast('已安排至 Day '+day);
     }
@@ -2425,7 +2421,7 @@
     };
     function getInfoConfig(){
       const x=getStoredData('infoConfig',defaultInfoConfig)||{};
-      return {visibility:{...defaultInfoConfig.visibility,...JSON.parse(localStorage.getItem(infoVisibilityKey()) || '{}')},flight:{...defaultInfoConfig.flight,...(x.flight||{})},hotel:{...defaultInfoConfig.hotel,...(x.hotel||{})},shuttle:{...defaultInfoConfig.shuttle,...(x.shuttle||{})}};
+      return {...x,visibility:{...defaultInfoConfig.visibility,...JSON.parse(localStorage.getItem(infoVisibilityKey()) || '{}')},flight:{...defaultInfoConfig.flight,...(x.flight||{})},hotel:{...defaultInfoConfig.hotel,...(x.hotel||{})},shuttle:{...defaultInfoConfig.shuttle,...(x.shuttle||{})}};
     }
     function infoVisibilityKey(){ return `perfect_info_visibility_${roomId}_${currentMember?.id || currentMember?.nickname || 'member'}`; }
     function saveInfoVisibility(){
@@ -2461,12 +2457,14 @@
         </div>`;
       }
       if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
-      if(v.weather)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">☀️ 天氣資訊</h3></div><p class="mt-2 text-slate-600">行程頁會依 Day 1～Day 6 顯示氣候預報與穿搭建議。</p><button onclick="switchTab('itinerary')" class="mt-2 text-sky-600 font-bold">查看每日天氣 →</button></div>`;
-      if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 交通接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
+      if(v.weather)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">☀️ 天氣資訊</h3></div><p class="mt-2 text-slate-600">行程頁依旅程天數顯示氣候參考與穿搭建議。</p><button onclick="switchTab('itinerary')" class="mt-2 text-sky-600 font-bold">查看每日天氣 →</button></div>`;
+      if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 交通接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p class="text-sky-600 font-bold">${c.shuttle.plan ? '已設定 '+c.shuttle.plan.vehicles.length+' 個車次：'+escapeHtml(c.shuttle.plan.vehicles.map(x=>x.name).join('、')) : '尚未設定車次'}</p><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
       box.innerHTML=h;
+      renderInfoReminders();
     }
     function openInfoEdit(type){
       if(!requireRoom() || !canEditInfo(type))return showToast('只有主辦人可以編輯旅程資訊'); const c=getInfoConfig();
+      if(type==='shuttle')return openAirportTransferModal();
       const defs={hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
       document.getElementById('info-edit-type').value=type;
       document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊'}[type]||'編輯資訊';
@@ -2756,7 +2754,7 @@
       if (addBtnLabel) addBtnLabel.textContent = `新增 Day ${currentDay} 行程地點`;
 
       const data = getStoredData('itinerary', defaultItineraryData);
-      const dayData = data[currentDay] || { items: [] };
+      const dayData = getItineraryWithTransfers(data)[currentDay] || { items: [] };
       const container = document.getElementById('itinerary-items-container');
 
       if (dayData.items.length === 0) {
@@ -2776,13 +2774,13 @@
               <h3 class="text-xs font-bold text-slate-800">${item.title}</h3>
             </div>
             <div class="flex items-center space-x-1 text-slate-400 text-xs shrink-0">
-              ${isOrganizer() ? `
-              ${idx > 0 ? `<button onclick="moveItineraryOrder(${idx}, -1)" class="hover:text-sky-600 p-1" title="上移"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
-              ${idx < dayData.items.length - 1 ? `<button onclick="moveItineraryOrder(${idx}, 1)" class="hover:text-sky-600 p-1" title="下移"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
+              ${isOrganizer() && !item.autoTransfer ? `
+              ${idx > 0 ? `<button onclick="moveItineraryOrder('${item.id}', -1)" class="hover:text-sky-600 p-1" title="上移"><i class="fa-solid fa-arrow-up"></i></button>` : ''}
+              ${idx < dayData.items.length - 1 ? `<button onclick="moveItineraryOrder('${item.id}', 1)" class="hover:text-sky-600 p-1" title="下移"><i class="fa-solid fa-arrow-down"></i></button>` : ''}
               <button onclick="openEditItineraryModal('${item.id}')" class="hover:text-sky-600 p-1" title="編輯行程與註解"><i class="fa-solid fa-pen-to-square"></i></button>
               <button onclick="openMoveDayModal('${item.id}', '${item.title}')" class="hover:text-sky-600 p-1" title="轉移天數"><i class="fa-solid fa-calendar-day"></i></button>
               <button onclick="deleteItineraryItem('${item.id}')" class="hover:text-rose-600 p-1" title="刪除行程"><i class="fa-solid fa-trash-can"></i></button>
-              ` : ''}
+              ` : (isOrganizer() && item.autoTransfer ? `<button onclick="openAirportTransferModal()" class="text-sky-600 text-[10px] p-1">編輯接駁</button>` : '')}
             </div>
           </div>
           ${item.desc ? `<div class="text-xs text-slate-600 leading-relaxed">${item.desc}</div>` : ''}
@@ -2896,6 +2894,8 @@
       if (!isOrganizer()) return showToast('團體每日行程僅限主辦人調整');
       const data = getStoredData('itinerary', defaultItineraryData);
       const items = data[currentDay].items;
+      if(typeof index==='string')index=items.findIndex(x=>x.id===index);
+      if(index<0)return;
       const targetIndex = index + direction;
       if (targetIndex >= 0 && targetIndex < items.length) {
         const temp = items[index];
@@ -2917,6 +2917,7 @@
 
     function openMoveDayModal(itemId, title) {
       if (!isOrganizer()) return showToast('團體每日行程僅限主辦人調整');
+      renderMoveDayButtons();
       document.getElementById('move-item-id').value = itemId;
       document.getElementById('move-item-name').textContent = title;
       closeModal();
@@ -2927,11 +2928,13 @@
     function executeMoveDay(targetDay) {
       if (!requireRoom()) return;
       if (!isOrganizer()) return showToast('團體每日行程僅限主辦人調整');
+      if(targetDay<1 || targetDay>getTripDays().length)return showToast('目標 Day 不在旅程期程內');
       const itemId = document.getElementById('move-item-id').value;
       const data = getStoredData('itinerary', defaultItineraryData);
       
       let movedItem = null;
-      for (let d = 1; d <= 6; d++) {
+      for (const d of Object.keys(data)) {
+        if(!Array.isArray(data[d]?.items))continue;
         const idx = data[d].items.findIndex(i => i.id === itemId);
         if (idx !== -1) {
           movedItem = data[d].items.splice(idx, 1)[0];
@@ -2940,6 +2943,7 @@
       }
 
       if (movedItem) {
+        if(!data[targetDay])data[targetDay]={items:[]};
         data[targetDay].items.push(movedItem);
         pushStateToCloud('itinerary', data);
         showToast(`已移動至 Day ${targetDay}`);
@@ -3028,13 +3032,13 @@
     function calculateProximityMatch(favItem) {
       const name = favItem.name.toLowerCase();
       if (name.includes('morning') || name.includes('會安') || name.includes('faifo') || name.includes('phượng')) {
-        return { day: 1, nearbyPoint: '會安古鎮', driveMinutes: '約 5 分鐘' };
+        return { day: Math.min(1,getTripDays().length), nearbyPoint: '會安古鎮', driveMinutes: '約 5 分鐘' };
       } else if (name.includes('mộc') || name.includes('bé mặn') || name.includes('salem') || name.includes('cộng')) {
-        return { day: 3, nearbyPoint: 'Chi House 飯店 / 美溪沙灘', driveMinutes: '約 8 分鐘' };
+        return { day: Math.min(3,getTripDays().length), nearbyPoint: 'Chi House 飯店 / 美溪沙灘', driveMinutes: '約 8 分鐘' };
       } else if (name.includes('bà dưỡng') || name.includes('漢市場')) {
-        return { day: 5, nearbyPoint: '漢市場與粉紅教堂', driveMinutes: '約 10 分鐘' };
+        return { day: Math.min(5,getTripDays().length), nearbyPoint: '漢市場與粉紅教堂', driveMinutes: '約 10 分鐘' };
       }
-      return { day: 3, nearbyPoint: '峴港市中心', driveMinutes: '約 12 分鐘' };
+      return { day: Math.min(3,getTripDays().length), nearbyPoint: '峴港市中心', driveMinutes: '約 12 分鐘' };
     }
 
     function getItemVotesBreakdown(item) {
@@ -3125,6 +3129,7 @@
     }
 
     function openVoteFavModal(catId, itemId) {
+      if(!requireRoom())return;
       const data = getStoredData('favorites', defaultFavoritesData);
       const cat = data.find(c => c.id === catId);
       if (!cat) return;
@@ -3134,7 +3139,7 @@
       document.getElementById('vote-fcat-id').value = catId;
       document.getElementById('vote-fitem-id').value = itemId;
       document.getElementById('vote-fitem-name-display').textContent = item.name;
-      document.getElementById('input-vote-name').value = '';
+      document.getElementById('input-vote-name').value = currentMember?.nickname || '';
       document.getElementById('input-vote-adults').value = '1';
       document.getElementById('input-vote-kids').value = '0';
       document.getElementById('input-vote-infants').value = '0';
@@ -3183,7 +3188,8 @@
       if (!requireRoom()) return;
       const catId = document.getElementById('vote-fcat-id').value;
       const itemId = document.getElementById('vote-fitem-id').value;
-      const name = document.getElementById('input-vote-name').value.trim();
+      const name = currentMember?.nickname || '';
+      const memberId = currentMember?.id;
       const adults = parseInt(document.getElementById('input-vote-adults').value) || 0;
       const kids = parseInt(document.getElementById('input-vote-kids').value) || 0;
       const infants = parseInt(document.getElementById('input-vote-infants').value) || 0;
@@ -3207,7 +3213,7 @@
 
       if (!item.voters) item.voters = [];
 
-      const existingIndex = item.voters.findIndex(v => v.name.trim().toLowerCase() === name.toLowerCase());
+      const existingIndex = item.voters.findIndex(v => v.memberId === memberId || (!v.memberId && String(v.name||'').trim().toLowerCase() === name.toLowerCase()));
 
       if (existingIndex !== -1) {
         item.voters[existingIndex].adults = adults;
@@ -3215,12 +3221,14 @@
         item.voters[existingIndex].infants = infants;
         item.voters[existingIndex].count = totalCount;
         item.voters[existingIndex].name = name;
+        item.voters[existingIndex].memberId = memberId;
         const countLabel = formatVoterCount({ adults, kids, infants });
         showToast(`已更新 ${name} 的投票人數 (${countLabel})`);
       } else {
         item.voters.push({
           id: `v-${Date.now()}`,
           name: name,
+          memberId,
           adults: adults,
           kids: kids,
           infants: infants,
@@ -3371,7 +3379,8 @@
 
         if (foundFav) {
           const prox = calculateProximityMatch(foundFav);
-          const day = prox.day;
+          const day = Math.min(prox.day,getTripDays().length);
+          if(!itineraryData[day])itineraryData[day]={items:[]};
           const voteInfo = getItemVotesBreakdown(foundFav);
           
           const exists = getFavoriteDays(foundFav.id).length > 0;
@@ -3933,7 +3942,7 @@
       if (!force && memberModal && !memberModal.classList.contains('hidden') && !currentMember) return;
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
-        'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
+        'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
@@ -4072,6 +4081,157 @@
       document.getElementById('input-room-password').value='';
       closeModal(true);renderMemberIdentity();refreshUI();setCloudStatus('尚未登入雲端房間');showToast('已登出房間，資料編輯已鎖定');
     }
+    const defaultAirportTransferData = {
+      type:'both', airportOut:'桃園機場二航廈', airportBack:'桃園機場二航廈', advanceMin:120, stopMin:15, driveMin:150,
+      provider:{name:'得佳富租賃有限公司',contact:'阿得',phone:'0972-922097',line:'0972922097',note:''},
+      vehicles:[
+        {id:'veh-a',name:'A車',mode:'包車店家',contact:'阿得',people:'',stops:['嘉義航空站','嘉義大賢路']},
+        {id:'veh-b',name:'B車',mode:'包車店家',contact:'阿得',people:'',stops:['嘉義市東區義教街708號（千香漢堡）','嘉義市鎮北路50巷25號','嘉義縣梅山鄉南興街19號','南投市新光路5號']}
+      ]
+    };
+    function normalizeTransferData(d){
+      d=d||{}; if(!Array.isArray(d.vehicles)){ d.vehicles=[]; if((d.stopsA||[]).length)d.vehicles.push({id:'veh-a',name:'A車',mode:'包車店家',contact:'阿得',people:'',stops:d.stopsA}); if((d.stopsB||[]).length)d.vehicles.push({id:'veh-b',name:'B車',mode:'包車店家',contact:'阿得',people:'',stops:d.stopsB}); }
+      if(!d.vehicles.length)d.vehicles=JSON.parse(JSON.stringify(defaultAirportTransferData.vehicles));
+      d.provider=d.provider||{name:'得佳富租賃有限公司',contact:'阿得',phone:'0972-922097',line:'0972922097',note:''}; return {...defaultAirportTransferData,...d};
+    }
+    function addTransferVehicleEditor(v={}){
+      const c=document.getElementById('transfer-vehicle-editors'); if(!c)return; const id=v.id||`veh-${Date.now()}-${Math.random().toString(36).slice(2,5)}`;
+      const row=document.createElement('div'); row.className='transfer-vehicle border border-sky-100 bg-sky-50/40 rounded-xl p-3 space-y-2'; row.dataset.id=id;
+      row.innerHTML=`<div class="flex gap-2"><input class="tv-name flex-1 p-2 border rounded-lg text-[11px] font-bold" placeholder="車次名稱，例如：A車／爸爸車" value="${escapeHtml(v.name||'')}"><button type="button" onclick="this.closest('.transfer-vehicle').remove()" class="text-rose-400">×</button></div>
+      <div class="grid grid-cols-2 gap-2"><select class="tv-mode p-2 border rounded-lg text-[11px]"><option>包車店家</option><option>親友接送</option><option>自駕</option><option>其他</option></select><input class="tv-contact p-2 border rounded-lg text-[11px]" placeholder="司機／聯絡人" value="${escapeHtml(v.contact||'')}"></div>
+      <div class="tv-provider-summary hidden text-[9px] leading-relaxed bg-white border border-sky-100 rounded-lg p-2 text-slate-600"></div>
+      <input class="tv-people w-full p-2 border rounded-lg text-[11px]" placeholder="搭乘人員，例如：媽媽、小明、小華" value="${escapeHtml(v.people||'')}">
+      <textarea class="tv-stops w-full p-2 border rounded-lg text-[11px]" rows="3" placeholder="上車地點，每行一站；可寫：媽媽、小明｜嘉義航空站">${escapeHtml((v.stops||[]).join('\n'))}</textarea>`;
+      c.appendChild(row); const modeEl=row.querySelector('.tv-mode'); modeEl.value=v.mode||'包車店家';
+      modeEl.addEventListener('change',()=>applyProviderToVehicle(row, true));
+      applyProviderToVehicle(row, false);
+    }
+    function currentTransferProvider(){
+      return {name:document.getElementById('transfer-provider-name')?.value.trim()||'',contact:document.getElementById('transfer-provider-contact')?.value.trim()||'',phone:document.getElementById('transfer-provider-phone')?.value.trim()||'',line:document.getElementById('transfer-provider-line')?.value.trim()||''};
+    }
+    function applyProviderToVehicle(row, overwriteContact){
+      if(!row)return; const mode=row.querySelector('.tv-mode')?.value; const summary=row.querySelector('.tv-provider-summary');
+      if(mode!=='包車店家'){ if(summary)summary.classList.add('hidden'); return; }
+      const p=currentTransferProvider(); const contact=row.querySelector('.tv-contact');
+      if(contact && (overwriteContact || !contact.value.trim())) contact.value=p.contact||p.name||'';
+      if(summary){
+        const parts=[p.name&&`店家：${p.name}`,p.contact&&`聯絡人：${p.contact}`,p.phone&&`電話：${p.phone}`,p.line&&`LINE／聯絡：${p.line}`].filter(Boolean);
+        summary.innerHTML=parts.length?`<strong class="text-sky-700">已帶入店家資訊</strong><br>${parts.map(escapeHtml).join('<br>')}`:'尚未填寫上方店家資訊';
+        summary.classList.remove('hidden');
+      }
+    }
+    function readTransferVehicles(){ return [...document.querySelectorAll('.transfer-vehicle')].map(r=>({id:r.dataset.id,name:r.querySelector('.tv-name').value.trim()||'未命名車次',mode:r.querySelector('.tv-mode').value,contact:r.querySelector('.tv-contact').value.trim(),people:r.querySelector('.tv-people').value.trim(),stops:r.querySelector('.tv-stops').value.split('\n').map(x=>x.trim()).filter(Boolean)})); }
+    function getTripDays(){
+      const {startDate,endDate}=parseHeaderDates(getStoredData('headerInfo',defaultHeaderInfo));
+      const toUTC=v=>{const [y,m,d]=v.replaceAll('/','-').split('-').map(Number);return Date.UTC(y,m-1,d);};
+      const start=toUTC(startDate),end=toUTC(endDate);
+      if(!Number.isFinite(start)||!Number.isFinite(end)||end<start)return [startDate];
+      return Array.from({length:Math.round((end-start)/86400000)+1},(_,i)=>new Date(start+i*86400000).toISOString().slice(0,10));
+    }
+    function renderTripDayButtons(){
+      const days=getTripDays();currentDay=Math.min(Math.max(1,currentDay),days.length);
+      const box=document.getElementById('trip-day-buttons');if(!box)return;
+      box.innerHTML=days.map((date,i)=>`<button onclick="selectDay(${i+1})" id="day-btn-${i+1}" class="day-btn min-w-[48px] flex-1 shrink-0 py-1.5 px-1 rounded-xl text-center ${currentDay===i+1?'bg-sky-600 text-white shadow-sm':'bg-white text-slate-600 border border-slate-200'}"><span class="block text-xs font-extrabold">D${i+1}</span><span class="block text-[9px] mt-0.5">${Number(date.slice(5,7))}/${Number(date.slice(8,10))}</span></button>`).join('');
+      const duration=document.getElementById('header-display-duration');if(duration)duration.textContent=`${days.length}D${Math.max(0,days.length-1)}N`;
+    }
+    function renderMoveDayButtons(){
+      document.getElementById('move-day-buttons').innerHTML=getTripDays().map((date,i)=>`<button onclick="executeMoveDay(${i+1})" class="p-2 border border-slate-200 rounded-xl hover:bg-sky-50 font-bold">Day ${i+1} (${Number(date.slice(5,7))}/${Number(date.slice(8,10))})</button>`).join('');
+    }
+    const initialInfoReminders=[{id:'reminder-entry-declaration',title:'越南入境線上聲明 (PAI)',body:'請全團旅客於 2026/12/04 起（出發前三天內）完成線上申報。',link:'https://prearrival.immigration.gov.vn',video:'https://youtu.be/-xYclU_TXEo?si=7RLVBd1m0ziLFSpm'}];
+    function getInfoReminders(){const c=getInfoConfig();return Array.isArray(c.reminders)?c.reminders:initialInfoReminders;}
+    function renderInfoReminders(){
+      const box=document.getElementById('info-reminders');if(!box)return;
+      box.innerHTML=`<div class="flex items-center justify-between"><h3 class="text-xs font-bold">提醒事項</h3>${isOrganizer()?'<button onclick="openInfoReminderEditor()" class="text-indigo-600 font-bold text-xs">＋新增提醒</button>':''}</div>`+getInfoReminders().map(x=>`<div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-2"><div class="flex justify-between gap-2"><h3 class="text-xs font-bold text-amber-900">${escapeHtml(x.title)}</h3>${isOrganizer()?`<div class="flex gap-3 shrink-0"><button onclick="openInfoReminderEditor('${x.id}')" class="text-xs text-indigo-600">編輯</button><button onclick="deleteInfoReminder('${x.id}')" class="text-xs text-rose-600">刪除</button></div>`:''}</div><p class="text-[11px] text-amber-800 whitespace-pre-wrap">${escapeHtml(x.body)}</p><div class="flex gap-3 text-[11px] font-bold">${safeExternalUrl(x.link)?`<a href="${escapeHtml(safeExternalUrl(x.link))}" target="_blank" rel="noopener noreferrer" class="text-sky-600">↗ 資訊連結</a>`:''}${safeExternalUrl(x.video)?`<a href="${escapeHtml(safeExternalUrl(x.video))}" target="_blank" rel="noopener noreferrer" class="text-rose-600">▶ 影片連結</a>`:''}</div></div>`).join('');
+    }
+    function openInfoReminderEditor(id=''){
+      if(!requireRoom()||!isOrganizer())return showToast('只有主辦人可以編輯提醒');
+      const x=getInfoReminders().find(x=>x.id===id)||{};
+      document.getElementById('reminder-edit-id').value=id;
+      ['title','body','link','video'].forEach(k=>document.getElementById('reminder-'+k).value=x[k]||'');
+      closeModal();document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-reminder-edit').classList.remove('hidden');
+    }
+    function saveInfoReminder(){
+      if(!requireRoom()||!isOrganizer())return;
+      const title=document.getElementById('reminder-title').value.trim();if(!title)return showToast('請輸入提醒標題');
+      const link=document.getElementById('reminder-link').value.trim(),video=document.getElementById('reminder-video').value.trim();
+      if((link&&!safeExternalUrl(link))||(video&&!safeExternalUrl(video)))return showToast('請輸入完整的 https:// 或 http:// 連結');
+      const id=document.getElementById('reminder-edit-id').value||'reminder-'+Date.now();
+      const c=getInfoConfig(),list=getInfoReminders().map(x=>({...x}));const x={id,title,body:document.getElementById('reminder-body').value.trim(),link,video};
+      const index=list.findIndex(x=>x.id===id);if(index<0)list.push(x);else list[index]=x;
+      c.reminders=list;pushStateToCloud('infoConfig',c);closeModal();showToast('提醒已儲存');
+    }
+    function deleteInfoReminder(id){
+      if(!requireRoom()||!isOrganizer()||!confirm('確定刪除這則提醒嗎？'))return;
+      const c=getInfoConfig();c.reminders=getInfoReminders().filter(x=>x.id!==id);pushStateToCloud('infoConfig',c);
+    }
+    function transferDate(value,time){if(!value||!time)return null;const d=new Date(value.replaceAll('/','-')+'T'+time);return Number.isNaN(d.getTime())?null:d;}
+    function hhmm(d){return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;}
+    function addMinutes(d,n){return new Date(new Date(d).getTime()+n*60000);}
+    function transferDateInput(d){return ymdLocal(d)+'T'+hhmm(d);}
+    function getTransferAutoTarget(){const f=getInfoConfig().flight;const d=transferDate(f.outboundDate,f.outboundTime);return d?transferDateInput(addMinutes(d,-120)):'';}
+    function getTransferReturnAuto(){const f=getInfoConfig().flight;const d=transferDate(f.returnArrivalDate,f.returnArrivalTime);return d?transferDateInput(addMinutes(d,30)):'';}
+    function openAirportTransferModal(){
+      if(!requireRoom()||!isOrganizer())return showToast('只有主辦人可以編輯接駁');
+      const c=getInfoConfig(),d=normalizeTransferData(c.shuttle.plan?JSON.parse(JSON.stringify(c.shuttle.plan)):JSON.parse(JSON.stringify(defaultAirportTransferData)));
+      const header=getStoredData('headerInfo',defaultHeaderInfo),useFlight=header.requiredInfo?.flight!==false;
+      document.querySelectorAll('input[name="transfer-type"]').forEach(r=>r.checked=r.value===(d.type||'both'));
+      document.getElementById('transfer-airport-out').value=d.airportOut||'';document.getElementById('transfer-airport-back').value=d.airportBack||'';
+      document.getElementById('transfer-stop-min').value=d.stopMin??15;document.getElementById('transfer-drive-min').value=d.driveMin??150;
+      const target=document.getElementById('transfer-target-datetime'),auto=useFlight?getTransferAutoTarget():'';
+      target.value=(d.targetAuto===false?d.targetDatetime:auto||d.targetDatetime)||'';target.dataset.autoDatetime=auto;
+      const back=document.getElementById('transfer-return-datetime'),returnAuto=useFlight?getTransferReturnAuto():'';
+      back.value=(d.returnAuto===false?d.returnDatetime:returnAuto||d.returnDatetime)||'';back.dataset.autoDatetime=returnAuto;
+      document.getElementById('transfer-target-hint').textContent=useFlight?'依去程起飛前兩小時帶入，可手動修改':'未搭機，請自行填寫抵達目的地時間';
+      const pr=c.shuttle.plan?d.provider:{name:c.shuttle.company,contact:c.shuttle.driver,phone:[c.shuttle.phone1,c.shuttle.phone2].filter(Boolean).join(' / '),line:c.shuttle.line,note:''};
+      ['name','contact','phone','line','note'].forEach(k=>document.getElementById('transfer-provider-'+k).value=pr[k]||'');
+      const box=document.getElementById('transfer-vehicle-editors');box.innerHTML='';d.vehicles.forEach(addTransferVehicleEditor);
+      ['name','contact','phone','line'].forEach(k=>{const el=document.getElementById('transfer-provider-'+k);if(!el.dataset.providerBound){el.addEventListener('input',()=>document.querySelectorAll('.transfer-vehicle').forEach(r=>applyProviderToVehicle(r,false)));el.dataset.providerBound='1';}});
+      closeModal();document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-airport-transfer').classList.remove('hidden');
+    }
+    function saveAirportTransferPlan(){
+      if(!requireRoom()||!isOrganizer())return;
+      const target=document.getElementById('transfer-target-datetime'),back=document.getElementById('transfer-return-datetime');
+      const d={type:document.querySelector('input[name="transfer-type"]:checked')?.value||'both',airportOut:document.getElementById('transfer-airport-out').value.trim(),airportBack:document.getElementById('transfer-airport-back').value.trim(),stopMin:Number(document.getElementById('transfer-stop-min').value),driveMin:Number(document.getElementById('transfer-drive-min').value),targetDatetime:target.value,targetAuto:!!target.dataset.autoDatetime&&target.value===target.dataset.autoDatetime,returnDatetime:back.value,returnAuto:!!back.dataset.autoDatetime&&back.value===back.dataset.autoDatetime,provider:{...currentTransferProvider(),note:document.getElementById('transfer-provider-note').value.trim()},vehicles:readTransferVehicles()};
+      if(!d.vehicles.length)return showToast('請至少新增一個車次');
+      if(!Number.isFinite(d.stopMin)||!Number.isFinite(d.driveMin)||d.stopMin<0||d.driveMin<0)return showToast('車程與每站預留時間不能為負數');
+      if(d.type!=='inbound'&&!d.targetDatetime)return showToast('請填寫去程預計抵達時間');
+      if(d.type!=='outbound'&&!d.returnDatetime)return showToast('請填寫回程集合出發時間，或先填回程班機抵達時間');
+      const c=getInfoConfig();c.shuttle={...c.shuttle,company:d.provider.name,driver:d.provider.contact,phone1:d.provider.phone,phone2:'',line:d.provider.line,plan:d};
+      pushStateToCloud('infoConfig',c);closeModal();showToast('接駁已儲存，去程在 Day 1 開頭、回程在最後一天結尾');
+    }
+    function deleteAirportTransferPlan(){
+      if(!requireRoom()||!isOrganizer()||!confirm('確定移除所有車次安排及行程中的接駁項目嗎？'))return;
+      const c=getInfoConfig();delete c.shuttle.plan;pushStateToCloud('infoConfig',c);closeModal();
+    }
+    function getItineraryWithTransfers(source){
+      const data=JSON.parse(JSON.stringify(source));Object.values(data).forEach(x=>{if(Array.isArray(x?.items))x.items=x.items.filter(i=>!i.autoTransfer);});
+      const header=getStoredData('headerInfo',defaultHeaderInfo);if(header.requiredInfo?.shuttle===false)return data;
+      const d=getInfoConfig().shuttle.plan;if(!d?.vehicles?.length)return data;
+      const days=getTripDays(),useFlight=header.requiredInfo?.flight!==false;
+      const dateLabel=t=>`${formatDateZh(ymdLocal(t))} ${hhmm(t)}`;
+      const pr=d.provider||{},provider=[pr.name,pr.contact,pr.phone,pr.line,pr.note].filter(Boolean).map(escapeHtml).join('｜');
+      const stopMin=Number(d.stopMin)||0,driveMin=Number(d.driveMin)||0;
+      if(d.type==='outbound'||d.type==='both'){
+        const raw=d.targetAuto&&useFlight?getTransferAutoTarget():d.targetDatetime,target=raw?new Date(raw):null;
+        if(target&&!Number.isNaN(target.getTime())){
+          const starts=[];const blocks=d.vehicles.map(v=>{
+            const stops=v.stops||[],last=addMinutes(target,-driveMin);const times=stops.map((x,i)=>addMinutes(last,-(stops.length-1-i)*stopMin));if(times.length)starts.push(times[0]);
+            return `<strong>${escapeHtml(v.name)}｜${escapeHtml(v.mode)}｜${escapeHtml(v.contact||'')}</strong>${v.people?'<br>搭乘：'+escapeHtml(v.people):''}<br>${stops.map((x,i)=>`• ${dateLabel(times[i])} 📍 ${escapeHtml(x)}`).join('<br>')||'尚未填上車地點'}`;
+          });
+          const start=starts.sort((a,b)=>a-b)[0]||target;if(!data[1])data[1]={items:[]};
+          data[1].items.unshift({id:'auto-transfer-outbound',autoTransfer:true,title:'🚐 去程交通接駁',time:`${hhmm(start)} - ${hhmm(target)}`,desc:`${provider}<br><br>${blocks.join('<br><br>')}<br><br>預計 ${dateLabel(target)} 抵達 ${escapeHtml(d.airportOut||'目的地')}`,map:buildAutoMapLink(d.airportOut||'目的地'),comment:'接駁時間為預估值，請確認車次、人員與上車地點'});
+        }
+      }
+      if(d.type==='inbound'||d.type==='both'){
+        const raw=d.returnAuto&&useFlight?getTransferReturnAuto():d.returnDatetime,leave=raw?new Date(raw):null;
+        if(leave&&!Number.isNaN(leave.getTime())){
+          const blocks=d.vehicles.map(v=>`<strong>${escapeHtml(v.name)}｜${escapeHtml(v.mode)}｜${escapeHtml(v.contact||'')}</strong>${v.people?'<br>搭乘：'+escapeHtml(v.people):''}<br>${[...(v.stops||[])].reverse().map((x,i)=>`• 約 ${dateLabel(addMinutes(leave,driveMin+i*stopMin))} 📍 ${escapeHtml(x)}`).join('<br>')||'尚未填下車地點'}`);
+          const last=days.length;if(!data[last])data[last]={items:[]};data[last].items.push({id:'auto-transfer-inbound',autoTransfer:true,title:'🚐 回程交通接駁',time:hhmm(leave),desc:`${provider}<br><br>${dateLabel(leave)} 從 ${escapeHtml(d.airportBack||'集合地')} 出發<br><br>${blocks.join('<br><br>')}`,map:buildAutoMapLink(d.airportBack||'集合地'),comment:'實際出發時間依抵達與集合狀況調整'});
+        }
+      }
+      return data;
+    }
+
     function requireRoom(){
       if (cloudConnected && cloudPassword && cloudClient && currentMember && getMemberToken()) return true;
       showToast('請先登入房間並驗證成員暱稱與密碼，才能編輯資料'); return false;
@@ -4103,6 +4263,7 @@
 
     function refreshUI() {
       renderHeaderInfo();
+      renderTripDayButtons();
       renderItinerary();
       renderPackingList();
       renderFavorites();
