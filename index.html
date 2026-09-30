@@ -24,6 +24,33 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
+    /* Keep flight date/time controls aligned, including iPhone date inputs. */
+    #info-edit-fields .flight-datetime-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    #info-edit-fields .flight-datetime-row > div {
+      min-width: 0;
+    }
+    #info-edit-fields .flight-datetime-row input:not([type="hidden"]),
+    #info-edit-fields .flight-datetime-row button {
+      box-sizing: border-box;
+      display: block;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      height: 42px;
+      text-align: center;
+    }
+    #info-edit-fields .flight-datetime-row input::-webkit-date-and-time-value {
+      min-height: 1em;
+      text-align: center;
+    }
+    #info-edit-fields .flight-datetime-row input::-webkit-datetime-edit {
+      display: inline-flex;
+      justify-content: center;
+      padding: 0;
+    }
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
@@ -2423,28 +2450,28 @@
         const retArrivalDate=normalizeDateValue(f.returnArrivalDate,retDate||header.endDate) || retDate || header.endDate || '';
         fieldsBox.innerHTML=`
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程班機</label><input data-info-key="outboundNo" value="${escapeHtml(f.outboundNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="flight-datetime-row grid grid-cols-2 gap-2">
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛日期</label><input id="info-flight-out-date" data-info-key="outboundDate" type="date" value="${outDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程起飛時間</label><input id="info-flight-out-time" data-info-key="outboundTime" type="time" value="${escapeHtml(f.outboundTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="flight-datetime-row grid grid-cols-2 gap-2">
             <div>
               <label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達日期</label>
-              <button type="button" id="info-flight-out-arrival-date-btn" onclick="openFlightArrivalCalendar('out')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${outArrivalDate ? formatDateZh(outArrivalDate) : '選擇日期'}</button>
+              <button type="button" id="info-flight-out-arrival-date-btn" onclick="openFlightArrivalCalendar('out')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-center">${outArrivalDate ? formatDateZh(outArrivalDate) : '選擇日期'}</button>
               <input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="hidden" value="${outArrivalDate}">
             </div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達時間</label><input id="info-flight-out-arrival-time" data-info-key="outboundArrivalTime" type="time" value="${escapeHtml(f.outboundArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
 
           <div class="border-t border-slate-100 pt-2 mt-1"><label class="text-[11px] font-bold text-slate-600 block mb-1">回程班機</label><input data-info-key="returnNo" value="${escapeHtml(f.returnNo||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs uppercase"></div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="flight-datetime-row grid grid-cols-2 gap-2">
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛日期</label><input id="info-flight-return-date" data-info-key="returnDate" type="date" value="${retDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程起飛時間</label><input id="info-flight-return-time" data-info-key="returnTime" type="time" value="${escapeHtml(f.returnTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
-          <div class="grid grid-cols-2 gap-2">
+          <div class="flight-datetime-row grid grid-cols-2 gap-2">
             <div>
               <label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達日期</label>
-              <button type="button" id="info-flight-return-arrival-date-btn" onclick="openFlightArrivalCalendar('return')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left">${retArrivalDate ? formatDateZh(retArrivalDate) : '選擇日期'}</button>
+              <button type="button" id="info-flight-return-arrival-date-btn" onclick="openFlightArrivalCalendar('return')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-center">${retArrivalDate ? formatDateZh(retArrivalDate) : '選擇日期'}</button>
               <input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="hidden" value="${retArrivalDate}">
             </div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達時間</label><input id="info-flight-return-arrival-time" data-info-key="returnArrivalTime" type="time" value="${escapeHtml(f.returnArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
