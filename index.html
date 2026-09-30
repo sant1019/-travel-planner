@@ -64,9 +64,13 @@
       justify-content: center;
       padding: 0;
     }
+    #page-budget, #fixed-expenses-tbody { font-variant-numeric: tabular-nums; }
+    #page-budget td:not(:first-child), #page-budget [id^="calc-"] { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; font-weight: 600; white-space: nowrap; }
+    #page-itinerary button[onclick^="deleteItineraryItem"] { margin-left: 12px; min-width: 28px; min-height: 28px; }
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
+<div id="room-login-warning" class="bg-amber-100 text-amber-900 text-xs p-2 text-center">尚未登入雲端房間，資料編輯已鎖定。<button onclick="openSyncModal()" class="font-bold underline">登入房間</button></div>
 
   <div class="sticky top-0 z-50 shadow-sm bg-white">
     <!-- Top Navigation Header -->
@@ -74,7 +78,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-08｜日期時間欄位精簡對齊
+            測試版 FC-09｜權限與同步修正
           </span>
         </div>
       </div>
@@ -307,7 +311,7 @@
         <h2 class="text-xs font-bold text-slate-800 flex items-center">
           <i class="fa-solid fa-pen-to-square text-amber-500 mr-1.5"></i>團體隨手記事 / 其他備忘錄
         </h2>
-        <textarea id="group-notes-input" oninput="handleNotesInput()" placeholder="大家可以在這裡輸入緊急聯絡人、集合注意事項等..." class="w-full h-40 p-3 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none leading-relaxed"></textarea>
+        <textarea id="group-notes-input" oninput="handleNotesInput()" onblur="handleNotesInput()" placeholder="大家可以在這裡輸入緊急聯絡人、集合注意事項等..." class="w-full h-40 p-3 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none leading-relaxed"></textarea>
       </div>
 
       <!-- Hotel Room Assignment Section -->
@@ -528,7 +532,7 @@
         <label class="text-[11px] font-bold text-slate-600 block mb-1">團體標籤：</label>
         <input type="text" id="input-header-grouptag" placeholder="例如：必去景點" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
-      <div class="flex space-x-2 pt-1">
+<div class="border-t pt-2 space-y-2"><p class="text-xs font-bold">開放成員編輯資訊</p><label class="text-xs flex gap-2"><input id="header-edit-flight" type="checkbox">班機</label><label class="text-xs flex gap-2"><input id="header-edit-hotel" type="checkbox">住宿</label><label class="text-xs flex gap-2"><input id="header-edit-shuttle" type="checkbox">接駁</label></div>      <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
         <button onclick="saveHeaderData()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">儲存修改</button>
       </div>
@@ -671,7 +675,7 @@
         <div class="flex gap-2"><button onclick="cancelFixedActivityEditor()" class="flex-1 bg-white border border-slate-200 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveFixedActivity()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
       </div>
 
-      <button id="fixed-research-btn" onclick="startFixedScheduleResearch()" class="w-full bg-indigo-600 text-white font-extrabold py-3 rounded-xl text-xs">🔎 查證營業／場次並產生智慧排程</button>
+      <button id="fixed-research-btn" onclick="startFixedScheduleResearch()" class="w-full bg-indigo-600 text-white font-extrabold py-3 rounded-xl text-xs">🔎 查證營業時間／場次</button>
       <div id="fixed-research-result" class="hidden rounded-xl border border-indigo-100 bg-indigo-50 p-3 text-[10px] text-slate-700 space-y-1"></div>
       <p class="text-[10px] text-slate-400 text-center">查證結果以 Edge Function 回傳資料為準；查不到的資訊會保留為「尚未確認」，不會自行猜測。</p>
       <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs">關閉</button>
@@ -897,7 +901,7 @@
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">備註說明：</label>
         <input type="text" id="input-fitem-note" placeholder="例如：必點烤龍蝦、營業至22:00" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
-      </div>
+      </div><div><label class="text-[11px] font-bold block mb-1">影音連結</label><input id="input-fitem-video" type="url" placeholder="https://…" class="w-full p-2.5 border rounded-xl text-xs"></div>
       <div id="fav-search-preview" class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1.5 hidden">
         <p class="text-[10px] font-bold text-slate-500">自動生成比對連結：</p>
         <a id="fav-preview-map" href="#" target="_blank" class="text-[11px] text-sky-600 font-bold block truncate"><i class="fa-solid fa-map-pin mr-1"></i>Google Map 導航連結</a>
@@ -920,7 +924,7 @@
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">備註事項：</label>
         <input type="text" id="input-edit-fitem-note" placeholder="例如：招牌烤龍蝦、營業至22:00" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
-      </div>
+      </div><div><label class="text-[11px] font-bold block mb-1">影音連結</label><input id="input-edit-fitem-video" type="url" placeholder="https://…" class="w-full p-2.5 border rounded-xl text-xs"></div>
       <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
         <button onclick="saveEditedFavNote()" class="flex-1 bg-rose-500 text-white py-2 rounded-xl text-xs font-semibold">儲存修改</button>
@@ -1197,7 +1201,9 @@
     }
 
     function openHeaderEditModal() {
+      if (!requireRoom() || !isOrganizer()) return showToast('只有管理者可以修改旅遊標題');
       const info = getStoredData('headerInfo', defaultHeaderInfo);
+      ['flight','hotel','shuttle'].forEach(k=>document.getElementById('header-edit-'+k).checked=!!info.memberInfoEdit?.[k]);
       const counts = parseHeaderHeadcount(info);
       const dates = parseHeaderDates(info);
 
@@ -1224,6 +1230,7 @@
     }
 
     function saveHeaderData() {
+      if (!requireRoom() || !isOrganizer()) return showToast('只有管理者可以修改旅遊標題');
       const title = document.getElementById('input-header-title').value.trim();
       const adults = Math.max(0, parseInt(document.getElementById('input-header-adults').value || '0', 10) || 0);
       const children = Math.max(0, parseInt(document.getElementById('input-header-children').value || '0', 10) || 0);
@@ -1252,6 +1259,7 @@
         groupTag: groupTag || '必去景點'
       };
 
+      newInfo.memberInfoEdit = Object.fromEntries(['flight','hotel','shuttle'].map(k=>[k,document.getElementById('header-edit-'+k).checked]));
       pushStateToCloud('headerInfo', newInfo);
       closeModal();
       showToast("頁首資訊已成功更新！");
@@ -1728,7 +1736,8 @@
     function getStoredData(key, fallback) {
       try {
         const stored = localStorage.getItem(`danang_${roomId}_${key}`);
-        return stored ? JSON.parse(stored) : fallback;
+        const value = stored ? JSON.parse(stored) : fallback;
+        return key === 'rooms' && Array.isArray(value) ? value.slice().sort((a,b)=>(a.sortOrder ?? 999999)-(b.sortOrder ?? 999999)) : value;
       } catch (e) {
         return fallback;
       }
@@ -1764,6 +1773,7 @@
     }
 
     function setCloudStatus(text, ok=false) {
+      updateRoomEditingLock();
       const el = document.getElementById('cloud-sync-status');
       if (el) {
         el.textContent = text;
@@ -1963,7 +1973,11 @@
         // 此時才釋放固定 base，並把伺服器的合併結果套回畫面。
         if (!Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) {
           delete cloudSectionBases[key];
-          setStoredData(key, merged);
+          if (key === 'notes' && document.activeElement?.id === 'group-notes-input') {
+            const draft = document.getElementById('group-notes-input').value;
+            setStoredData(key, draft);
+            if (draft !== merged) scheduleSectionPush(key, draft);
+          } else setStoredData(key, merged);
           refreshUI();
         }
         setCloudStatus(`已同步：${roomId}`, true);
@@ -1986,6 +2000,7 @@
       cloudPullBusy = true;
       const { data, error } = await cloudClient.rpc('get_trip_room', { p_room_id: roomId, p_password: cloudPassword });
       if (error || data === null) {
+        if (!error && data === null) cloudConnected = false;
         cloudPullBusy = false;
         setCloudStatus('同步失敗：無法讀取雲端資料', false);
         if (!silent) showToast('雲端讀取失敗');
@@ -1997,6 +2012,7 @@
       cloudApplying = true;
       CLOUD_KEYS.forEach(key => {
         if (!Object.prototype.hasOwnProperty.call(remote, key)) return;
+        if (key === 'notes' && document.activeElement?.id === 'group-notes-input') return;
         // 本機正在修改/送出這個區塊時，不用輪詢結果蓋掉它；RPC 完成後會取得合併結果。
         if (Object.prototype.hasOwnProperty.call(cloudSectionPending, key) || cloudSectionInFlight[key]) return;
         const remoteJson = JSON.stringify(remote[key]);
@@ -2060,6 +2076,7 @@
     }
 
     function pushStateToCloud(key, data) {
+      if (!requireRoom()) return false;
       setStoredData(key, data);
       refreshUI();
       scheduleSectionPush(key, data);
@@ -2144,7 +2161,7 @@
       const box=document.getElementById('fixed-planner-list'); if(!box) return;
       const list=getFixedActivities();
       if(!list.length){box.innerHTML='<div class="text-center text-xs text-slate-400 py-4 border border-dashed border-slate-200 rounded-xl">尚未建立固定活動</div>';return;}
-      box.innerHTML=list.map(x=>`<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="flex justify-between gap-2"><div class="min-w-0"><div class="font-extrabold text-xs">${x.name}</div><div class="text-[10px] text-slate-500 mt-1">${x.dateRule==='flexible'?'日期皆可':(x.dateValue||'有限制')}${x.time?'・'+x.time:''}${x.duration?'・停留 '+x.duration:''}</div>${x.note?`<div class="text-[10px] text-amber-700 mt-1">⚠️ ${x.note}</div>`:''}<div class="text-[10px] text-slate-400 mt-1">網路查證：${x.researchStatus||'尚未查證'}</div></div><div class="shrink-0"><button onclick="openFixedActivityEditor('${x.id}')" class="text-sky-600 p-1">✎</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500 p-1">🗑</button></div></div></div>`).join('');
+      box.innerHTML=list.map(x=>`<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="flex justify-between gap-2"><div class="min-w-0"><div class="font-extrabold text-xs">${x.name}</div><div class="text-[10px] text-slate-500 mt-1">${x.dateRule==='flexible'?'日期皆可':(x.dateValue||'有限制')}${x.time?'・'+x.time:''}${x.duration?'・停留 '+x.duration:''}</div>${x.note?`<div class="text-[10px] text-amber-700 mt-1">⚠️ ${x.note}</div>`:''}<div class="text-[10px] text-slate-400 mt-1">網路查證：${x.researchStatus === 'unverified' ? '尚未確認（不代表不能手動安排）' : (x.researchStatus||'尚未查證')}</div></div><div class="shrink-0"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600 p-1">排入 Day</button><button onclick="openFixedActivityEditor('${x.id}')" class="text-sky-600 p-1">✎</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500 p-1">🗑</button></div></div></div>`).join('');
     }
 
     function openFixedActivityEditor(id='') {
@@ -2162,13 +2179,30 @@
     function cancelFixedActivityEditor(){document.getElementById('fixed-activity-editor').classList.add('hidden');}
     function previewFixedMap(){const name=document.getElementById('fixed-name')?.value.trim()||'';const box=document.getElementById('fixed-map-preview'),link=document.getElementById('fixed-map-link');if(name.length>=2){link.href=buildAutoMapLink(name);box.classList.remove('hidden')}else box.classList.add('hidden');}
     function saveFixedActivity(){
+      if (!requireRoom()) return;
       const name=document.getElementById('fixed-name').value.trim(); if(!name)return showToast('請輸入活動或店家名稱');
       const id=document.getElementById('fixed-edit-id').value,list=getFixedActivities(),old=list.find(x=>x.id===id);
       const data={id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),time:document.getElementById('fixed-time').value.trim(),duration:document.getElementById('fixed-duration').value.trim(),note:document.getElementById('fixed-note').value.trim(),map:buildAutoMapLink(name),researchStatus:old?.researchStatus||'尚未查證'};
       const idx=list.findIndex(x=>x.id===id); if(idx>=0)list[idx]=data;else list.push(data);
       pushStateToCloud('fixedActivities',list);cancelFixedActivityEditor();renderFixedPlannerList();showToast('固定活動已儲存');
     }
-    function deleteFixedActivity(id){pushStateToCloud('fixedActivities',getFixedActivities().filter(x=>x.id!==id));renderFixedPlannerList();showToast('固定活動已刪除');}
+    function deleteFixedActivity(id){
+      if (!requireRoom()) return;pushStateToCloud('fixedActivities',getFixedActivities().filter(x=>x.id!==id));renderFixedPlannerList();showToast('固定活動已刪除');}
+    function scheduleFixedActivity(id){
+      if(!requireRoom() || !isOrganizer())return;
+      const activity=getFixedActivities().find(x=>x.id===id);if(!activity)return;
+      const data=getStoredData('itinerary',defaultItineraryData);
+      const existing=Object.entries(data).find(([day,x])=>x.items?.some(i=>i.fixedActivityId===id));
+      if(existing)return showToast('已安排至 Day '+existing[0]);
+      const validDays=Object.keys(data).filter(day=>Array.isArray(data[day]?.items));
+      const day=prompt('排入哪一天？請輸入 Day 編號（'+validDays.join('、')+'）',validDays[0]);if(day===null)return;
+      if(!validDays.includes(day.trim()))return showToast('請輸入有效的 Day 編號');
+      const verified=['verified','confirmed','ok'].includes(String(activity.researchStatus).toLowerCase());
+      if(!confirm((verified?'':'此活動營業時間／場次尚未確認。\n')+'請確認 Day '+day+' 符合日期限制：'+(activity.dateValue||'日期皆可')+'，確定排入？'))return;
+      data[day.trim()].items.push({id:'fixed-itin-'+Date.now(),fixedActivityId:id,title:activity.name,time:activity.time||'待確認',desc:escapeHtml([activity.note,activity.duration ? '停留 '+activity.duration : '',verified?'':'營業時間／場次尚未確認'].filter(Boolean).join('；')),map:buildAutoMapLink(activity.name)});
+      pushStateToCloud('itinerary',data);showToast('已安排至 Day '+day);
+    }
+
     async function startFixedScheduleResearch() {
       if (!isOrganizer()) return showToast('只有主辦人可以執行智慧排程');
       const activities = getFixedActivities();
@@ -2268,7 +2302,7 @@
         if (btn) {
           btn.disabled = false;
           btn.classList.remove('opacity-60');
-          btn.innerHTML = originalText || '🔎 查證營業／場次並產生智慧排程';
+          btn.innerHTML = originalText || '🔎 查證營業時間／場次';
         }
       }
     }
@@ -2402,17 +2436,21 @@
     };
     function getInfoConfig(){
       const x=getStoredData('infoConfig',defaultInfoConfig)||{};
-      return {visibility:{...defaultInfoConfig.visibility,...(x.visibility||{})},flight:{...defaultInfoConfig.flight,...(x.flight||{})},hotel:{...defaultInfoConfig.hotel,...(x.hotel||{})},shuttle:{...defaultInfoConfig.shuttle,...(x.shuttle||{})}};
+      return {visibility:{...defaultInfoConfig.visibility,...JSON.parse(localStorage.getItem(infoVisibilityKey()) || '{}')},flight:{...defaultInfoConfig.flight,...(x.flight||{})},hotel:{...defaultInfoConfig.hotel,...(x.hotel||{})},shuttle:{...defaultInfoConfig.shuttle,...(x.shuttle||{})}};
     }
+    function infoVisibilityKey(){ return `perfect_info_visibility_${roomId}_${currentMember?.id || currentMember?.nickname || 'member'}`; }
     function saveInfoVisibility(){
-      if(!isOrganizer()){ renderInfoPage(); return showToast('只有主辦人可以修改資訊顯示設定'); }
-      const c=getInfoConfig(); c.visibility={flight:!!document.getElementById('toggle-info-flight')?.checked,hotel:!!document.getElementById('toggle-info-hotel')?.checked,weather:!!document.getElementById('toggle-info-weather')?.checked,shuttle:!!document.getElementById('toggle-info-shuttle')?.checked};
-      pushStateToCloud('infoConfig',c); renderInfoPage(); showToast('資訊顯示設定已更新');
+      if (!requireRoom()) return;
+      const visibility={};
+      ['flight','hotel','weather','shuttle'].forEach(k=>visibility[k]=!!document.getElementById('toggle-info-'+k)?.checked);
+      localStorage.setItem(infoVisibilityKey(),JSON.stringify(visibility));
+      renderInfoPage(); showToast('你的資訊顯示設定已更新');
     }
-    function infoEditButton(type){return isOrganizer()?`<button onclick="openInfoEdit('${type}')" class="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded-lg">✏️ 編輯</button>`:'';}
+    function canEditInfo(type){ return cloudConnected && (isOrganizer() || !!getStoredData('headerInfo',defaultHeaderInfo).memberInfoEdit?.[type]); }
+    function infoEditButton(type){return canEditInfo(type)?`<button onclick="openInfoEdit('${type}')" class="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded-lg">✏️ 編輯</button>`:'';}
     function renderInfoPage(){
       const c=getInfoConfig(),v=c.visibility;
-      [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!isOrganizer();}});
+      [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected;}});
       const box=document.getElementById('info-dynamic-sections'); if(!box)return;
       let h='';
       if(v.flight){
@@ -2436,7 +2474,7 @@
       box.innerHTML=h;
     }
     function openInfoEdit(type){
-      if(!isOrganizer())return showToast('只有主辦人可以編輯資訊'); const c=getInfoConfig();
+      if(!requireRoom() || !canEditInfo(type))return showToast('管理者尚未開放此項資訊的編輯權限'); const c=getInfoConfig();
       const defs={hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
       document.getElementById('info-edit-type').value=type;
       document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊'}[type]||'編輯資訊';
@@ -2649,6 +2687,7 @@
     }
 
     function saveInfoEdit(){
+      if (!requireRoom() || !canEditInfo(document.getElementById('info-edit-type').value)) return showToast('沒有此項資訊的編輯權限');
       const type=document.getElementById('info-edit-type').value,c=getInfoConfig(); if(!c[type])return;
 
       if(type==='flight'){
@@ -2814,6 +2853,7 @@
     }
 
     function saveItineraryItem() {
+      if (!requireRoom()) return;
       if (!isOrganizer()) return showToast('團體每日行程僅限主辦人修改');
       const itemId = document.getElementById('edit-itin-id').value;
       const title = document.getElementById('input-itin-title').value.trim();
@@ -2860,6 +2900,7 @@
     }
 
     function moveItineraryOrder(index, direction) {
+      if (!requireRoom()) return;
       if (!isOrganizer()) return showToast('團體每日行程僅限主辦人調整');
       const data = getStoredData('itinerary', defaultItineraryData);
       const items = data[currentDay].items;
@@ -2873,6 +2914,8 @@
     }
 
     function deleteItineraryItem(itemId) {
+      if (!confirm('確定刪除這筆行程嗎？')) return;
+      if (!requireRoom()) return;
       if (!isOrganizer()) return showToast('團體每日行程僅限主辦人刪除');
       const data = getStoredData('itinerary', defaultItineraryData);
       data[currentDay].items = data[currentDay].items.filter(i => i.id !== itemId);
@@ -2890,6 +2933,7 @@
     }
 
     function executeMoveDay(targetDay) {
+      if (!requireRoom()) return;
       if (!isOrganizer()) return showToast('團體每日行程僅限主辦人調整');
       const itemId = document.getElementById('move-item-id').value;
       const data = getStoredData('itinerary', defaultItineraryData);
@@ -2966,6 +3010,7 @@
     }
 
     function togglePersonalPackingItem(itemId) {
+      if (!requireRoom()) return;
       const personalCheckedState = getPersonalPackingState('checked');
       personalCheckedState[itemId] = !personalCheckedState[itemId];
       setPersonalPackingState('checked', personalCheckedState);
@@ -2973,6 +3018,7 @@
     }
 
     function deletePersonalPackingItem(catId, itemId) {
+      if (!requireRoom()) return;
       // 個人刪除：只記錄在這台裝置，不修改全團 packing 雲端資料。
       const personalHiddenState = getPersonalPackingState('hidden');
       personalHiddenState[itemId] = true;
@@ -3066,7 +3112,7 @@
                         </div>
                         ${item.note ? `<p class="text-[10px] text-slate-500 mt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-rose-400"></i>${item.note}</p>` : ''}
                         ${votersText ? `<p class="text-[10px] text-amber-800 font-medium mt-0.5"><i class="fa-solid fa-users mr-1 text-amber-600"></i>想去名單：${votersText}</p>` : ''}
-                        <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-300"></i>建議 Day ${prox.day} (${prox.driveMinutes})</p>
+                        <p class="text-[10px] text-slate-400 mt-0.5"><i class="fa-solid fa-location-dot mr-1 text-slate-300"></i>${getFavoriteDays(item.id).length ? '已安排至 Day ' + getFavoriteDays(item.id).join('、') : '建議 Day '+prox.day+' ('+prox.driveMinutes+')'}</p>
                       </div>
                     </div>
                     <div class="flex items-center space-x-1">
@@ -3075,6 +3121,7 @@
                       <button onclick="deleteFavItem('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                   </div>
+                  <div class="flex gap-3 pt-1"><a href="${escapeHtml(buildAutoMapLink(item.name))}" target="_blank" rel="noopener noreferrer" class="text-sky-600 font-bold text-[11px]">📍 地圖</a>${safeExternalUrl(item.video) ? `<a href="${escapeHtml(safeExternalUrl(item.video))}" target="_blank" rel="noopener noreferrer" class="text-rose-600 font-bold text-[11px]">▶ 影音</a>` : ''}</div>
                 </div>
               `;
             }).join('')}
@@ -3125,6 +3172,7 @@
     }
 
     function removeFavVote(catId, itemId, voterId) {
+      if (!requireRoom()) return;
       const data = getStoredData('favorites', defaultFavoritesData);
       const cat = data.find(c => c.id === catId);
       if (!cat) return;
@@ -3140,6 +3188,7 @@
     }
 
     function saveFavVote() {
+      if (!requireRoom()) return;
       const catId = document.getElementById('vote-fcat-id').value;
       const itemId = document.getElementById('vote-fitem-id').value;
       const name = document.getElementById('input-vote-name').value.trim();
@@ -3196,6 +3245,7 @@
     }
 
     function toggleFavVisited(catId, itemId) {
+      if (!requireRoom()) return;
       const data = getStoredData('favorites', defaultFavoritesData);
       const cat = data.find(c => c.id === catId);
       if (cat) {
@@ -3206,6 +3256,7 @@
     }
 
     function deleteFavItem(catId, itemId) {
+      if (!requireRoom()) return;
       const data = getStoredData('favorites', defaultFavoritesData);
       const cat = data.find(c => c.id === catId);
       if (cat) {
@@ -3223,6 +3274,7 @@
     }
 
     function saveEditedFavCat() {
+      if (!requireRoom()) return;
       const catId = document.getElementById('edit-fcat-target-id').value;
       const newTitle = document.getElementById('input-edit-fcat-title').value.trim();
       if (newTitle) {
@@ -3248,6 +3300,7 @@
       document.getElementById('edit-fitem-id').value = itemId;
       document.getElementById('edit-fitem-name-display').textContent = item.name;
       document.getElementById('input-edit-fitem-note').value = item.note || '';
+      document.getElementById('input-edit-fitem-video').value = item.video || '';
 
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -3255,6 +3308,7 @@
     }
 
     function saveEditedFavNote() {
+      if (!requireRoom()) return;
       const catId = document.getElementById('edit-fcat-id').value;
       const itemId = document.getElementById('edit-fitem-id').value;
       const newNote = document.getElementById('input-edit-fitem-note').value.trim();
@@ -3265,6 +3319,7 @@
         const catItem = cat.items.find(i => i.id === itemId);
         if (catItem) {
           catItem.note = newNote;
+          catItem.video = safeExternalUrl(document.getElementById('input-edit-fitem-video').value.trim());
         }
       }
       pushStateToCloud('favorites', data);
@@ -3287,7 +3342,7 @@
       container.innerHTML = allFavs.map((item, idx) => `
         <div class="py-2.5 flex items-start justify-between space-x-2">
           <label class="flex items-start space-x-2 cursor-pointer flex-1">
-            <input type="checkbox" value="${item.id}" class="smart-match-checkbox mt-0.5 text-rose-500 rounded">
+            <input type="checkbox" ${getFavoriteDays(item.id).length ? 'disabled' : ''} value="${item.id}" class="smart-match-checkbox mt-0.5 text-rose-500 rounded">
             <div>
               <div class="flex items-center space-x-1.5 flex-wrap">
                 <span class="font-bold text-slate-800 text-xs">${item.name}</span>
@@ -3295,7 +3350,7 @@
                 ${item.voteInfo.total > 0 ? `<span class="text-[9px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded-full">${item.voteInfo.summaryStr} 想去</span>` : ''}
               </div>
               <p class="text-[10px] text-slate-500 mt-0.5">${item.note || '無備註'}</p>
-              <span class="text-[10px] text-sky-600 font-bold mt-0.5 block">📍 推薦排入 Day ${item.prox.day} (近 ${item.prox.nearbyPoint})</span>
+              <span class="text-[10px] text-sky-600 font-bold mt-0.5 block">${getFavoriteDays(item.id).length ? '✅ 已安排至 Day '+getFavoriteDays(item.id).join('、') : '📍 推薦排入 Day '+item.prox.day+' (近 '+item.prox.nearbyPoint+')'}</span>
             </div>
           </label>
         </div>
@@ -3307,6 +3362,7 @@
     }
 
     function applySmartMatchSelection() {
+      if (!requireRoom()) return;
       if (!isOrganizer()) return showToast('智慧安排正式行程僅限主辦人使用');
       const checkboxes = document.querySelectorAll('.smart-match-checkbox:checked');
       const selectedIds = Array.from(checkboxes).map(cb => cb.value);
@@ -3326,7 +3382,7 @@
           const day = prox.day;
           const voteInfo = getItemVotesBreakdown(foundFav);
           
-          const exists = itineraryData[day].items.some(i => i.favItemId === foundFav.id);
+          const exists = getFavoriteDays(foundFav.id).length > 0;
           if (!exists) {
             const voteText = voteInfo.total > 0 ? `<span class="text-amber-600 font-bold"><i class="fa-solid fa-fire text-amber-500 mr-1"></i>團員喜愛度：${voteInfo.summaryStr}</span><br>` : '';
             itineraryData[day].items.push({
@@ -3526,6 +3582,7 @@
     }
 
     function saveTicketItem() {
+      if (!requireRoom()) return;
       const editId = document.getElementById('edit-ticket-id').value;
       const name = document.getElementById('input-ticket-name').value.trim();
       const price = Number(document.getElementById('input-ticket-price').value) || 0;
@@ -3564,6 +3621,7 @@
     }
 
     function deleteTicketItem(ticketId) {
+      if (!requireRoom()) return;
       let list = getStoredData('tickets', defaultTicketsData);
       list = list.filter(i => i.id !== ticketId);
       pushStateToCloud('tickets', list);
@@ -3597,6 +3655,7 @@
     }
 
     function saveFixedExpense() {
+      if (!requireRoom()) return;
       const editId = document.getElementById('edit-fe-id').value;
       const name = document.getElementById('input-fe-name').value.trim();
       const adult = Number(document.getElementById('input-fe-adult').value) || 0;
@@ -3634,6 +3693,7 @@
     }
 
     function deleteFixedExpense(expenseId) {
+      if (!requireRoom()) return;
       let list = getStoredData('fixedExpenses', defaultFixedExpensesData);
       list = list.filter(i => i.id !== expenseId);
       pushStateToCloud('fixedExpenses', list);
@@ -3641,6 +3701,7 @@
     }
 
     function toggleTicketCheck(id) {
+      if (!requireRoom()) return;
       const data = getStoredData('tickets', defaultTicketsData);
       const item = data.find(i => i.id === id);
       if (item) item.checked = !item.checked;
@@ -3649,11 +3710,13 @@
 
     function renderNotes() {
       const saved = getStoredData('notes', '');
-      document.getElementById('group-notes-input').value = saved;
+      const input = document.getElementById('group-notes-input');
+      if (document.activeElement !== input && !cloudSectionInFlight.notes && !Object.prototype.hasOwnProperty.call(cloudSectionPending, 'notes')) input.value = saved;
       renderRoomsList();
     }
 
     function handleNotesInput() {
+      if (!requireRoom()) return;
       const val = document.getElementById('group-notes-input').value;
       setStoredData('notes', val);
       scheduleSectionPush('notes', val);
@@ -3721,6 +3784,7 @@
     }
 
     function saveRoomItem() {
+      if (!requireRoom()) return;
       const editId = document.getElementById('edit-room-id').value;
       const hotel = document.getElementById('input-room-hotel').value;
       const guests = document.getElementById('input-room-guests').value.trim();
@@ -3756,17 +3820,20 @@
     }
 
     function moveRoomOrder(index, direction) {
+      if (!requireRoom()) return;
       const rooms = getStoredData('rooms', defaultRoomsData);
       const targetIndex = index + direction;
       if (targetIndex >= 0 && targetIndex < rooms.length) {
         const temp = rooms[index];
         rooms[index] = rooms[targetIndex];
         rooms[targetIndex] = temp;
+        rooms.forEach((room, i) => room.sortOrder = i);
         pushStateToCloud('rooms', rooms);
       }
     }
 
     function deleteRoomItem(roomId) {
+      if (!requireRoom()) return;
       let rooms = getStoredData('rooms', defaultRoomsData);
       rooms = rooms.filter(r => r.id !== roomId);
       pushStateToCloud('rooms', rooms);
@@ -3828,6 +3895,7 @@
     }
 
     function saveSouvenirItem() {
+      if (!requireRoom()) return;
       const souvId = document.getElementById('edit-souv-id').value;
       const name = document.getElementById('input-souv-name').value.trim();
       const price = document.getElementById('input-souv-price').value.trim();
@@ -3861,6 +3929,7 @@
     }
 
     function deleteSouvenir(id) {
+      if (!requireRoom()) return;
       let souvenirs = getStoredData('souvenirs', defaultSouvenirsData);
       souvenirs = souvenirs.filter(i => i.id !== id);
       pushStateToCloud('souvenirs', souvenirs);
@@ -3902,6 +3971,7 @@
     }
 
     function savePackingCat() {
+      if (!requireRoom()) return;
       const title = document.getElementById('input-pcat-title').value.trim();
       if (title) {
         const data = getStoredData('packing', defaultPackingData);
@@ -3921,6 +3991,7 @@
     }
 
     function savePackingItem() {
+      if (!requireRoom()) return;
       const catId = document.getElementById('target-pcat-id').value;
       const name = document.getElementById('input-pitem-name').value.trim();
       const note = document.getElementById('input-pitem-note').value.trim();
@@ -3944,6 +4015,7 @@
     }
 
     function saveFavCat() {
+      if (!requireRoom()) return;
       const title = document.getElementById('input-fcat-title').value.trim();
       if (title) {
         const data = getStoredData('favorites', defaultFavoritesData);
@@ -3957,6 +4029,7 @@
       document.getElementById('target-fcat-id').value = catId;
       document.getElementById('input-fitem-name').value = '';
       document.getElementById('input-fitem-note').value = '';
+      document.getElementById('input-fitem-video').value = '';
       document.getElementById('fav-search-preview').classList.add('hidden');
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -3977,6 +4050,7 @@
     }
 
     function saveFavItem() {
+      if (!requireRoom()) return;
       const catId = document.getElementById('target-fcat-id').value;
       const name = document.getElementById('input-fitem-name').value.trim();
       const note = document.getElementById('input-fitem-note').value.trim();
@@ -3985,12 +4059,38 @@
         const data = getStoredData('favorites', defaultFavoritesData);
         const cat = data.find(c => c.id === catId);
         if (cat) {
-          cat.items.push({ id: `fitem-${Date.now()}`, name, note, votes: 0, visited: false, voters: [] });
+          cat.items.push({ id: `fitem-${Date.now()}`, name, note, video: safeExternalUrl(document.getElementById('input-fitem-video').value.trim()), votes: 0, visited: false, voters: [] });
           pushStateToCloud('favorites', data);
         }
         closeModal();
       }
     }
+
+
+    function requireRoom(){
+      if (cloudConnected && cloudPassword && cloudClient) return true;
+      showToast('請先登入雲端房間，才能輸入或修改資料'); return false;
+    }
+    function safeExternalUrl(value){ try { const u=new URL(value); return ['http:','https:'].includes(u.protocol) ? u.href : ''; } catch(e){return '';} }
+    function getFavoriteDays(id){const data=getStoredData('itinerary',defaultItineraryData);return Object.entries(data).filter(([day,x])=>x?.items?.some(i=>i.favItemId===id)).map(([day])=>day);}
+    function updateRoomEditingLock(){
+      const unlocked=!!(cloudConnected && cloudPassword && cloudClient);
+      document.getElementById('room-login-warning')?.classList.toggle('hidden',unlocked);
+      document.querySelectorAll('.page-content input,.page-content textarea,.page-content select').forEach(el=>{
+        if(el.id.startsWith('fx-') || el.closest('#page-currency') || el.id.includes('currency') || el.id.includes('convert') || el.closest('[id*="currency"]')) return;
+        el.disabled=!unlocked;
+      });
+      const heading=document.querySelector('button[onclick="openHeaderEditModal()"]');
+      if(heading){heading.disabled=!unlocked || !isOrganizer();heading.querySelector('.fa-pencil')?.classList.toggle('hidden',heading.disabled);}
+    }
+    document.addEventListener('click',function(e){
+      if(cloudConnected) return;
+      const trigger=e.target.closest('[onclick],[onchange]'); if(!trigger)return;
+      const action=trigger.getAttribute('onclick')||trigger.getAttribute('onchange')||'';
+      if(/(?:openAdd|openEdit|openRoomModal|openTicketModal|openFixed|openInfoEdit|openVote|openHeaderEdit|save|delete|toggleFav|moveRoom|moveItinerary|openMoveDay|applySmart|removeFav)/.test(action)){
+        e.preventDefault();e.stopImmediatePropagation();requireRoom();
+      }
+    },true);
 
     function refreshUI() {
       renderHeaderInfo();
@@ -4001,6 +4101,7 @@
       renderNotes();
       calculateCurrencyConversion();
       renderInfoPage();
+      updateRoomEditingLock();
     }
 
     window.onload = async function() {
