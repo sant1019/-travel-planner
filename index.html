@@ -67,10 +67,11 @@
     #page-budget, #fixed-expenses-tbody { font-variant-numeric: tabular-nums; }
     #page-budget td:not(:first-child), #page-budget [id^="calc-"] { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 12px; font-weight: 600; white-space: nowrap; }
     #page-itinerary button[onclick^="deleteItineraryItem"] { margin-left: 12px; min-width: 28px; min-height: 28px; }
+    .info-choice-disabled { background: #e2e8f0 !important; color: #94a3b8 !important; border-color: #cbd5e1 !important; cursor: not-allowed; filter: grayscale(1); }
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
-<div id="room-login-warning" class="bg-amber-100 text-amber-900 text-xs p-2 text-center">尚未登入雲端房間，資料編輯已鎖定。<button onclick="openSyncModal()" class="font-bold underline">登入房間</button></div>
+<div id="room-login-warning" class="bg-amber-100 text-amber-900 text-xs p-2 text-center">尚未完成房間／成員登入，資料編輯已鎖定。<button onclick="cloudConnected ? openMemberIdentityModal() : openSyncModal()" class="font-bold underline">登入房間／成員</button></div>
 
   <div class="sticky top-0 z-50 shadow-sm bg-white">
     <!-- Top Navigation Header -->
@@ -78,7 +79,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-10｜旅程資訊與房間登入設定
+            測試版 FC-12｜成員密碼登入與資訊反灰
           </span>
         </div>
       </div>
@@ -329,7 +330,7 @@
     <section id="page-info" class="page-content hidden space-y-3">
       <!-- 資訊顯示設定 -->
       <div class="bg-indigo-50 border border-indigo-100 p-3 rounded-2xl shadow-sm space-y-2">
-        <div class="flex items-center justify-between"><h2 class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-sliders mr-1.5"></i>資訊顯示設定</h2><span class="text-[9px] text-indigo-500">全團同步</span></div>
+        <div class="flex items-center justify-between"><h2 class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-sliders mr-1.5"></i>資訊顯示設定</h2><span class="text-[9px] text-indigo-500">個人顯示設定</span></div>
         <p class="text-[10px] text-indigo-600">選擇資訊頁要顯示的內容；主辦人可編輯班機、住宿與接駁資料。</p>
         <div class="grid grid-cols-2 gap-2 text-[11px] font-bold text-slate-700">
           <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 班機</label>
@@ -557,16 +558,19 @@
     </div>
 
     <!-- Member Identity Modal -->
-    <div id="modal-member-identity" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
+    <div id="modal-member-identity" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[85vh] overflow-y-auto">
       <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-user-group text-sky-600 mr-1.5"></i>設定你的暱稱</h3>
-      <p class="text-[11px] text-slate-500">第一次使用請建立新成員；如果你已經在其他裝置使用過，請直接選擇既有暱稱。</p>
+      <p class="text-[11px] text-slate-500">新成員請設定自己的暱稱與密碼；既有成員必須輸入個人密碼才能登入或切換身分。</p>
       <div id="existing-members-wrap" class="hidden">
         <label class="text-[11px] font-bold text-slate-600 block mb-1">我是既有成員</label>
         <div id="existing-members-list" class="grid gap-2"></div>
       </div>
+      <div class="space-y-2 border-t pt-3"><label class="text-xs font-bold">登入既有成員</label><input id="input-member-login-nickname" autocomplete="username" placeholder="暱稱" class="w-full p-2.5 border rounded-xl text-xs"><input id="input-member-login-password" type="password" autocomplete="current-password" placeholder="個人密碼" class="w-full p-2.5 border rounded-xl text-xs"><button onclick="loginMemberIdentity()" class="w-full bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">驗證並登入</button></div>
       <div class="border-t border-slate-100 pt-3">
         <label class="text-[11px] font-bold text-slate-600 block mb-1">建立新成員</label>
         <input type="text" id="input-member-nickname" maxlength="30" placeholder="輸入暱稱" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
+        <input id="input-member-password" type="password" autocomplete="new-password" placeholder="設定個人密碼（至少六個字元）" class="mt-2 w-full p-2.5 border rounded-xl text-xs">
+        <input id="input-member-password-confirm" type="password" autocomplete="new-password" placeholder="再次輸入個人密碼" class="mt-2 w-full p-2.5 border rounded-xl text-xs">
         <button onclick="createMemberIdentity()" class="mt-2 w-full bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">建立並使用這個暱稱</button>
       </div>
       <p id="member-identity-status" class="text-[10px] text-slate-400"></p>
@@ -580,6 +584,7 @@
         <label class="text-[11px] font-bold text-slate-600 block mb-1">更改我的暱稱</label>
         <input type="text" id="input-member-new-nickname" maxlength="30" placeholder="輸入新暱稱" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
+      <button onclick="openMemberIdentityModal()" class="w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換成員／建立自己的身分</button>
       <p id="member-settings-status" class="text-[10px] text-slate-400"></p>
       <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
@@ -1515,6 +1520,20 @@
     let cloudConnected = false;
     let currentMember = null;
 
+    function memberTokenKey(){return `perfect_member_token_${roomId}`;}
+    function getMemberToken(){return sessionStorage.getItem(memberTokenKey())||'';}
+    function memberLoginError(error){
+      const code=String(error?.message||error||'');
+      if(code.includes('member_password_not_set'))return '此暱稱尚未設定個人密碼，請由主辦人在 Supabase 補設';
+      if(code.includes('temporarily_blocked'))return '密碼錯誤次數過多，請五分鐘後再試';
+      if(code.includes('nickname_already_exists'))return '暱稱已有人使用，請改用登入或換一個暱稱';
+      if(code.includes('Could not find')||code.includes('PGRST202'))return '成員密碼功能尚未安裝，請先執行 FC-12 SQL';
+      return '暱稱或密碼不正確，或無法連線，請確認後再試';
+    }
+    function useAuthenticatedMember(data){
+      if(!data?.token||!data?.member?.id)throw new Error(data?.error||'invalid_member_credentials');
+      sessionStorage.setItem(memberTokenKey(),data.token);saveMemberIdentity(data.member);refreshUI();
+    }
     function memberStorageKey(targetRoom = roomId) { return `perfect_member_${targetRoom}`; }
 
     function loadStoredMember(targetRoom = roomId) {
@@ -1533,6 +1552,7 @@
       renderMemberIdentity();
       updateItineraryPermissions();
       renderInfoPage();
+      updateRoomEditingLock();
     }
 
     function renderMemberIdentity() {
@@ -1557,45 +1577,19 @@
       return Array.isArray(data) ? data : [];
     }
 
-    async function ensureMemberIdentity(showIfMissing=true) {
-      if (!cloudConnected) return;
-
-      const stored = loadStoredMember();
-
-      // 尚未選擇成員時，先顯示視窗，再讀取雲端成員。
-      if (!stored && showIfMissing) {
-        closeModal();
-        document.getElementById('modal-backdrop').classList.remove('hidden');
-        document.getElementById('modal-member-identity').classList.remove('hidden');
-        setMemberStatus('正在讀取成員…');
+    async function ensureMemberIdentity(showIfMissing=true){
+      if(!cloudConnected)return;
+      const token=getMemberToken();
+      if(token){
+        try{
+          const {data,error}=await cloudClient.rpc('get_trip_member_session',{p_room_id:roomId,p_member_token:token});
+          if(!error&&data?.id){saveMemberIdentity(data);refreshUI();return;}
+        }catch(e){}
+        sessionStorage.removeItem(memberTokenKey());
       }
-
-      try {
-        const members = await fetchRoomMembers();
-
-        if (stored) {
-          const verified = members.find(m => m.id === stored.id && m.nickname === stored.nickname);
-          if (verified) {
-            saveMemberIdentity(verified);
-            return;
-          }
-        }
-
-        currentMember = null;
-        renderMemberIdentity();
-
-        if (showIfMissing) await openMemberIdentityModal(members);
-      } catch (e) {
-        console.error('member identity error:', e);
-        if (showIfMissing) {
-          closeModal();
-          document.getElementById('modal-backdrop').classList.remove('hidden');
-          document.getElementById('modal-member-identity').classList.remove('hidden');
-          setMemberStatus('成員資料讀取失敗，請稍後再試', true);
-        }
-      }
+      currentMember=null;renderMemberIdentity();refreshUI();
+      if(showIfMissing)await openMemberIdentityModal();
     }
-
     async function openMemberIdentityModal(prefetchedMembers=null) {
       if (!cloudConnected) return showToast('請先登入雲端房間');
       closeModal();
@@ -1625,32 +1619,45 @@
       }
     }
 
-    function selectExistingMember(member) {
-      saveMemberIdentity(member);
-      closeModal(true);
-      showToast(`已使用暱稱：${member.nickname}`);
+    function selectExistingMember(member){
+      document.getElementById('input-member-login-nickname').value=member.nickname;
+      document.getElementById('input-member-login-password').value='';
+      document.getElementById('input-member-login-password').focus();
+      setMemberStatus('請輸入 '+member.nickname+' 的個人密碼');
     }
-
-    async function createMemberIdentity() {
-      const input = document.getElementById('input-member-nickname');
-      const nickname = (input?.value || '').trim();
-      if (!nickname) return setMemberStatus('請輸入暱稱', true);
+    async function loginMemberIdentity(){
+      if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setMemberStatus('資料正在同步，請稍後再切換身分',true);
+      if(!cloudConnected)return;
+      const nickname=document.getElementById('input-member-login-nickname').value.trim();
+      const password=document.getElementById('input-member-login-password').value;
+      if(!nickname||!password)return setMemberStatus('請輸入暱稱與個人密碼',true);
+      setMemberStatus('正在驗證…');
+      try{
+        const {data,error}=await cloudClient.rpc('login_trip_member_secure',{p_room_id:roomId,p_password:cloudPassword,p_nickname:nickname,p_member_password:password});
+        if(error||data?.error)throw error||new Error(data.error);
+        const oldToken=getMemberToken();useAuthenticatedMember(data);
+        if(oldToken)cloudClient.rpc('logout_trip_member_secure',{p_room_id:roomId,p_member_token:oldToken});
+        document.getElementById('input-member-login-password').value='';closeModal(true);showToast('已登入：'+data.member.nickname);
+      }catch(e){setMemberStatus(memberLoginError(e),true);}
+    }
+    async function createMemberIdentity(){
+      if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setMemberStatus('資料正在同步，請稍後再切換身分',true);
+      if(!cloudConnected)return;
+      const nickname=document.getElementById('input-member-nickname').value.trim();
+      const password=document.getElementById('input-member-password').value;
+      const confirmation=document.getElementById('input-member-password-confirm').value;
+      if(!nickname)return setMemberStatus('請輸入暱稱',true);
+      if(password.length<6 || new TextEncoder().encode(password).length>72)return setMemberStatus('個人密碼至少六個字元，最多 72 bytes',true);
+      if(password!==confirmation)return setMemberStatus('兩次密碼不一致',true);
       setMemberStatus('正在建立…');
-      try {
-        const { data, error } = await cloudClient.rpc('create_trip_room_member', { p_room_id: roomId, p_password: cloudPassword, p_nickname: nickname });
-        if (error) {
-          const msg = error.message || '';
-          if (msg.includes('nickname_already_exists') || msg.includes('duplicate')) setMemberStatus('這個暱稱已有人使用，請選擇既有成員或換一個暱稱', true);
-          else setMemberStatus('建立暱稱失敗，請稍後再試', true);
-          return;
-        }
-        saveMemberIdentity(data);
-        closeModal(true);
-        showToast(`歡迎，${data.nickname}`);
-      } catch (e) {
-        console.error('create member error:', e);
-        setMemberStatus('建立暱稱失敗，請稍後再試', true);
-      }
+      try{
+        const {data,error}=await cloudClient.rpc('register_trip_member_secure',{p_room_id:roomId,p_password:cloudPassword,p_nickname:nickname,p_member_password:password});
+        if(error||data?.error)throw error||new Error(data.error);
+        const oldToken=getMemberToken();useAuthenticatedMember(data);
+        if(oldToken)cloudClient.rpc('logout_trip_member_secure',{p_room_id:roomId,p_member_token:oldToken});
+        document.getElementById('input-member-password').value='';document.getElementById('input-member-password-confirm').value='';
+        closeModal(true);showToast('歡迎，'+data.member.nickname);
+      }catch(e){setMemberStatus(memberLoginError(e),true);}
     }
     function setMemberSettingsStatus(text, isError=false) {
       const el = document.getElementById('member-settings-status');
@@ -1687,10 +1694,10 @@
         if (duplicate) return setMemberSettingsStatus('這個暱稱已有人使用，請換一個暱稱', true);
 
         // 需要 Supabase 建立 rename_trip_room_member RPC；若尚未建立，畫面會明確提示。
-        const { data, error } = await cloudClient.rpc('rename_trip_room_member', {
+        const { data, error } = await cloudClient.rpc('rename_trip_member_secure', {
           p_room_id: roomId,
           p_password: cloudPassword,
-          p_member_id: currentMember.id,
+          p_member_token: getMemberToken(),
           p_nickname: nickname
         });
         if (error) {
@@ -1913,7 +1920,7 @@
       if (display) display.textContent = roomId;
       setCloudStatus(`已連線：${roomId}`, true);
       startCloudPolling();
-      currentMember = loadStoredMember(newRoom);
+      currentMember = null;
       renderMemberIdentity();
       updateItineraryPermissions();
       renderInfoPage();
@@ -1921,15 +1928,13 @@
 
       // 房間一驗證成功就獨立啟動成員身分檢查，
       // 不再等待後續 pullCloudState，避免同步流程阻擋暱稱視窗。
-      if (!currentMember) {
-        setTimeout(() => ensureMemberIdentity(true), 300);
-      }
+      setTimeout(() => ensureMemberIdentity(true), 300);
     }
 
     // 多人安全同步：每次只更新被修改的區塊，並把「修改前版本」一起交給
     // Supabase 的 update_trip_room_section_safe 做三方合併，避免多人同時新增互蓋。
     function scheduleSectionPush(key, data) {
-      if (!cloudConnected || !cloudPassword || !cloudClient || cloudApplying) return;
+      if (!cloudConnected || !cloudPassword || !cloudClient || !currentMember || !getMemberToken() || cloudApplying) return;
 
       // 只在這一輪本機修改的第一次記住 base。之後即使收到另一支手機的
       // Realtime / polling，也不能把這個「修改前版本」換掉。
@@ -1956,9 +1961,10 @@
       cloudSectionInFlight[key] = true;
       setCloudStatus(`同步中：${roomId}…`, false);
 
-      const { data: merged, error } = await cloudClient.rpc('update_trip_room_section_safe', {
+      const { data: merged, error } = await cloudClient.rpc('update_trip_room_section_authenticated', {
         p_room_id: roomId,
         p_password: cloudPassword,
+        p_member_token: getMemberToken(),
         p_section: key,
         p_base: baseData,
         p_data: localData
@@ -1986,6 +1992,7 @@
           cloudSectionPending[key] = localData;
         }
         setCloudStatus('同步失敗，資料已保留在本機');
+        if(error?.message?.includes('member_login_required')){currentMember=null;sessionStorage.removeItem(memberTokenKey());refreshUI();openMemberIdentityModal();return;}
       }
 
       if (Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) {
@@ -2136,7 +2143,7 @@
     function isOrganizer() {
       // currentMember 在雲端重新連線/同步期間可能短暫為 null。
       // 此時改讀本機已驗證過的成員身分，避免主辦人按鈕被錯誤隱藏。
-      const member = currentMember || loadStoredMember(roomId);
+      const member = getMemberToken() ? currentMember : null;
       return !!(member && member.role === 'organizer');
     }
 
@@ -2453,7 +2460,8 @@
       const c=getInfoConfig(),v={...c.visibility};
       const required=getStoredData('headerInfo',defaultHeaderInfo).requiredInfo || {};
       ['flight','hotel','shuttle'].forEach(k=>{if(required[k] === false)v[k]=false;});
-      [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;}});
+      [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;
+        const label=e.closest('label');if(label){label.classList.toggle('info-choice-disabled',e.disabled);label.title=required[k] === false ? '主辦人未勾選本次旅程所需資訊' : '';}}});
       const box=document.getElementById('info-dynamic-sections'); if(!box)return;
       let h='';
       if(v.flight){
@@ -4073,6 +4081,8 @@
       if(Object.values(cloudSectionInFlight).some(Boolean))return showToast('資料正在同步，請稍後再登出');
       for(const key of Object.keys(cloudSectionPending))await flushSectionPush(key);
       if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return showToast('資料尚未同步完成，請先確認連線再登出');
+      const oldToken=getMemberToken();if(oldToken){try{await cloudClient.rpc('logout_trip_member_secure',{p_room_id:roomId,p_member_token:oldToken});}catch(e){}}
+      sessionStorage.removeItem(memberTokenKey());
       cloudConnected=false; cloudPassword=''; currentMember=null;
       localStorage.removeItem('perfect_cloud_password');sessionStorage.removeItem('perfect_cloud_password');
       clearInterval(cloudPollTimer);cloudPollTimer=null;
@@ -4082,25 +4092,27 @@
       closeModal(true);renderMemberIdentity();refreshUI();setCloudStatus('尚未登入雲端房間');showToast('已登出房間，資料編輯已鎖定');
     }
     function requireRoom(){
-      if (cloudConnected && cloudPassword && cloudClient) return true;
-      showToast('請先登入雲端房間，才能輸入或修改資料'); return false;
+      if (cloudConnected && cloudPassword && cloudClient && currentMember && getMemberToken()) return true;
+      showToast('請先登入房間並驗證成員暱稱與密碼，才能編輯資料'); return false;
     }
     function safeExternalUrl(value){ try { const u=new URL(value); return ['http:','https:'].includes(u.protocol) ? u.href : ''; } catch(e){return '';} }
     function getFavoriteDays(id){const data=getStoredData('itinerary',defaultItineraryData);return Object.entries(data).filter(([day,x])=>x?.items?.some(i=>i.favItemId===id)).map(([day])=>day);}
     function updateRoomEditingLock(){
-      const unlocked=!!(cloudConnected && cloudPassword && cloudClient);
+      const unlocked=!!(cloudConnected && cloudPassword && cloudClient && currentMember && getMemberToken());
       document.getElementById('room-login-warning')?.classList.toggle('hidden',unlocked);
-      document.getElementById('logout-room-button')?.classList.toggle('hidden',!unlocked);
+      document.getElementById('logout-room-button')?.classList.toggle('hidden',!cloudConnected);
       const roomLabel=document.getElementById('room-name-display');if(roomLabel)roomLabel.textContent=unlocked ? roomId : '登入房間';
       document.querySelectorAll('.page-content input,.page-content textarea,.page-content select').forEach(el=>{
         if(el.id.startsWith('fx-') || el.closest('#page-currency') || el.id.includes('currency') || el.id.includes('convert') || el.closest('[id*="currency"]')) return;
-        el.disabled=!unlocked;
+        const infoKey=el.id.startsWith('toggle-info-') ? el.id.replace('toggle-info-','') : null;
+        const unavailable=infoKey && getStoredData('headerInfo',defaultHeaderInfo).requiredInfo?.[infoKey] === false;
+        el.disabled=!unlocked || !!unavailable;
       });
       const heading=document.querySelector('button[onclick="openHeaderEditModal()"]');
       if(heading){heading.disabled=!unlocked || !isOrganizer();heading.querySelector('.fa-pencil')?.classList.toggle('hidden',heading.disabled);}
     }
     document.addEventListener('click',function(e){
-      if(cloudConnected) return;
+      if(cloudConnected && currentMember && getMemberToken()) return;
       const trigger=e.target.closest('[onclick],[onchange]'); if(!trigger)return;
       const action=trigger.getAttribute('onclick')||trigger.getAttribute('onchange')||'';
       if(/(?:openAdd|openEdit|openRoomModal|openTicketModal|openFixed|openInfoEdit|openVote|openHeaderEdit|save|delete|toggleFav|moveRoom|moveItinerary|openMoveDay|applySmart|removeFav)/.test(action)){
