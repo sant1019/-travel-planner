@@ -78,7 +78,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-09｜權限與同步修正
+            測試版 FC-10｜旅程資訊與房間登入設定
           </span>
         </div>
       </div>
@@ -298,10 +298,7 @@
             <span>總支出金額：</span>
             <span id="calc-grand-total" class="text-sky-700">$21,389</span>
           </div>
-          <div class="flex justify-between text-emerald-600 font-bold text-xs pt-0.5">
-            <span>剩餘自由支配預算：</span>
-            <span id="calc-remaining-budget">$3,611</span>
-          </div>
+
         </div>
       </div>
     </section>
@@ -532,7 +529,7 @@
         <label class="text-[11px] font-bold text-slate-600 block mb-1">團體標籤：</label>
         <input type="text" id="input-header-grouptag" placeholder="例如：必去景點" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
-<div class="border-t pt-2 space-y-2"><p class="text-xs font-bold">開放成員編輯資訊</p><label class="text-xs flex gap-2"><input id="header-edit-flight" type="checkbox">班機</label><label class="text-xs flex gap-2"><input id="header-edit-hotel" type="checkbox">住宿</label><label class="text-xs flex gap-2"><input id="header-edit-shuttle" type="checkbox">接駁</label></div>      <div class="flex space-x-2 pt-1">
+<div class="border-t pt-2 space-y-2"><p class="text-xs font-bold">本次旅程所需資訊</p><label class="text-xs flex gap-2"><input id="header-edit-flight" type="checkbox">班機</label><label class="text-xs flex gap-2"><input id="header-edit-hotel" type="checkbox">住宿</label><label class="text-xs flex gap-2"><input id="header-edit-shuttle" type="checkbox">接駁</label></div>      <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
         <button onclick="saveHeaderData()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">儲存修改</button>
       </div>
@@ -550,10 +547,11 @@
         <label class="text-[11px] font-bold text-slate-600 block mb-1">房間密碼</label>
         <input type="password" id="input-room-password" placeholder="至少 6 個字元" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
+      <button id="logout-room-button" onclick="logoutCloudRoom()" class="hidden w-full bg-rose-50 text-rose-600 py-2 rounded-xl text-xs font-bold">登出目前房間</button>
       <p id="cloud-sync-status" class="text-[10px] text-slate-400">尚未登入雲端房間</p>
       <div class="grid grid-cols-2 gap-2 pt-1">
         <button onclick="createCloudRoom()" class="bg-emerald-600 text-white py-2 rounded-xl text-xs font-semibold">建立新房間</button>
-        <button onclick="joinCloudRoom()" class="bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">登入同步</button>
+        <button onclick="joinCloudRoom()" class="bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">登入房間</button>
       </div>
       <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
     </div>
@@ -1203,7 +1201,7 @@
     function openHeaderEditModal() {
       if (!requireRoom() || !isOrganizer()) return showToast('只有管理者可以修改旅遊標題');
       const info = getStoredData('headerInfo', defaultHeaderInfo);
-      ['flight','hotel','shuttle'].forEach(k=>document.getElementById('header-edit-'+k).checked=!!info.memberInfoEdit?.[k]);
+      ['flight','hotel','shuttle'].forEach(k=>document.getElementById('header-edit-'+k).checked=info.requiredInfo?.[k] !== false);
       const counts = parseHeaderHeadcount(info);
       const dates = parseHeaderDates(info);
 
@@ -1259,7 +1257,7 @@
         groupTag: groupTag || '必去景點'
       };
 
-      newInfo.memberInfoEdit = Object.fromEntries(['flight','hotel','shuttle'].map(k=>[k,document.getElementById('header-edit-'+k).checked]));
+      newInfo.requiredInfo = Object.fromEntries(['flight','hotel','shuttle'].map(k=>[k,document.getElementById('header-edit-'+k).checked]));
       pushStateToCloud('headerInfo', newInfo);
       closeModal();
       showToast("頁首資訊已成功更新！");
@@ -1919,6 +1917,7 @@
       renderMemberIdentity();
       updateItineraryPermissions();
       renderInfoPage();
+      updateRoomEditingLock();
 
       // 房間一驗證成功就獨立啟動成員身分檢查，
       // 不再等待後續 pullCloudState，避免同步流程阻擋暱稱視窗。
@@ -1998,7 +1997,9 @@
     async function pullCloudState(silent=true) {
       if (!cloudConnected || !cloudPassword || !cloudClient || cloudPullBusy) return;
       cloudPullBusy = true;
+      const requestedRoom=roomId, requestedPassword=cloudPassword;
       const { data, error } = await cloudClient.rpc('get_trip_room', { p_room_id: roomId, p_password: cloudPassword });
+      if (!cloudConnected || roomId !== requestedRoom || cloudPassword !== requestedPassword){cloudPullBusy=false;return;}
       if (error || data === null) {
         if (!error && data === null) cloudConnected = false;
         cloudPullBusy = false;
@@ -2446,11 +2447,13 @@
       localStorage.setItem(infoVisibilityKey(),JSON.stringify(visibility));
       renderInfoPage(); showToast('你的資訊顯示設定已更新');
     }
-    function canEditInfo(type){ return cloudConnected && (isOrganizer() || !!getStoredData('headerInfo',defaultHeaderInfo).memberInfoEdit?.[type]); }
+    function canEditInfo(type){ return cloudConnected && isOrganizer(); }
     function infoEditButton(type){return canEditInfo(type)?`<button onclick="openInfoEdit('${type}')" class="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded-lg">✏️ 編輯</button>`:'';}
     function renderInfoPage(){
-      const c=getInfoConfig(),v=c.visibility;
-      [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected;}});
+      const c=getInfoConfig(),v={...c.visibility};
+      const required=getStoredData('headerInfo',defaultHeaderInfo).requiredInfo || {};
+      ['flight','hotel','shuttle'].forEach(k=>{if(required[k] === false)v[k]=false;});
+      [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;}});
       const box=document.getElementById('info-dynamic-sections'); if(!box)return;
       let h='';
       if(v.flight){
@@ -2474,7 +2477,7 @@
       box.innerHTML=h;
     }
     function openInfoEdit(type){
-      if(!requireRoom() || !canEditInfo(type))return showToast('管理者尚未開放此項資訊的編輯權限'); const c=getInfoConfig();
+      if(!requireRoom() || !canEditInfo(type))return showToast('只有主辦人可以編輯旅程資訊'); const c=getInfoConfig();
       const defs={hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
       document.getElementById('info-edit-type').value=type;
       document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊'}[type]||'編輯資訊';
@@ -3546,13 +3549,12 @@
 
       const ticketsTotal = ticketsData.filter(i => i.checked).reduce((sum, i) => sum + Number(i.price || 0), 0);
       const grandTotal = adultSubtotal + ticketsTotal;
-      const budgetLimit = 25000;
-      const remaining = budgetLimit - grandTotal;
+
 
       document.getElementById('calc-adult-fixed').textContent = `$${adultSubtotal.toLocaleString()}`;
       document.getElementById('calc-tickets-total').textContent = `$${ticketsTotal.toLocaleString()}`;
       document.getElementById('calc-grand-total').textContent = `$${grandTotal.toLocaleString()}`;
-      document.getElementById('calc-remaining-budget').textContent = `$${remaining.toLocaleString()}`;
+
     }
 
     function openTicketModal(ticketId) {
@@ -4067,6 +4069,18 @@
     }
 
 
+    async function logoutCloudRoom(){
+      if(Object.values(cloudSectionInFlight).some(Boolean))return showToast('資料正在同步，請稍後再登出');
+      for(const key of Object.keys(cloudSectionPending))await flushSectionPush(key);
+      if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return showToast('資料尚未同步完成，請先確認連線再登出');
+      cloudConnected=false; cloudPassword=''; currentMember=null;
+      localStorage.removeItem('perfect_cloud_password');sessionStorage.removeItem('perfect_cloud_password');
+      clearInterval(cloudPollTimer);cloudPollTimer=null;
+      if(cloudRealtimeChannel){cloudClient.removeChannel(cloudRealtimeChannel);cloudRealtimeChannel=null;}
+      Object.values(cloudSectionTimers).forEach(clearTimeout);
+      document.getElementById('input-room-password').value='';
+      closeModal(true);renderMemberIdentity();refreshUI();setCloudStatus('尚未登入雲端房間');showToast('已登出房間，資料編輯已鎖定');
+    }
     function requireRoom(){
       if (cloudConnected && cloudPassword && cloudClient) return true;
       showToast('請先登入雲端房間，才能輸入或修改資料'); return false;
@@ -4076,6 +4090,8 @@
     function updateRoomEditingLock(){
       const unlocked=!!(cloudConnected && cloudPassword && cloudClient);
       document.getElementById('room-login-warning')?.classList.toggle('hidden',unlocked);
+      document.getElementById('logout-room-button')?.classList.toggle('hidden',!unlocked);
+      const roomLabel=document.getElementById('room-name-display');if(roomLabel)roomLabel.textContent=unlocked ? roomId : '登入房間';
       document.querySelectorAll('.page-content input,.page-content textarea,.page-content select').forEach(el=>{
         if(el.id.startsWith('fx-') || el.closest('#page-currency') || el.id.includes('currency') || el.id.includes('convert') || el.closest('[id*="currency"]')) return;
         el.disabled=!unlocked;
