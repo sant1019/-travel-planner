@@ -80,7 +80,7 @@
       <div class="max-w-md mx-auto px-4 pt-1">
         <div class="flex justify-end">
           <span id="test-version-badge" class="text-[9px] font-extrabold tracking-wide bg-black/20 border border-white/20 px-2 py-0.5 rounded-full">
-            測試版 FC-14｜期程連動、提醒與接駁
+            測試版 FC-15｜個人資訊、門票試算與固定活動
           </span>
         </div>
       </div>
@@ -252,7 +252,7 @@
         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
           <div>
             <h3 class="text-xs font-bold text-slate-800 flex items-center">
-              <i class="fa-solid fa-ticket text-indigo-500 mr-1.5"></i>預估門票/活動勾選試算
+              <i class="fa-solid fa-ticket text-indigo-500 mr-1.5"></i>預估門票/活動個人勾選試算
             </h3>
             <p class="text-[10px] text-slate-400 font-normal mt-0.5">勾選併入總額計算</p>
           </div>
@@ -310,15 +310,17 @@
         <div class="flex items-center justify-between"><h2 class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-sliders mr-1.5"></i>資訊顯示設定</h2><span class="text-[9px] text-indigo-500">個人顯示設定</span></div>
         <p class="text-[10px] text-indigo-600">選擇資訊頁要顯示的內容；主辦人可編輯班機、住宿與接駁資料。</p>
         <div class="grid grid-cols-2 gap-2 text-[11px] font-bold text-slate-700">
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 班機</label>
-          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">🏨 住宿</label>
           <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-weather" type="checkbox" onchange="saveInfoVisibility()">☀️ 天氣</label>
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-exchange" type="checkbox" onchange="saveInfoVisibility()">💱 換匯</label>
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-reminders" type="checkbox" onchange="saveInfoVisibility()">📌 提醒事項</label>
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 航班</label>
           <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-shuttle" type="checkbox" onchange="saveInfoVisibility()">🚐 交通接駁</label>
+          <label class="bg-white rounded-xl border p-2 flex items-center gap-2"><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">🏨 住宿</label>
         </div>
       </div>
-      <div id="info-dynamic-sections" class="space-y-3"></div>
+      <div id="info-weather-section"></div>
       <!-- 實時匯率換匯計算器 -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+      <div id="info-exchange-section" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
           <h2 class="text-xs font-bold text-slate-800 flex items-center">
             <i class="fa-solid fa-arrow-right-arrow-left text-emerald-600 mr-1.5"></i>實時匯率換匯計算器
@@ -384,6 +386,7 @@
       </div>
 
       <div id="info-reminders" class="space-y-3"></div>
+      <div id="info-dynamic-sections" class="space-y-3"></div>
 
       <!-- 星宇航空選位提醒 -->
       <div class="hidden bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-2xl shadow-md space-y-2">
@@ -655,7 +658,7 @@
     <!-- Fixed Itinerary Smart Planner Modal -->
     <div id="modal-fixed-planner" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
       <h3 class="text-sm font-extrabold text-slate-800"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>固定行程設定與智慧排程</h3>
-      <p class="text-[10px] text-slate-500">先一次建立所有固定活動。排程前會查證營業時間／表演場次；查不到就標示「尚未確認」，不會猜測。</p>
+      <p class="text-[10px] text-slate-500">手動填寫固定活動的營業時間與表演場次，再依日期限制安排到行程。</p>
       <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10px] text-amber-800"><b>優先順序：</b>指定日期／星期與場次 → 營業時間 → 已訂時間 → 地點鄰近。</div>
       <div id="fixed-planner-list" class="space-y-2"></div>
       <button onclick="openFixedActivityEditor()" class="w-full border border-sky-200 bg-sky-50 text-sky-700 font-bold py-2.5 rounded-xl text-xs">＋ 新增固定活動</button>
@@ -667,20 +670,19 @@
           <div id="fixed-map-preview" class="hidden mt-2"><a id="fixed-map-link" href="#" target="_blank" rel="noopener noreferrer" class="text-[11px] text-sky-700 font-bold">📍 先用 Google Maps 確認地點</a></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">日期限制</label><select id="fixed-date-rule" class="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white"><option value="flexible">日期皆可</option><option value="specific">指定日期</option><option value="weekday">指定星期</option></select></div>
-          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">日期／星期</label><input id="fixed-date-value" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="12/9 或 星期三"></div>
+          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">日期限制</label><select id="fixed-date-rule" onchange="renderFixedDateOptions()" class="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white"><option value="flexible">日期皆可</option><option value="specific">指定日期</option><option value="weekday">指定星期</option></select></div>
+          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">日期／星期</label><select id="fixed-date-value" class="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white"></select></div>
         </div>
         <div class="grid grid-cols-2 gap-2">
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">已訂／偏好時間</label><input id="fixed-time" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="20:00"></div>
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">停留時間</label><input id="fixed-duration" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="2 小時"></div>
         </div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">營業時間</label><input id="fixed-opening-hours" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：09:00–18:00；星期一休息"></div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">表演場次</label><input id="fixed-sessions" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：17:00、20:00"></div>
         <div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：票已訂、只能晚場"></textarea></div>
         <div class="flex gap-2"><button onclick="cancelFixedActivityEditor()" class="flex-1 bg-white border border-slate-200 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveFixedActivity()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
       </div>
 
-      <button id="fixed-research-btn" onclick="startFixedScheduleResearch()" class="w-full bg-indigo-600 text-white font-extrabold py-3 rounded-xl text-xs">🔎 查證營業時間／場次</button>
-      <div id="fixed-research-result" class="hidden rounded-xl border border-indigo-100 bg-indigo-50 p-3 text-[10px] text-slate-700 space-y-1"></div>
-      <p class="text-[10px] text-slate-400 text-center">查證結果以 Edge Function 回傳資料為準；查不到的資訊會保留為「尚未確認」，不會自行猜測。</p>
       <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs">關閉</button>
     </div>
 
@@ -2145,16 +2147,31 @@
       const box=document.getElementById('fixed-planner-list'); if(!box) return;
       const list=getFixedActivities();
       if(!list.length){box.innerHTML='<div class="text-center text-xs text-slate-400 py-4 border border-dashed border-slate-200 rounded-xl">尚未建立固定活動</div>';return;}
-      box.innerHTML=list.map(x=>`<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="flex justify-between gap-2"><div class="min-w-0"><div class="font-extrabold text-xs">${x.name}</div><div class="text-[10px] text-slate-500 mt-1">${x.dateRule==='flexible'?'日期皆可':(x.dateValue||'有限制')}${x.time?'・'+x.time:''}${x.duration?'・停留 '+x.duration:''}</div>${x.note?`<div class="text-[10px] text-amber-700 mt-1">⚠️ ${x.note}</div>`:''}<div class="text-[10px] text-slate-400 mt-1">網路查證：${x.researchStatus === 'unverified' ? '尚未確認（不代表不能手動安排）' : (x.researchStatus||'尚未查證')}</div></div><div class="shrink-0"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600 p-1">排入 Day</button><button onclick="openFixedActivityEditor('${x.id}')" class="text-sky-600 p-1">✎</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500 p-1">🗑</button></div></div></div>`).join('');
+      box.innerHTML=list.map(x=>`<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="flex justify-between gap-2"><div class="min-w-0"><div class="font-extrabold text-xs">${x.name}</div><div class="text-[10px] text-slate-500 mt-1">${x.dateRule==='flexible'?'日期皆可':(x.dateValue||'有限制')}${x.time?'・'+x.time:''}${x.duration?'・停留 '+x.duration:''}</div>${x.note?`<div class="text-[10px] text-amber-700 mt-1">⚠️ ${x.note}</div>`:''}${x.openingHours?`<div class="text-[10px] text-slate-500 mt-1">營業時間：${escapeHtml(x.openingHours)}</div>`:''}${x.sessions?`<div class="text-[10px] text-slate-500 mt-1">場次：${escapeHtml(x.sessions)}</div>`:''}</div><div class="shrink-0"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600 p-1">排入 Day</button><button onclick="openFixedActivityEditor('${x.id}')" class="text-sky-600 p-1">✎</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500 p-1">🗑</button></div></div></div>`).join('');
     }
 
+    function renderFixedDateOptions(saved=''){
+      const rule=document.getElementById('fixed-date-rule').value,select=document.getElementById('fixed-date-value');
+      if(rule==='specific'){
+        const days=getTripDays();
+        select.innerHTML='<option value="">請選擇日期</option>'+days.map((d,i)=>`<option value="${d}">Day ${i+1}｜${d.replaceAll('-','/')}</option>`).join('');
+        const normalized=saved.replaceAll('/','-');
+        select.value=days.find(d=>d===normalized || `${Number(d.slice(5,7))}/${Number(d.slice(8,10))}`===saved)||'';
+      }else if(rule==='weekday'){
+        const names=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+        select.innerHTML=names.map(d=>`<option value="${d}">${d}</option>`).join('');select.value=names.includes(saved)?saved:names[0];
+      }else {select.innerHTML='<option value="">日期皆可</option>';}
+      select.disabled=rule==='flexible';
+    }
     function openFixedActivityEditor(id='') {
       document.getElementById('fixed-activity-editor').classList.remove('hidden');
       const x=getFixedActivities().find(v=>v.id===id);
       document.getElementById('fixed-edit-id').value=id;
       document.getElementById('fixed-name').value=x?.name||'';
       document.getElementById('fixed-date-rule').value=x?.dateRule||'flexible';
-      document.getElementById('fixed-date-value').value=x?.dateValue||'';
+      renderFixedDateOptions(x?.dateValue||'');
+      document.getElementById('fixed-opening-hours').value=x?.openingHours||'';
+      document.getElementById('fixed-sessions').value=x?.sessions||'';
       document.getElementById('fixed-time').value=x?.time||'';
       document.getElementById('fixed-duration').value=x?.duration||'';
       document.getElementById('fixed-note').value=x?.note||'';
@@ -2166,7 +2183,9 @@
       if (!requireRoom()) return;
       const name=document.getElementById('fixed-name').value.trim(); if(!name)return showToast('請輸入活動或店家名稱');
       const id=document.getElementById('fixed-edit-id').value,list=getFixedActivities(),old=list.find(x=>x.id===id);
-      const data={id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),time:document.getElementById('fixed-time').value.trim(),duration:document.getElementById('fixed-duration').value.trim(),note:document.getElementById('fixed-note').value.trim(),map:buildAutoMapLink(name),researchStatus:old?.researchStatus||'尚未查證'};
+      const rule=document.getElementById('fixed-date-rule').value,dateValue=document.getElementById('fixed-date-value').value;
+      if(rule==='specific'&&!getTripDays().includes(dateValue))return showToast('請選擇旅遊期程內的日期');
+      const data={...old,id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),time:document.getElementById('fixed-time').value.trim(),duration:document.getElementById('fixed-duration').value.trim(),note:document.getElementById('fixed-note').value.trim(),map:buildAutoMapLink(name),openingHours:document.getElementById('fixed-opening-hours').value.trim(),sessions:document.getElementById('fixed-sessions').value.trim()};
       const idx=list.findIndex(x=>x.id===id); if(idx>=0)list[idx]=data;else list.push(data);
       pushStateToCloud('fixedActivities',list);cancelFixedActivityEditor();renderFixedPlannerList();showToast('固定活動已儲存');
     }
@@ -2181,117 +2200,20 @@
       const validDays=getTripDays().map((_,i)=>String(i+1));
       const day=prompt('排入哪一天？請輸入 Day 編號（'+validDays.join('、')+'）',validDays[0]);if(day===null)return;
       if(!validDays.includes(day.trim()))return showToast('請輸入有效的 Day 編號');
-      const verified=['verified','confirmed','ok'].includes(String(activity.researchStatus).toLowerCase());
-      if(!confirm((verified?'':'此活動營業時間／場次尚未確認。\n')+'請確認 Day '+day+' 符合日期限制：'+(activity.dateValue||'日期皆可')+'，確定排入？'))return;
-      if(!data[day.trim()])data[day.trim()]={items:[]};
-      data[day.trim()].items.push({id:'fixed-itin-'+Date.now(),fixedActivityId:id,title:activity.name,time:activity.time||'待確認',desc:escapeHtml([activity.note,activity.duration ? '停留 '+activity.duration : '',verified?'':'營業時間／場次尚未確認'].filter(Boolean).join('；')),map:buildAutoMapLink(activity.name)});
+      const chosen=day.trim(),date=getTripDays()[Number(chosen)-1];
+      if(activity.dateRule==='specific'){
+        const match=activity.dateValue===date || activity.dateValue===date.replaceAll('-','/') || activity.dateValue===`${Number(date.slice(5,7))}/${Number(date.slice(8,10))}`;
+        if(!match)return showToast('此活動限定 '+activity.dateValue+'，請選擇對應的 Day');
+      }
+      if(activity.dateRule==='weekday'){
+        const weekday=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][new Date(date+'T00:00:00Z').getUTCDay()];
+        if(weekday!==activity.dateValue)return showToast('此活動限定 '+activity.dateValue+'，請選擇符合的 Day');
+      }
+      if(!confirm('確定將此活動安排至 Day '+chosen+'？'))return;
+      if(!data[chosen])data[chosen]={items:[]};
+      data[chosen].items.push({id:'fixed-itin-'+Date.now(),fixedActivityId:id,title:activity.name,time:activity.time||'待安排',desc:escapeHtml([activity.note,activity.duration ? '停留 '+activity.duration : '',activity.openingHours?'營業時間：'+activity.openingHours:'',activity.sessions?'場次：'+activity.sessions:''].filter(Boolean).join('；')),map:buildAutoMapLink(activity.name)});
       pushStateToCloud('itinerary',data);showToast('已安排至 Day '+day);
     }
-
-    async function startFixedScheduleResearch() {
-      if (!isOrganizer()) return showToast('只有主辦人可以執行智慧排程');
-      const activities = getFixedActivities();
-      if (!activities.length) return showToast('請先新增固定活動');
-
-      const btn = document.getElementById('fixed-research-btn');
-      const resultBox = document.getElementById('fixed-research-result');
-      const originalText = btn?.innerHTML || '';
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000);
-
-      if (btn) {
-        btn.disabled = true;
-        btn.classList.add('opacity-60');
-        btn.innerHTML = '⏳ 正在查證營業時間與場次…';
-      }
-      if (resultBox) {
-        resultBox.classList.remove('hidden');
-        resultBox.innerHTML = '<div class="font-bold text-indigo-700">正在連線查證後端…</div>';
-      }
-
-      try {
-        const endpoint = `${SUPABASE_URL}/functions/v1/research-fixed-itinerary`;
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          signal: controller.signal,
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': SUPABASE_PUBLISHABLE_KEY,
-            'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
-          },
-          body: JSON.stringify({
-            activities,
-            roomId,
-            trip: {
-              destination: document.getElementById('header-display-title')?.textContent?.trim() || '峴港會安',
-              dates: document.getElementById('header-display-dates')?.textContent?.trim() || '2026/12/07 - 12/12'
-            }
-          })
-        });
-
-        const raw = await response.text();
-        let data = null;
-        try { data = raw ? JSON.parse(raw) : null; } catch (_) {}
-
-        if (!response.ok) {
-          if (response.status === 401) {
-            throw new Error('Edge Function 驗證未通過（401）');
-          }
-          throw new Error(data?.error || `後端回應錯誤（${response.status}）`);
-        }
-        if (!data || !Array.isArray(data.activities)) {
-          throw new Error('後端回傳格式不完整');
-        }
-
-        const returnedById = new Map(data.activities.map(x => [String(x.id || ''), x]));
-        const merged = activities.map(old => {
-          const r = returnedById.get(String(old.id)) || {};
-          return {
-            ...old,
-            researchStatus: r.researchStatus || r.status || old.researchStatus || '尚未確認',
-            research: r
-          };
-        });
-
-        pushStateToCloud('fixedActivities', merged);
-        renderFixedPlannerList();
-
-        const verified = data.activities.filter(x =>
-          ['verified','confirmed','ok'].includes(String(x.researchStatus || x.status || '').toLowerCase())
-        ).length;
-        const unverified = data.activities.length - verified;
-
-        if (resultBox) {
-          const lines = data.activities.map(x => {
-            const status = x.researchStatus || x.status || 'unverified';
-            const mark = ['verified','confirmed','ok'].includes(String(status).toLowerCase()) ? '✅' : '⚠️';
-            const note = x.explanation || x.note || x.message || '';
-            return `<div>${mark} <b>${escapeHtml(x.name || '未命名活動')}</b>：${escapeHtml(String(status))}${note ? `・${escapeHtml(String(note))}` : ''}</div>`;
-          }).join('');
-          resultBox.innerHTML =
-            `<div class="font-extrabold text-indigo-800 mb-1">查證完成：${verified} 筆已確認、${unverified} 筆尚未確認</div>` +
-            lines;
-        }
-        showToast('固定行程查證完成');
-      } catch (err) {
-        console.error('research-fixed-itinerary failed:', err);
-        const message = err?.name === 'AbortError'
-          ? '查證逾時（20 秒），已自動停止'
-          : (err?.message || '無法連線查證後端');
-        if (resultBox) {
-          resultBox.innerHTML = `<div class="font-bold text-rose-600">❌ ${escapeHtml(message)}</div><div class="mt-1 text-slate-500">固定活動資料沒有被刪除，也沒有使用假資料排程。</div>`;
-        }
-        showToast(message);
-      } finally {
-        clearTimeout(timeoutId);
-        if (btn) {
-          btn.disabled = false;
-          btn.classList.remove('opacity-60');
-          btn.innerHTML = originalText || '🔎 查證營業時間／場次';
-        }
-      }
-    }
-
 
     // 航空公司選位／餐點提醒規則（由先前版本恢復）
     const AIRLINE_RULES = {
@@ -2414,7 +2336,7 @@
     }
 
     const defaultInfoConfig = {
-      visibility: { flight:true, hotel:true, weather:true, shuttle:true },
+      visibility: { flight:true, hotel:true, weather:true, shuttle:true, exchange:true, reminders:true },
       flight: { outboundNo:'JX703', outboundDate:'12/07', outboundTime:'15:20', outboundArrivalDate:'12/07', outboundArrivalTime:'17:15', returnNo:'JX704', returnDate:'12/12', returnTime:'18:25', returnArrivalDate:'12/12', returnArrivalTime:'' },
       hotel: { h1Dates:'12/07 - 12/09 (2晚)', h1Name:'Little Residence A Boutique Hotel & Spa', h2Dates:'12/09 - 12/12 (3晚)', h2Name:'Chi House Danang Hotel and Apartment' },
       shuttle: { company:'得佳富租賃有限公司', driver:'阿得', phone1:'0972-922097', phone2:'04-25668678', line:'0972922097' }
@@ -2427,7 +2349,7 @@
     function saveInfoVisibility(){
       if (!requireRoom()) return;
       const visibility={};
-      ['flight','hotel','weather','shuttle'].forEach(k=>visibility[k]=!!document.getElementById('toggle-info-'+k)?.checked);
+      ['weather','exchange','reminders','flight','shuttle','hotel'].forEach(k=>visibility[k]=!!document.getElementById('toggle-info-'+k)?.checked);
       localStorage.setItem(infoVisibilityKey(),JSON.stringify(visibility));
       renderInfoPage(); showToast('你的資訊顯示設定已更新');
     }
@@ -2437,7 +2359,7 @@
       const c=getInfoConfig(),v={...c.visibility};
       const required=getStoredData('headerInfo',defaultHeaderInfo).requiredInfo || {};
       ['flight','hotel','shuttle'].forEach(k=>{if(required[k] === false)v[k]=false;});
-      [['flight','toggle-info-flight'],['hotel','toggle-info-hotel'],['weather','toggle-info-weather'],['shuttle','toggle-info-shuttle']].forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;
+      ['weather','exchange','reminders','flight','shuttle','hotel'].map(k=>[k,'toggle-info-'+k]).forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;
         const label=e.closest('label');if(label){label.classList.toggle('info-choice-disabled',e.disabled);label.title=required[k] === false ? '主辦人未勾選本次旅程所需資訊' : '';}}});
       const box=document.getElementById('info-dynamic-sections'); if(!box)return;
       let h='';
@@ -2456,11 +2378,13 @@
           <p class="text-[9px] text-slate-400 mt-2">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
         </div>`;
       }
-      if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
-      if(v.weather)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">☀️ 天氣資訊</h3></div><p class="mt-2 text-slate-600">行程頁依旅程天數顯示氣候參考與穿搭建議。</p><button onclick="switchTab('itinerary')" class="mt-2 text-sky-600 font-bold">查看每日天氣 →</button></div>`;
+      document.getElementById('info-weather-section').innerHTML=v.weather?`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">☀️ 天氣資訊</h3></div><p class="mt-2 text-slate-600">行程頁依旅程天數顯示氣候參考與穿搭建議。</p><button onclick="switchTab('itinerary')" class="mt-2 text-sky-600 font-bold">查看每日天氣 →</button></div>`:'';
       if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 交通接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p class="text-sky-600 font-bold">${c.shuttle.plan ? '已設定 '+c.shuttle.plan.vehicles.length+' 個車次：'+escapeHtml(c.shuttle.plan.vehicles.map(x=>x.name).join('、')) : '尚未設定車次'}</p><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
+      if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
       box.innerHTML=h;
       renderInfoReminders();
+      document.getElementById('info-exchange-section').classList.toggle('hidden',!v.exchange);
+      document.getElementById('info-reminders').classList.toggle('hidden',!v.reminders);
     }
     function openInfoEdit(type){
       if(!requireRoom() || !canEditInfo(type))return showToast('只有主辦人可以編輯旅程資訊'); const c=getInfoConfig();
@@ -3518,7 +3442,8 @@
         tbody.innerHTML = rowsHtml;
       }
 
-      const ticketsData = getStoredData('tickets', defaultTicketsData);
+      const ticketSelection=getPersonalTicketSelection();
+      const ticketsData = getStoredData('tickets', defaultTicketsData).map(item=>({...item,checked:ticketSelection[item.id]===true}));
       const container = document.getElementById('ticket-checklist');
 
       container.innerHTML = ticketsData.map(item => `
@@ -3611,10 +3536,10 @@
           price,
           note,
           link,
-          checked: true
         });
       }
 
+      if(!editId){const selection=getPersonalTicketSelection();selection[list[list.length-1].id]=true;localStorage.setItem(personalTicketKey(),JSON.stringify(selection));}
       pushStateToCloud('tickets', list);
       closeModal();
       showToast(editId ? "門票資料已修改！" : "已新增門票項目！");
@@ -3700,12 +3625,12 @@
       showToast("已刪除該開銷項目");
     }
 
+    function personalTicketKey(){return `perfect_ticket_selection_${roomId}_${currentMember?.id || currentMember?.nickname || 'member'}`;}
+    function getPersonalTicketSelection(){try{return JSON.parse(localStorage.getItem(personalTicketKey())||'{}')||{};}catch(_){return {};}}
     function toggleTicketCheck(id) {
       if (!requireRoom()) return;
-      const data = getStoredData('tickets', defaultTicketsData);
-      const item = data.find(i => i.id === id);
-      if (item) item.checked = !item.checked;
-      pushStateToCloud('tickets', data);
+      const selection=getPersonalTicketSelection();selection[id]=selection[id]!==true;
+      localStorage.setItem(personalTicketKey(),JSON.stringify(selection));renderBudget();
     }
 
     function renderNotes() {
