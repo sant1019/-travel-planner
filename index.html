@@ -130,7 +130,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-21</span>
+        <span id="test-version-badge" class="trip-version">FC-23</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -558,6 +558,12 @@
       <button id="logout-room-button" onclick="logoutCloudRoom()" class="hidden trip-login-logout">登出目前房間</button>
       <details class="trip-room-create"><summary>建立新房間</summary><p>先填寫上方房間名稱與密碼，再建立房間。</p><button type="button" onclick="createCloudRoom()">建立新房間</button></details>
       <p id="cloud-sync-status" class="text-[10px] text-slate-400"></p>
+    </div>
+
+    <div id="modal-room-session" class="hidden relative bg-white rounded-2xl p-5 w-full max-w-xs shadow-xl">
+      <button type="button" onclick="closeModal(true)" class="absolute top-2 right-2 w-8 h-8 text-xl text-slate-400" aria-label="關閉">×</button>
+      <h3 class="text-sm font-bold text-slate-800 mb-4">房間已登入</h3>
+      <button type="button" onclick="logoutCloudRoom()" class="w-full bg-rose-50 text-rose-600 py-3 rounded-xl text-sm font-bold">登出房間</button>
     </div>
 
     <!-- Member Identity Modal -->
@@ -1636,7 +1642,7 @@
       ['input-member-login-password','input-member-password','input-member-password-confirm'].forEach(id=>document.getElementById(id).value='');
       setMemberStatus('');
     }
-    async function openMemberIdentityModal(){openSyncModal();}
+    async function openMemberIdentityModal(){openSyncModal(true);}
     async function loginMemberIdentity(){
       if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setMemberStatus('資料正在同步，請稍後再切換身分',true);
       if(!cloudConnected)return;
@@ -3936,7 +3942,7 @@
       document.getElementById('modal-backdrop').classList.remove('trip-login-overlay');
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
-        'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
+        'modal-room-session', 'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
@@ -3955,6 +3961,7 @@
     function prefillTripNickname(){
       const target=document.getElementById('input-room-id').value.trim();
       document.getElementById('trip-login-nickname').value=localStorage.getItem(`perfect_last_nickname_${target}`)||'';
+      document.getElementById('input-room-password').placeholder=cloudConnected&&target===roomId&&cloudPassword.length>=6?'留空即可沿用目前房間密碼':'輸入房間密碼';
     }
     function toggleTripPassword(id,button){
       const input=document.getElementById(id),show=input.type==='password';input.type=show?'text':'password';
@@ -3970,12 +3977,17 @@
       document.getElementById('trip-login-mode').textContent=register?'返回既有成員登入':'尚未加入－註冊為新成員';
       document.getElementById('trip-login-password').value='';document.getElementById('trip-login-confirm').value='';setTripLoginStatus('');
     }
-    function openSyncModal() {
+    function openSyncModal(forceLogin=false) {
       if(tripLoginBusy)return;
       closeModal(true);
+      if(!forceLogin && cloudConnected && currentMember && getMemberToken()){
+        document.getElementById('modal-backdrop').classList.remove('hidden');
+        document.getElementById('modal-room-session').classList.remove('hidden');
+        return;
+      }
       document.getElementById('input-room-id').value=roomId;
       document.getElementById('input-room-password').value='';
-      document.getElementById('input-room-password').placeholder=cloudConnected?'目前房間已連線，可留空':'輸入房間密碼';
+      document.getElementById('input-room-password').placeholder=cloudConnected&&cloudPassword.length>=6?'留空即可沿用目前房間密碼':'輸入房間密碼';
       document.getElementById('trip-login-nickname').value=localStorage.getItem(`perfect_last_nickname_${roomId}`)||loadStoredMember()?.nickname||'';
       document.getElementById('trip-login-remember').checked=sessionStorage.getItem('perfect_remember_login')==='true';
       setTripLoginMode(false);
@@ -4012,11 +4024,13 @@
         roomId=target;applyRoomState(state||{});activateCloudRoom(target,roomPassword,false);useAuthenticatedMember(data);
         if(previousToken && previousToken!==data.token){
           if(previousRoom!==target)sessionStorage.removeItem(`perfect_member_token_${previousRoom}`);
-          cloudClient.rpc('logout_trip_member_secure',{p_room_id:previousRoom,p_member_token:previousToken}).catch(()=>{});
+          // Supabase RPC is a thenable builder, not a native Promise with .catch().
+          // Retiring the previous token must not turn a successful login into an error.
+          Promise.resolve().then(()=>cloudClient.rpc('logout_trip_member_secure',{p_room_id:previousRoom,p_member_token:previousToken})).catch(()=>{});
         }
         ['input-room-password','trip-login-password','trip-login-confirm'].forEach(id=>document.getElementById(id).value='');
         tripLoginBusy=false;closeModal(true);showToast((registering?'歡迎，':'已登入：')+data.member.nickname);
-      }catch(e){setTripLoginStatus('無法完成登入，請確認網路後再試',true);}
+      }catch(e){console.error('combined login error:',e);setTripLoginStatus('登入處理失敗，請稍後再試；已填資料會保留',true);}
       finally{tripLoginBusy=false;document.querySelectorAll('#modal-sync-room input,#modal-sync-room button').forEach(el=>el.disabled=false);}
     }
 
