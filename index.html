@@ -69,27 +69,33 @@
     #page-itinerary button[onclick^="deleteItineraryItem"] { margin-left: 12px; min-width: 28px; min-height: 28px; }
     .info-choice-disabled { background: #e2e8f0 !important; color: #94a3b8 !important; border-color: #cbd5e1 !important; cursor: not-allowed; filter: grayscale(1); }
     #modal-airport-transfer input[type="datetime-local"] { -webkit-appearance: none; appearance: none; box-sizing: border-box; min-width: 0; height: 36px; min-height: 36px; padding: 8px; line-height: 18px; }
-    /* FC-17: header presentation only; existing IDs and handlers retained. */
-    .trip-header { background: linear-gradient(115deg, #124a63 0%, #1a365b 58%, #293557 100%); }
-    .trip-header-inner { padding: 10px 18px 14px; }
-    .trip-version { display: block; font-size: 9px; font-weight: 600; letter-spacing: .08em; color: #b3c8d8; line-height: 14px; }
-    .trip-room { display: flex; align-items: center; gap: 7px; width: 100%; min-height: 30px; padding: 2px 0 5px; text-align: left; border-bottom: 1px solid rgba(255,255,255,.13); font-size: 11px; color: #d7e5ee; }
-    .trip-room-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 44%; }
-    .trip-room-divider { width: 1px; height: 10px; background: rgba(255,255,255,.25); flex-shrink: 0; }
-    .trip-sync-status { font-size: 10px; white-space: nowrap; }
-    .trip-member { padding: 2px 7px; border-radius: 6px; background: rgba(255,255,255,.10); font-size: 10px; max-width: 22%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .trip-room-arrow { margin-left: auto; font-size: 9px; opacity: .55; }
-    .trip-heading { display: flex; flex-direction: column; gap: 6px; width: 100%; padding-top: 11px; text-align: left; }
-    .trip-title-row { display: flex; align-items: center; gap: 10px; }
-    .trip-title { font-size: 23px; line-height: 1.25; font-weight: 800; letter-spacing: .02em; overflow-wrap: anywhere; }
-    .trip-edit-icon { font-size: 10px; color: #acc2d5; flex-shrink: 0; }
-    .trip-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 8px; font-size: 10px; line-height: 18px; color: #d7e5ee; font-variant-numeric: tabular-nums; }
+    /* FC-18: approved compact header; existing IDs and handlers retained. */
+    .trip-header { background: linear-gradient(115deg, #087d92 0%, #07527c 45%, #102d60 100%); }
+    .trip-header-inner { padding: 6px 16px 10px; }
+    .trip-version { display: block; text-align: right; font-size: 9px; line-height: 12px; color: #bbd0e3; letter-spacing: .04em; }
+    .trip-heading { display: flex; flex-direction: column; align-items: center; gap: 5px; width: 100%; padding: 3px 0 0; text-align: center; }
+    .trip-title-row { position: relative; max-width: 100%; padding: 0 17px; }
+    .trip-title { font-family: "Songti TC", "Noto Serif TC", "PMingLiU", serif; font-size: 30px; line-height: 1.22; font-weight: 700; letter-spacing: .07em; overflow-wrap: anywhere; }
+    .trip-edit-icon { position: absolute; right: 0; top: 50%; transform: translateY(-50%); font-size: 9px; color: #aac6dc; }
+    .trip-meta { display: flex; align-items: center; justify-content: center; gap: 0; max-width: 100%; color: #dcecf5; font-size: 11px; line-height: 17px; font-variant-numeric: tabular-nums; }
     .trip-dates { white-space: nowrap; }
-    .trip-detail { border-left: 1px solid rgba(255,255,255,.25); padding-left: 8px; white-space: nowrap; }
-    .trip-tagline { color: #aac5d6; font-size: 10px; line-height: 14px; }
+    .trip-detail { border-left: 1px solid rgba(255,255,255,.55); margin-left: 9px; padding-left: 9px; white-space: nowrap; }
+    #header-display-duration { display: none; }
+    .trip-tagline { color: #c2dce7; font-family: "Songti TC", "Noto Serif TC", serif; font-size: 11px; line-height: 15px; letter-spacing: .13em; overflow-wrap: anywhere; }
     .trip-tagline:empty { display: none; }
+    .trip-utility { border-top: 1px solid rgba(255,255,255,.18); background: rgba(8,31,64,.13); }
+    .trip-room { display: flex; align-items: center; gap: 7px; width: 100%; min-height: 32px; padding: 5px 16px; color: #e2edf5; text-align: left; font-size: 11px; }
+    .trip-room-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .trip-sync-status { flex-shrink: 0; font-size: 10px; white-space: nowrap; }
+    .trip-sync-status::before { content: ""; display: inline-block; width: 5px; height: 5px; margin-right: 5px; border-radius: 50%; background: #cbd5e1; vertical-align: 1px; }
+    .trip-room:has(#cloud-header-icon.text-emerald-300) .trip-sync-status::before { background: #6ee7b7; }
+    .trip-room:has(#cloud-header-icon.text-amber-300) .trip-sync-status::before { background: #fcd34d; }
+    .trip-room:has(#cloud-header-icon.text-rose-300) .trip-sync-status::before { background: #fda4af; }
+    .trip-member { flex-shrink: 1; min-width: 0; max-width: 30%; padding: 2px 7px; margin-left: 3px; border-left: 1px solid rgba(255,255,255,.3); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .trip-room-arrow { font-size: 9px; opacity: .75; flex-shrink: 0; }
     .trip-room:active, .trip-heading:active { opacity: .8; }
-    .trip-room:focus-visible, .trip-heading:focus-visible { outline: 2px solid #9bd6e2; outline-offset: 3px; border-radius: 4px; }
+    .trip-room:focus-visible, .trip-heading:focus-visible { outline: 2px solid #9bd6e2; outline-offset: -2px; border-radius: 4px; }
+    @media (max-width: 350px) { .trip-meta { font-size: 10px; } .trip-detail { margin-left: 6px; padding-left: 6px; } .trip-title { font-size: 28px; } }
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
@@ -99,15 +105,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-17 · 旅程首頁</span>
-        <button onclick="openSyncModal()" class="trip-room" aria-label="房間登入與同步設定">
-          <i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i>
-          <span id="room-name-display" class="trip-room-name">danang2026</span>
-          <span class="trip-room-divider"></span>
-          <span id="cloud-header-status" class="trip-sync-status">尚未連線</span>
-          <span id="member-header-badge" onclick="event.stopPropagation(); openMemberSettingsModal()" class="hidden trip-member" title="成員設定"></span>
-          <i class="fa-solid fa-angle-right trip-room-arrow" aria-hidden="true"></i>
-        </button>
+        <span id="test-version-badge" class="trip-version">FC-18</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -115,10 +113,19 @@
           </div>
           <div class="trip-meta">
             <span id="header-display-dates" class="trip-dates">2026/12/07 - 12/12</span>
-            <span id="header-display-duration" class="trip-detail">6D5N</span>
+            <span id="header-display-duration" hidden>6D5N</span>
             <span id="header-display-headcount" class="trip-detail">14大2小1嬰</span>
           </div>
           <span id="header-display-grouptag" class="trip-tagline">必去景點</span>
+        </button>
+      </div>
+      <div class="trip-utility">
+        <button onclick="openSyncModal()" class="max-w-md mx-auto trip-room" aria-label="房間登入與同步設定">
+          <i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i>
+          <span id="room-name-display" class="trip-room-name">danang2026</span>
+          <span id="cloud-header-status" class="trip-sync-status">尚未連線</span>
+          <span id="member-header-badge" onclick="event.stopPropagation(); openMemberSettingsModal()" class="hidden trip-member" title="成員設定"></span>
+          <i class="fa-solid fa-chevron-down trip-room-arrow" aria-hidden="true"></i>
         </button>
       </div>
     </header>
