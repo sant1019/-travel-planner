@@ -105,7 +105,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-18</span>
+        <span id="test-version-badge" class="trip-version">FC-20</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -329,7 +329,6 @@
       <div class="bg-indigo-50 border border-indigo-100 px-2.5 py-2 rounded-xl space-y-1.5">
         <div class="flex items-center justify-between"><h2 class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-sliders mr-1.5"></i>資訊顯示設定</h2><span class="text-[9px] text-indigo-500">個人顯示設定</span></div>
         <div class="grid grid-cols-3 gap-1 text-[10px] font-medium text-slate-700">
-          <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-weather" type="checkbox" onchange="saveInfoVisibility()">☀️ 天氣</label>
           <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-exchange" type="checkbox" onchange="saveInfoVisibility()">💱 換匯</label>
           <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-reminders" type="checkbox" onchange="saveInfoVisibility()">📌 提醒事項</label>
           <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 航班</label>
@@ -337,7 +336,6 @@
           <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">🏨 住宿</label>
         </div>
       </div>
-      <div id="info-weather-section"></div>
       <!-- 實時匯率換匯計算器 -->
       <div id="info-exchange-section" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <div class="flex justify-between items-center border-b border-slate-100 pb-2">
@@ -1711,7 +1709,9 @@
         updated.nickname = updated.nickname || nickname;
         updated.role = updated.role || currentMember.role;
         localStorage.setItem(`perfect_last_nickname_${roomId}`,updated.nickname);
+        const previousNickname=currentMember.nickname;
         saveMemberIdentity(updated);
+        updateMemberVoteNames(updated,previousNickname);
         closeModal(true);
         showToast(`暱稱已更改為：${updated.nickname}`);
       } catch (e) {
@@ -2355,7 +2355,7 @@
     }
 
     const defaultInfoConfig = {
-      visibility: { flight:true, hotel:true, weather:true, shuttle:true, exchange:true, reminders:true },
+      visibility: { flight:true, hotel:true, shuttle:true, exchange:true, reminders:true },
       flight: { outboundNo:'JX703', outboundDate:'12/07', outboundTime:'15:20', outboundArrivalDate:'12/07', outboundArrivalTime:'17:15', returnNo:'JX704', returnDate:'12/12', returnTime:'18:25', returnArrivalDate:'12/12', returnArrivalTime:'' },
       hotel: { h1Dates:'12/07 - 12/09 (2晚)', h1Name:'Little Residence A Boutique Hotel & Spa', h2Dates:'12/09 - 12/12 (3晚)', h2Name:'Chi House Danang Hotel and Apartment' },
       shuttle: { company:'得佳富租賃有限公司', driver:'阿得', phone1:'0972-922097', phone2:'04-25668678', line:'0972922097' }
@@ -2368,7 +2368,7 @@
     function saveInfoVisibility(){
       if (!requireRoom()) return;
       const visibility={};
-      ['weather','exchange','reminders','flight','shuttle','hotel'].forEach(k=>visibility[k]=!!document.getElementById('toggle-info-'+k)?.checked);
+      ['exchange','reminders','flight','shuttle','hotel'].forEach(k=>visibility[k]=!!document.getElementById('toggle-info-'+k)?.checked);
       localStorage.setItem(infoVisibilityKey(),JSON.stringify(visibility));
       renderInfoPage(); showToast('你的資訊顯示設定已更新');
     }
@@ -2378,7 +2378,7 @@
       const c=getInfoConfig(),v={...c.visibility};
       const required=getStoredData('headerInfo',defaultHeaderInfo).requiredInfo || {};
       ['flight','hotel','shuttle'].forEach(k=>{if(required[k] === false)v[k]=false;});
-      ['weather','exchange','reminders','flight','shuttle','hotel'].map(k=>[k,'toggle-info-'+k]).forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;
+      ['exchange','reminders','flight','shuttle','hotel'].map(k=>[k,'toggle-info-'+k]).forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;
         const label=e.closest('label');if(label){label.classList.toggle('info-choice-disabled',e.disabled);label.title=required[k] === false ? '主辦人未勾選本次旅程所需資訊' : '';}}});
       const box=document.getElementById('info-dynamic-sections'); if(!box)return;
       let h='';
@@ -2397,7 +2397,6 @@
           <p class="text-[9px] text-slate-400 mt-2">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
         </div>`;
       }
-      document.getElementById('info-weather-section').innerHTML=v.weather?`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">☀️ 天氣資訊</h3></div><p class="mt-2 text-slate-600">行程頁依旅程天數顯示氣候參考與穿搭建議。</p><button onclick="switchTab('itinerary')" class="mt-2 text-sky-600 font-bold">查看每日天氣 →</button></div>`:'';
       if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 交通接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p class="text-sky-600 font-bold">${c.shuttle.plan ? '已設定 '+c.shuttle.plan.vehicles.length+' 個車次：'+escapeHtml(c.shuttle.plan.vehicles.map(x=>x.name).join('、')) : '尚未設定車次'}</p><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
       if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
       box.innerHTML=h;
@@ -3071,6 +3070,25 @@
       renderSouvenirsList();
     }
 
+    function updateMemberVoteNames(member,previousNickname){
+      const data=getStoredData('favorites',defaultFavoritesData);let changed=false;
+      data.forEach(cat=>(cat.items||[]).forEach(item=>(item.voters||[]).forEach(v=>{
+        const owned=v.memberId ? String(v.memberId)===String(member.id) : String(v.name||'').trim().toLowerCase()===String(previousNickname||'').trim().toLowerCase();
+        if(owned && (v.name!==member.nickname || v.memberId!==member.id)){
+          v.name=member.nickname;v.memberId=member.id;changed=true;
+        }
+      })));
+      if(changed){pushStateToCloud('favorites',data);renderFavorites();}
+    }
+    function renderVoteCountOptions(vote={}){
+      const limits=parseHeaderHeadcount(getStoredData('headerInfo',defaultHeaderInfo));
+      [['adults',limits.adults,1],['kids',limits.children,0],['infants',limits.infants,0]].forEach(([key,max,fallback])=>{
+        const select=document.getElementById('input-vote-'+key);
+        select.innerHTML=Array.from({length:max+1},(_,n)=>`<option value="${n}">${n}</option>`).join('');
+        select.value=String(Math.min(max,Math.max(0,Number(vote[key]??fallback)||0)));
+      });
+    }
+
     function openVoteFavModal(catId, itemId) {
       if(!requireRoom())return;
       const data = getStoredData('favorites', defaultFavoritesData);
@@ -3083,9 +3101,8 @@
       document.getElementById('vote-fitem-id').value = itemId;
       document.getElementById('vote-fitem-name-display').textContent = item.name;
       document.getElementById('input-vote-name').value = currentMember?.nickname || '';
-      document.getElementById('input-vote-adults').value = '1';
-      document.getElementById('input-vote-kids').value = '0';
-      document.getElementById('input-vote-infants').value = '0';
+      const ownVote=(item.voters||[]).find(v=>v.memberId && String(v.memberId)===String(currentMember.id));
+      renderVoteCountOptions(ownVote||{});
 
       renderCurrentVotersList(catId, itemId, item);
 
@@ -3137,6 +3154,12 @@
       const kids = parseInt(document.getElementById('input-vote-kids').value) || 0;
       const infants = parseInt(document.getElementById('input-vote-infants').value) || 0;
       const totalCount = adults + kids + infants;
+      const limits=parseHeaderHeadcount(getStoredData('headerInfo',defaultHeaderInfo));
+      if(adults<0 || kids<0 || infants<0 || adults>limits.adults || kids>limits.children || infants>limits.infants){
+        renderVoteCountOptions({adults,kids,infants});
+        return showToast('投票人數超過大標設定，請重新確認人數');
+      }
+
 
       if (!name) {
         showToast("請輸入您的姓名");
