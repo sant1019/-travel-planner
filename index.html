@@ -96,6 +96,31 @@
     .trip-room:active, .trip-heading:active { opacity: .8; }
     .trip-room:focus-visible, .trip-heading:focus-visible { outline: 2px solid #9bd6e2; outline-offset: -2px; border-radius: 4px; }
     @media (max-width: 350px) { .trip-meta { font-size: 10px; } .trip-detail { margin-left: 6px; padding-left: 6px; } .trip-title { font-size: 28px; } }
+    #modal-backdrop.trip-login-overlay { background: linear-gradient(115deg, rgba(7,153,164,.96), rgba(12,48,105,.98)); align-items: center; justify-content: center; padding: 16px; }
+    .trip-login-card { position: relative; width: 100%; max-width: 350px; max-height: calc(100dvh - 32px); overflow-y: auto; padding: 22px; border-radius: 22px; background: #fff; box-shadow: 0 18px 50px rgba(8,31,64,.22); }
+    .trip-login-close { position: absolute; top: 8px; right: 10px; width: 32px; height: 32px; font-size: 26px; color: #64748b; }
+    .trip-login-heading { text-align: center; margin-bottom: 18px; }
+    .trip-login-heading>i { font-size: 28px; color: #078ba0; margin-bottom: 8px; }
+    .trip-login-heading h3 { font-size: 22px; font-weight: 800; color: #102c48; }
+    .trip-login-heading p { margin-top: 3px; font-size: 13px; color: #64748b; }
+    .trip-login-fields { display: flex; flex-direction: column; gap: 12px; }
+    .trip-login-fields label:not(.trip-login-remember) { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 600; }
+    .trip-login-fields input:not([type="checkbox"]) { width: 100%; min-width: 0; height: 42px; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f5f8fa; font-size: 16px; outline-color: #078ba0; }
+    .trip-password-wrap { position: relative; }
+    .trip-password-wrap input { padding-right: 42px !important; }
+    .trip-password-wrap button { position: absolute; right: 0; top: 0; width: 42px; height: 42px; color: #64748b; }
+    .trip-login-remember { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #475569; }
+    .trip-login-remember input { accent-color: #078ba0; width: 15px; height: 15px; }
+    #trip-login-status { font-size: 11px; line-height: 1.5; color: #64748b; }
+    #trip-login-status:empty { display: none; }
+    .trip-login-submit { padding: 11px; border-radius: 10px; color: white; font-weight: 700; font-size: 15px; background: linear-gradient(110deg,#06abb1,#074779); }
+    .trip-login-submit:disabled { opacity: .6; }
+    .trip-login-mode { width: 100%; margin-top: 16px; padding: 8px 0; border-top: 1px solid #e2e8f0; color: #078b9f; font-size: 12px; font-weight: 600; }
+    .trip-login-footnote { text-align: center; font-size: 10px; color: #94a3b8; margin-top: 7px; }
+    .trip-login-logout { width: 100%; padding-top: 12px; font-size: 11px; color: #e11d48; }
+    .trip-room-create { margin-top: 12px; font-size: 10px; color: #64748b; }
+    .trip-room-create p { margin-top: 5px; }
+    .trip-room-create button { padding: 7px 0; color: #078b9f; font-weight: 600; }
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
@@ -105,7 +130,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-20</span>
+        <span id="test-version-badge" class="trip-version">FC-21</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -515,24 +540,24 @@
     </div>
 
     <!-- Cloud Room Sync Modal -->
-    <div id="modal-sync-room" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
-      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-cloud-arrow-up text-sky-600 mr-1.5"></i>雲端同步房間</h3>
-      <p class="text-[11px] text-slate-500">同一組「房間名稱＋密碼」可在不同手機同步。第一次使用請先建立房間；其他手機再用登入同步。</p>
-      <div>
-        <label class="text-[11px] font-bold text-slate-600 block mb-1">房間名稱</label>
-        <input type="text" id="input-room-id" placeholder="至少 4 個字元，例如：danang2026" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
-      </div>
-      <div>
-        <label class="text-[11px] font-bold text-slate-600 block mb-1">房間密碼</label>
-        <input type="password" id="input-room-password" placeholder="至少 6 個字元" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
-      </div>
-      <button id="logout-room-button" onclick="logoutCloudRoom()" class="hidden w-full bg-rose-50 text-rose-600 py-2 rounded-xl text-xs font-bold">登出目前房間</button>
-      <p id="cloud-sync-status" class="text-[10px] text-slate-400">尚未登入雲端房間</p>
-      <div class="grid grid-cols-2 gap-2 pt-1">
-        <button onclick="createCloudRoom()" class="bg-emerald-600 text-white py-2 rounded-xl text-xs font-semibold">建立新房間</button>
-        <button onclick="joinCloudRoom()" class="bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">登入房間</button>
-      </div>
-      <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
+    <div id="modal-sync-room" class="trip-login-card hidden">
+      <button type="button" id="trip-login-close" onclick="closeModal(true)" class="trip-login-close" aria-label="關閉登入視窗">×</button>
+      <div class="trip-login-heading"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i><h3>登入旅程</h3><p>enjoy your trip</p></div>
+      <form id="trip-login-form" onsubmit="event.preventDefault();submitTripLogin()" class="trip-login-fields">
+        <div><label for="input-room-id">房間名稱</label><input id="input-room-id" name="room" autocomplete="off" autocapitalize="none" spellcheck="false" oninput="prefillTripNickname()" placeholder="例如：danang2026" required></div>
+        <div><label for="input-room-password">房間密碼</label><div class="trip-password-wrap"><input id="input-room-password" name="room-password" type="password" autocomplete="off" placeholder="輸入房間密碼"><button type="button" onclick="toggleTripPassword('input-room-password',this)" aria-label="顯示房間密碼" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div></div>
+        <div><label for="trip-login-nickname">個人暱稱</label><input id="trip-login-nickname" name="username" autocomplete="username" autocapitalize="none" maxlength="30" placeholder="輸入暱稱" required></div>
+        <div><label for="trip-login-password">個人密碼</label><div class="trip-password-wrap"><input id="trip-login-password" name="password" type="password" autocomplete="current-password" placeholder="輸入個人密碼" required><button type="button" onclick="toggleTripPassword('trip-login-password',this)" aria-label="顯示個人密碼" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div></div>
+        <div id="trip-confirm-field" class="hidden"><label for="trip-login-confirm">確認個人密碼</label><input id="trip-login-confirm" type="password" autocomplete="new-password" placeholder="再次輸入個人密碼"></div>
+        <label class="trip-login-remember"><input id="trip-login-remember" type="checkbox">記住登入狀態</label>
+        <p id="trip-login-status" role="status" aria-live="polite"></p>
+        <button type="submit" id="trip-login-submit" class="trip-login-submit">登入</button>
+      </form>
+      <button type="button" id="trip-login-mode" onclick="setTripLoginMode(!tripLoginRegister)" class="trip-login-mode">尚未加入－註冊為新成員</button>
+      <p class="trip-login-footnote">房間與暱稱會帶入上次成功登入的資料</p>
+      <button id="logout-room-button" onclick="logoutCloudRoom()" class="hidden trip-login-logout">登出目前房間</button>
+      <details class="trip-room-create"><summary>建立新房間</summary><p>先填寫上方房間名稱與密碼，再建立房間。</p><button type="button" onclick="createCloudRoom()">建立新房間</button></details>
+      <p id="cloud-sync-status" class="text-[10px] text-slate-400"></p>
     </div>
 
     <!-- Member Identity Modal -->
@@ -1529,7 +1554,8 @@
     const cloudClient = (window.supabase && window.supabase.createClient)
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
       : null;
-    let cloudPassword = localStorage.getItem('perfect_cloud_password') || sessionStorage.getItem('perfect_cloud_password') || '';
+    let cloudPassword = sessionStorage.getItem('perfect_cloud_password') || '';
+    localStorage.removeItem('perfect_cloud_password');
     let cloudConnected = false;
     let currentMember = null;
 
@@ -1610,14 +1636,7 @@
       ['input-member-login-password','input-member-password','input-member-password-confirm'].forEach(id=>document.getElementById(id).value='');
       setMemberStatus('');
     }
-    async function openMemberIdentityModal(){
-      if(!cloudConnected)return showToast('請先登入雲端房間');
-      closeModal();
-      document.getElementById('input-member-login-nickname').value=localStorage.getItem(`perfect_last_nickname_${roomId}`)||loadStoredMember()?.nickname||'';
-      setMemberLoginMode(false);
-      document.getElementById('modal-backdrop').classList.remove('hidden');
-      document.getElementById('modal-member-identity').classList.remove('hidden');
-    }
+    async function openMemberIdentityModal(){openSyncModal();}
     async function loginMemberIdentity(){
       if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setMemberStatus('資料正在同步，請稍後再切換身分',true);
       if(!cloudConnected)return;
@@ -1905,13 +1924,14 @@
       }
     }
 
-    function activateCloudRoom(newRoom, password) {
+    function activateCloudRoom(newRoom, password, checkMember=true) {
       roomId = newRoom;
       cloudPassword = password;
       cloudConnected = true;
       localStorage.setItem('danang_room_id', roomId);
-      localStorage.setItem('perfect_cloud_password', password);
-      sessionStorage.setItem('perfect_cloud_password', password);
+      localStorage.removeItem('perfect_cloud_password');
+      if(sessionStorage.getItem('perfect_remember_login')==='true')sessionStorage.setItem('perfect_cloud_password',password);
+      else sessionStorage.removeItem('perfect_cloud_password');
       const display = document.getElementById('room-name-display');
       if (display) display.textContent = roomId;
       setCloudStatus(`已連線：${roomId}`, true);
@@ -1924,7 +1944,7 @@
 
       // 房間一驗證成功就獨立啟動成員身分檢查，
       // 不再等待後續 pullCloudState，避免同步流程阻擋暱稱視窗。
-      setTimeout(() => ensureMemberIdentity(true), 300);
+      if(checkMember)setTimeout(() => ensureMemberIdentity(true), 300);
     }
 
     // 多人安全同步：每次只更新被修改的區塊，並把「修改前版本」一起交給
@@ -3912,6 +3932,8 @@
       const memberModal = document.getElementById('modal-member-identity');
       // 尚未完成身分設定時，暱稱視窗不可略過或被其他關閉動作收起。
       if (!force && memberModal && !memberModal.classList.contains('hidden') && !currentMember) return;
+      if(tripLoginBusy)return;
+      document.getElementById('modal-backdrop').classList.remove('trip-login-overlay');
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
         'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
@@ -3926,13 +3948,76 @@
       });
     }
 
+    let tripLoginRegister=false,tripLoginBusy=false;
+    function setTripLoginStatus(message,error=false){
+      const el=document.getElementById('trip-login-status');el.textContent=message;el.style.color=error?'#e11d48':'#64748b';
+    }
+    function prefillTripNickname(){
+      const target=document.getElementById('input-room-id').value.trim();
+      document.getElementById('trip-login-nickname').value=localStorage.getItem(`perfect_last_nickname_${target}`)||'';
+    }
+    function toggleTripPassword(id,button){
+      const input=document.getElementById(id),show=input.type==='password';input.type=show?'text':'password';
+      button.setAttribute('aria-pressed',String(show));button.setAttribute('aria-label',(show?'隱藏':'顯示')+(id==='input-room-password'?'房間密碼':'個人密碼'));
+      button.querySelector('i').className=show?'fa-regular fa-eye-slash':'fa-regular fa-eye';
+    }
+    function setTripLoginMode(register){
+      if(tripLoginBusy)return;tripLoginRegister=register;
+      document.getElementById('trip-confirm-field').classList.toggle('hidden',!register);
+      document.getElementById('trip-login-confirm').required=register;
+      document.getElementById('trip-login-password').autocomplete=register?'new-password':'current-password';
+      document.getElementById('trip-login-submit').textContent=register?'註冊並登入':'登入';
+      document.getElementById('trip-login-mode').textContent=register?'返回既有成員登入':'尚未加入－註冊為新成員';
+      document.getElementById('trip-login-password').value='';document.getElementById('trip-login-confirm').value='';setTripLoginStatus('');
+    }
     function openSyncModal() {
-      document.getElementById('input-room-id').value = roomId;
-      document.getElementById('input-room-password').value = cloudPassword || '';
-      setCloudStatus(cloudConnected ? `已連線：${roomId}` : '尚未登入雲端房間', cloudConnected);
-      closeModal();
+      if(tripLoginBusy)return;
+      closeModal(true);
+      document.getElementById('input-room-id').value=roomId;
+      document.getElementById('input-room-password').value='';
+      document.getElementById('input-room-password').placeholder=cloudConnected?'目前房間已連線，可留空':'輸入房間密碼';
+      document.getElementById('trip-login-nickname').value=localStorage.getItem(`perfect_last_nickname_${roomId}`)||loadStoredMember()?.nickname||'';
+      document.getElementById('trip-login-remember').checked=sessionStorage.getItem('perfect_remember_login')==='true';
+      setTripLoginMode(false);
+      ['input-room-password','trip-login-password'].forEach(id=>{document.getElementById(id).type='password';});
+      document.querySelectorAll('#modal-sync-room .trip-password-wrap button').forEach(b=>{b.setAttribute('aria-pressed','false');b.querySelector('i').className='fa-regular fa-eye';});
+      document.getElementById('cloud-sync-status').textContent='';
       document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-backdrop').classList.add('trip-login-overlay');
       document.getElementById('modal-sync-room').classList.remove('hidden');
+      updateRoomEditingLock();
+    }
+    async function submitTripLogin(){
+      if(tripLoginBusy)return;
+      if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setTripLoginStatus('資料正在同步，請稍後再登入',true);
+      const target=document.getElementById('input-room-id').value.trim();
+      const roomPassword=document.getElementById('input-room-password').value || (cloudConnected&&target===roomId?cloudPassword:'');
+      const nickname=document.getElementById('trip-login-nickname').value.trim(),password=document.getElementById('trip-login-password').value;
+      if(target.length<4 || roomPassword.length<6)return setTripLoginStatus('請輸入房間名稱（至少四個字元）與房間密碼（至少六個字元）',true);
+      if(!nickname || !password)return setTripLoginStatus('請輸入個人暱稱與個人密碼',true);
+      if(tripLoginRegister && (password.length<6 || new TextEncoder().encode(password).length>72))return setTripLoginStatus('個人密碼至少六個字元，最多 72 bytes',true);
+      if(tripLoginRegister && password!==document.getElementById('trip-login-confirm').value)return setTripLoginStatus('兩次個人密碼不一致',true);
+      if(!cloudClient)return setTripLoginStatus('無法連線，請重新整理後再試',true);
+      const registering=tripLoginRegister,remember=document.getElementById('trip-login-remember').checked;
+      tripLoginBusy=true;document.querySelectorAll('#modal-sync-room input,#modal-sync-room button').forEach(el=>el.disabled=true);
+      setTripLoginStatus('正在驗證房間…');
+      try{
+        const {data:state,error:roomError}=await cloudClient.rpc('get_trip_room',{p_room_id:target,p_password:roomPassword});
+        if(roomError || state===null){setTripLoginStatus(roomError?'房間驗證失敗，請確認房間資料與網路連線':'房間名稱或密碼不正確',true);return;}
+        setTripLoginStatus(registering?'正在註冊成員…':'正在驗證個人帳密…');
+        const {data,error}=await cloudClient.rpc(registering?'register_trip_member_secure':'login_trip_member_secure',{p_room_id:target,p_password:roomPassword,p_nickname:nickname,p_member_password:password});
+        if(error || data?.error || !data?.token || !data?.member?.id){setTripLoginStatus(memberLoginError(error||data?.error||'invalid_member_credentials'),true);return;}
+        const previousRoom=roomId,previousToken=getMemberToken();
+        sessionStorage.setItem('perfect_remember_login',String(remember));
+        roomId=target;applyRoomState(state||{});activateCloudRoom(target,roomPassword,false);useAuthenticatedMember(data);
+        if(previousToken && previousToken!==data.token){
+          if(previousRoom!==target)sessionStorage.removeItem(`perfect_member_token_${previousRoom}`);
+          cloudClient.rpc('logout_trip_member_secure',{p_room_id:previousRoom,p_member_token:previousToken}).catch(()=>{});
+        }
+        ['input-room-password','trip-login-password','trip-login-confirm'].forEach(id=>document.getElementById(id).value='');
+        tripLoginBusy=false;closeModal(true);showToast((registering?'歡迎，':'已登入：')+data.member.nickname);
+      }catch(e){setTripLoginStatus('無法完成登入，請確認網路後再試',true);}
+      finally{tripLoginBusy=false;document.querySelectorAll('#modal-sync-room input,#modal-sync-room button').forEach(el=>el.disabled=false);}
     }
 
     function openAddPackingCatModal() {
@@ -4045,6 +4130,7 @@
       if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return showToast('資料尚未同步完成，請先確認連線再登出');
       const oldToken=getMemberToken();if(oldToken){try{await cloudClient.rpc('logout_trip_member_secure',{p_room_id:roomId,p_member_token:oldToken});}catch(e){}}
       sessionStorage.removeItem(memberTokenKey());
+      sessionStorage.removeItem('perfect_remember_login');
       cloudConnected=false; cloudPassword=''; currentMember=null;
       localStorage.removeItem('perfect_cloud_password');sessionStorage.removeItem('perfect_cloud_password');
       clearInterval(cloudPollTimer);cloudPollTimer=null;
@@ -4264,22 +4350,9 @@
         });
         if (!error && data !== null) {
           applyRoomState(data || {});
-          activateCloudRoom(roomId, cloudPassword);
+          activateCloudRoom(roomId, cloudPassword, false);
 
-          // 自動登入成功後，如果本機尚未選擇成員，
-          // 直接同步顯示暱稱視窗，不再依賴任何 timer / polling / RPC 後續流程。
-          if (!loadStoredMember(roomId)) {
-            closeModal();
-            document.getElementById('modal-backdrop').classList.remove('hidden');
-            document.getElementById('modal-member-identity').classList.remove('hidden');
-            setMemberStatus('正在讀取成員…');
-            fetchRoomMembers()
-              .then(members => openMemberIdentityModal(members))
-              .catch(err => {
-                console.error('member startup error:', err);
-                setMemberStatus('成員資料讀取失敗，請稍後再試', true);
-              });
-          }
+          await ensureMemberIdentity(true);
 
           await pullCloudState(true);
         } else {
