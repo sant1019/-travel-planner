@@ -128,7 +128,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-29</span>
+        <span id="test-version-badge" class="trip-version">FC-30</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -211,8 +211,7 @@
       <!-- Weather Forecast Header -->
       <div id="weather-banner" class="bg-gradient-to-r from-blue-500 to-sky-400 text-white p-3 rounded-2xl shadow-sm space-y-1"></div>
 
-      <button onclick="openScenicPdfModal()" class="w-full bg-white border border-sky-200 text-sky-700 font-bold py-3 rounded-2xl text-xs"><i class="fa-solid fa-file-pdf mr-1.5"></i>匯出行程與景點介紹 PDF</button>
-      <button onclick="openTravelBook()" class="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 rounded-2xl text-xs">🎨 製作旅程總覽／每日行程圖與介紹</button>
+      <button onclick="openTravelBook()" class="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 rounded-2xl text-xs">🎨 製作旅程總覽與景點介紹 PDF</button>
       <!-- Itinerary List -->
       <div id="itinerary-items-container" class="space-y-3"></div>
 
@@ -705,11 +704,13 @@
     </div>
 
     <div id="modal-scenic-pdf" class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
-      <h3 class="text-sm font-bold text-sky-800">旅程行程圖與景點／餐廳介紹</h3>
-      <p class="text-[11px] text-slate-500">依已排行程製作路線總覽，再接左圖右文的景點／餐廳介紹。優先使用已儲存的介紹；未填時沿用既有說明。以下修改只供本次匯出，長期保存請到行程編輯畫面的「景點／餐廳介紹」欄位儲存。內建四套示意插圖，不使用付費搜尋或即時生成服務。</p>
-      <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 space-y-2"><label class="text-xs font-bold text-emerald-800">PDF／圖片風格</label><select id="travel-book-style" onchange="clearTravelBookPreview()" class="w-full p-2 text-xs border rounded-lg bg-white"><option value="caramel">焦糖印章版（預設）</option><option value="light">暖白旅誌版</option><option value="dark">暮色復古版</option><option value="pop">繽紛普普版</option></select><label class="text-xs font-bold text-emerald-800">行程圖版型</label><select id="travel-book-mode" class="w-full p-2 text-xs border rounded-lg bg-white"><option value="overview">完整旅程一張總覽</option><option value="daily">分成每日頁（內容多時續頁）</option></select><button id="travel-book-generate" onclick="generateTravelBook()" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-xs font-bold">製作總覽與介紹圖</button><p class="text-[10px] text-slate-500">圖片只包含已安排的行程；待安排項目保留於介紹 PDF。可逐張下載，iPhone 也可長按圖片儲存。</p></div><div id="travel-book-overflow" class="hidden p-3 bg-amber-50 rounded-xl text-xs"><p>內容超過單張可讀範圍。全部項目都會保留，請選擇分頁後重新匯出。</p><button type="button" onclick="acceptTravelBookDaily()" class="mt-2 bg-amber-200 p-2 rounded">分成每日頁</button></div><div id="travel-book-preview" class="space-y-3"></div>
-      <div id="scenic-pdf-list" class="space-y-3"></div>
-      <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 bg-slate-100 py-2.5 rounded-xl text-xs">取消</button><button id="scenic-pdf-download" onclick="downloadScenicPdf()" class="flex-1 bg-sky-600 text-white py-2.5 rounded-xl text-xs font-bold">下載 PDF</button></div>
+      <div class="sticky top-0 z-10 bg-white flex items-center justify-between gap-3 pb-2"><h3 class="text-sm font-bold text-emerald-800">旅程總覽與景點／餐廳介紹 PDF</h3><button type="button" onclick="closeScenicPdfModal()" aria-label="取消並關閉 PDF 視窗" class="w-10 h-10 rounded-full bg-slate-100 text-slate-700 text-2xl shrink-0">×</button></div>
+      <p class="text-xs text-slate-600">只列出已排行程的景點、餐廳與購物地點。路線排滿一頁後接續下一頁，再接左圖右文的介紹，合成一份多頁 PDF。以下修改只供本次匯出，長期保存請到行程編輯畫面的「景點／餐廳介紹」欄位儲存。</p>
+      <div class="bg-emerald-50 rounded-xl p-3 space-y-2"><label class="text-xs font-bold text-emerald-800">PDF 風格</label><select id="travel-book-style" onchange="clearTravelBookPreview()" class="w-full p-2 text-sm border rounded-lg bg-white"><option value="caramel">焦糖印章版（預設）</option><option value="light">暖白旅誌版</option><option value="dark">暮色復古版</option><option value="pop">繽紛普普版</option></select><button id="travel-book-generate" onclick="generateTravelBook()" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-sm font-bold">預覽整份 PDF</button></div>
+      <div id="travel-book-preview" class="space-y-3"></div>
+      <label class="block text-sm font-bold text-slate-700">選擇填寫天數<select id="scenic-pdf-day" onchange="renderScenicPdfList()" class="w-full p-2 text-sm border rounded-lg bg-white mt-1"><option value="all">全部天數</option></select></label><p id="scenic-pdf-count" class="text-xs text-slate-500"></p>
+      <div id="scenic-pdf-list" class="space-y-4"></div>
+      <button id="scenic-pdf-download" onclick="downloadScenicPdf()" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold">下載整份 PDF</button>
       <p class="text-[10px] text-slate-400">iPhone 若開啟 PDF 預覽，可按分享 → 儲存到「檔案」。</p>
     </div>
 
@@ -2475,13 +2476,31 @@
       const entered=scenicPlainText((fixed?fixed.guideText:item.guideText)||[(fixed?fixed.note:item.desc),item.note,item.comment].filter(Boolean).join('\n')).trim();
       return {day,date,title:scenicPlainText(item.title||item.name),time:item.time||'',duration:item.duration||'',text:entered||guides.map(g=>g.text).join('\n\n')||'尚未填寫介紹，可在下方補充。',highlights:item.guideHighlights||travelBookShortText(entered)||guides.map(g=>g.highlights||'').filter(Boolean).join('\n'),note:fixed?fixedActivityDetailLines(fixed).filter(line=>fixed.guideText||!line.startsWith('備註：')).join('\n'):(item.guideText?scenicPlainText([item.desc,item.comment,item.note].filter(Boolean).join('\n')):''),sources:entered?[]:[...new Set(guides.map(g=>g.source))]};
     }
+    function scenicExportItem(item){
+      if(item.autoTransfer)return false;
+      const title=scenicPlainText(item.title||item.name||'').trim(),type=String(item.category||item.type||'').toLowerCase();
+      if(['flight','transfer','transport','hotel','accommodation'].includes(type))return false;
+      if(/接駁|航班|航廈|機場|班機|搭機|飛機|包車接送|交通集合|去程交通|回程交通|前往飯店|返回飯店|回飯店|入住|退房|住宿|check[ -]?(in|out)|airport|flight|(?:^|\s)[A-Z]{2}\d{2,4}(?:\s|$)/i.test(title))return false;
+      if(/(?:飯店|酒店|旅館|民宿|hotel|apartment)\s*$/i.test(title))return false;
+      const hotel=getInfoConfig().hotel||{};
+      return ![hotel.h1Name,hotel.h2Name].filter(Boolean).some(n=>title===scenicPlainText(n).trim());
+    }
     function openScenicPdfModal(){
-      closeModal();const days=getTripDays(),data=getItineraryWithTransfers(getStoredData('itinerary',defaultItineraryData));scenicPdfDraft=[];
-      days.forEach((date,i)=>(data[i+1]?.items||[]).forEach(item=>scenicPdfDraft.push(scenicEntry(item,'Day '+(i+1),date))));
-      getFixedActivities().filter(a=>!fixedAssignments(a.id).length).forEach(a=>scenicPdfDraft.push(scenicEntry({...a,title:a.name,guideText:a.guideText},'待安排','')));
-      document.getElementById('scenic-pdf-list').innerHTML=scenicPdfDraft.length?scenicPdfDraft.map((e,i)=>`<div class="border border-slate-200 rounded-xl p-3 space-y-2"><h4 class="text-xs font-bold text-sky-800">${e.day} ${escapeHtml(e.date)}｜${escapeHtml(e.title)}</h4><label class="text-[10px] text-slate-500">歷史／特色介紹</label><textarea aria-label="歷史與特色介紹" class="w-full border rounded-lg p-2 text-xs h-28" oninput="scenicPdfDraft[${i}].text=this.value">${escapeHtml(e.text)}</textarea><label class="text-[10px] text-slate-500">必玩／必看／推薦菜色</label><textarea aria-label="必玩必看推薦菜色" class="w-full border rounded-lg p-2 text-xs h-20" oninput="scenicPdfDraft[${i}].highlights=this.value">${escapeHtml(e.highlights)}</textarea><label class="text-[10px] text-slate-500">停留時間／參觀提醒</label><textarea aria-label="停留時間與參觀提醒" class="w-full border rounded-lg p-2 text-xs h-20" oninput="scenicPdfDraft[${i}].note=this.value">${escapeHtml([e.duration&&'停留時間：'+e.duration,e.note].filter(Boolean).join('\n'))}</textarea>${e.sources.map(url=>`<a class="block text-[10px] text-sky-600 underline break-all" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">資料來源：${escapeHtml(url)}</a>`).join('')}</div>`).join(''):'<p class="text-xs text-slate-400">目前沒有可匯出的行程。</p>';
-      scenicPdfDraft.forEach(e=>{e.note=[e.duration&&'停留時間：'+e.duration,e.note].filter(Boolean).join('\n');});
+      if(!requireRoom())return;
+      closeModal();clearTravelBookPreview();const days=getTripDays(),data=getStoredData('itinerary',defaultItineraryData);scenicPdfDraft=[];
+      days.forEach((date,i)=>(data[i+1]?.items||[]).filter(scenicExportItem).forEach(item=>{
+        const e=scenicEntry(item,'Day '+(i+1),date);e.note=[e.duration&&'停留時間：'+e.duration,e.note].filter(Boolean).join('\n');scenicPdfDraft.push(e);
+      }));
+      const select=document.getElementById('scenic-pdf-day');select.innerHTML='<option value="all">全部天數</option>'+days.map((date,i)=>`<option value="Day ${i+1}">第 ${i+1} 天｜${escapeHtml(date)}</option>`).join('');select.value='all';renderScenicPdfList();
       document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-scenic-pdf').classList.remove('hidden');
+    }
+    function closeScenicPdfModal(){clearTravelBookPreview();closeModal();}
+    function updateScenicPdfEntry(index,key,value){if(!scenicPdfDraft[index]||!['text','highlights','note'].includes(key))return;scenicPdfDraft[index][key]=value;clearTravelBookPreview();}
+    function renderScenicPdfList(){
+      const selected=document.getElementById('scenic-pdf-day').value,colors=['#FFF9ED','#E9F1E7','#F3E4D2'];
+      const visible=scenicPdfDraft.map((e,i)=>({e,i})).filter(({e})=>selected==='all'||e.day===selected);
+      document.getElementById('scenic-pdf-list').innerHTML=visible.length?visible.map(({e,i},n)=>`<div data-scenic-index="${i}" class="rounded-2xl p-4 space-y-3 shadow-sm" style="background:${colors[n%colors.length]};color:#293B32;margin-bottom:18px"><h4 class="text-sm font-bold">${travelBookDay(e.day)} ${escapeHtml(e.date)}<br>${escapeHtml(e.title)}</h4><label class="block text-xs font-bold">歷史／特色介紹<textarea aria-label="歷史與特色介紹" class="w-full border rounded-lg p-2 text-sm h-28 bg-white mt-1" oninput="updateScenicPdfEntry(${i},'text',this.value)">${escapeHtml(e.text)}</textarea></label><label class="block text-xs font-bold">必玩／必看／推薦菜色<textarea aria-label="必玩必看推薦菜色" class="w-full border rounded-lg p-2 text-sm h-20 bg-white mt-1" oninput="updateScenicPdfEntry(${i},'highlights',this.value)">${escapeHtml(e.highlights)}</textarea></label><label class="block text-xs font-bold">停留時間／參觀提醒<textarea aria-label="停留時間與參觀提醒" class="w-full border rounded-lg p-2 text-sm h-20 bg-white mt-1" oninput="updateScenicPdfEntry(${i},'note',this.value)">${escapeHtml(e.note)}</textarea></label>${e.sources.map(url=>`<a class="block text-xs text-sky-700 underline break-all" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">資料來源：${escapeHtml(url)}</a>`).join('')}</div>`).join(''):'<p class="text-sm text-slate-500 py-4">這一天沒有已安排的景點、餐廳或購物地點。</p>';
+      document.getElementById('scenic-pdf-count').textContent=`顯示 ${visible.length} 項／全部 ${scenicPdfDraft.length} 項；PDF 會包含全部天數。`;
     }
     let placeGuideCandidates={fixed:[],itin:[]},placeGuideRequest={fixed:0,itin:0};
     function placeGuideFields(kind){return kind==='fixed'?{title:'fixed-name',map:'fixed-guide-map',intro:'fixed-guide',box:'fixed-guide-results'}:{title:'input-itin-title',map:'input-itin-map',intro:'input-itin-guide',box:'itin-guide-results'};}
@@ -2500,9 +2519,9 @@
     };
     function travelBookTheme(){return TRAVEL_BOOK_THEMES[document.getElementById('travel-book-style')?.value]||TRAVEL_BOOK_THEMES.caramel;}
     function travelBookStyle(){return Object.keys(TRAVEL_BOOK_THEMES).find(k=>TRAVEL_BOOK_THEMES[k]===travelBookTheme())||'caramel';}
-    let travelBookUrls=[];
-    function clearTravelBookPreview(){travelBookUrls.forEach(URL.revokeObjectURL);travelBookUrls=[];const el=document.getElementById('travel-book-preview');if(el)el.innerHTML='';document.getElementById('travel-book-overflow')?.classList.add('hidden');}
-    function openTravelBook(){if(!requireRoom())return;openScenicPdfModal();clearTravelBookPreview();}
+    let travelBookUrls=[],travelBookPreviewRevision=0;
+    function clearTravelBookPreview(){travelBookPreviewRevision++;travelBookUrls.forEach(URL.revokeObjectURL);travelBookUrls=[];const el=document.getElementById('travel-book-preview');if(el)el.innerHTML='';}
+    function openTravelBook(){if(!requireRoom())return;openScenicPdfModal();}
     function travelBookGroups(){const groups=new Map();for(const e of scenicPdfDraft){if(e.day==='待安排')continue;const key=e.day+'|'+e.date;if(!groups.has(key))groups.set(key,{day:e.day,date:e.date,entries:[]});groups.get(key).entries.push(e);}return [...groups.values()];}
     function travelBookDay(day){return String(day).replace(/^Day\s*(\d+)$/,'第 $1 天');}
     function travelBookIcon(title){const choices=[[/機場|航班|星宇|飛機|返程|賦歸|出發集合/,0],[/入住|飯店|Hotel|Chi House|住宿/i,1],[/寺|教堂|美山|My Son|Linh Ung/i,2],[/古[鎮城]|Hoi An Ancient/i,3],[/Teh Dar|回憶秀|劇場|表演/i,4],[/椰子船|竹籃船|迦南|Cam Thanh/i,5],[/五行山|山茶|Marble|Son Tra/i,6],[/市場|市集|購物|採買|伴手禮|超市|Big C|Go!/i,7],[/咖啡|Coffee|Cà Phê|Caphe/i,9],[/海鮮|餐廳|晚餐|午餐|美食|Mộc|Moc|Bánh|Banh|Morning Glory/i,8],[/巴拿|纜車|Ba Na|Sun World/i,10],[/龍橋|韓江|Dragon Bridge/i,11]];return choices.find(([p])=>p.test(title))?.[1]??3;}
@@ -2512,20 +2531,44 @@
     function travelBookBase(canvas,title,subtitle){const ctx=canvas.getContext('2d'),t=travelBookTheme();ctx.fillStyle=t.bg;ctx.fillRect(0,0,canvas.width,canvas.height);travelBookText(ctx,title,65,30,48,canvas.width-130,t.ink,true);travelBookText(ctx,subtitle,68,101,23,canvas.width-136,t.muted);ctx.strokeStyle=t.accent;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(65,145);ctx.lineTo(canvas.width-65,145);ctx.stroke();return ctx;}
     function travelBookTripTitle(){const title=scenicPlainText(getStoredData('headerInfo',defaultHeaderInfo).title||'旅遊').trim();return title.includes('之旅')?title:title+'之旅';}
     function travelBookArrow(ctx,x1,y1,x2,y2){const t=travelBookTheme(),a=Math.atan2(y2-y1,x2-x1);ctx.strokeStyle=t.accent;ctx.fillStyle=t.accent;ctx.lineWidth=3;ctx.setLineDash(travelBookStyle()==='caramel'?[7,6]:[]);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-13*Math.cos(a-.5),y2-13*Math.sin(a-.5));ctx.lineTo(x2-13*Math.cos(a+.5),y2-13*Math.sin(a+.5));ctx.closePath();ctx.fill();}
-    function travelBookRoute(groups,image,daily=false){
-      const W=1920,H=1080,measure=document.createElement('canvas').getContext('2d');let rows,cols;
-      for(let n=3;n<=6;n++){const r=groups.flatMap(g=>Array.from({length:Math.ceil(g.entries.length/n)},(_,i)=>({...g,entries:g.entries.slice(i*n,(i+1)*n),part:i})));const width=1510/n-35;if(r.length<=6&&r.every(g=>g.entries.every(e=>travelBookWrap(measure,e.title,25,width,true).length<=2&&travelBookWrap(measure,e.time||'時間未指定',22,width).length<=2&&(travelBookWrap(measure,e.title,25,width,true).length*36.25+travelBookWrap(measure,e.time||'時間未指定',22,width).length*31.9+8)<=850/r.length-55))){rows=r;cols=n;break;}}
-      if(!rows?.length)return null;
-      const canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;const t=travelBookTheme(),ctx=travelBookBase(canvas,travelBookTripTitle(),daily?travelBookDay(groups[0].day)+'｜'+groups[0].date:'完整旅程路線總覽｜'+getTripDays()[0]+' ～ '+getTripDays().at(-1));
-      const rowH=850/rows.length,cw=1510/cols,xStart=205,positions=[];
-      rows.forEach((g,r)=>{const reverse=r%2===1,y=170+r*rowH,artH=Math.min(135,rowH-Math.max(...g.entries.map(e=>travelBookWrap(measure,e.title,25,cw-36,true).length*36.25+travelBookWrap(measure,e.time||'時間未指定',22,cw-36).length*31.9+8))-4),centers=[];g.entries.forEach((e,j)=>{const slot=reverse?cols-1-j:j,x=xStart+slot*cw,w=cw-36;centers.push(x+w/2);travelBookArt(ctx,image,travelBookIcon(e.title),x,y,w,artH);const ty=y+artH+4;const timeH=travelBookText(ctx,e.time||'時間未指定',x,ty,22,w,t.accent,true);travelBookText(ctx,e.title,x,ty+timeH+2,25,w,t.ink,true);if(j)travelBookArrow(ctx,centers[j-1]+(reverse?-1:1)*w*.39,y+artH*.5,centers[j]-(reverse?-1:1)*w*.39,y+artH*.5);});
-        const bx=reverse?1740:40;ctx.fillStyle=t.panel;ctx.beginPath();ctx.roundRect(bx,y+10,145,82,18);ctx.fill();travelBookText(ctx,travelBookDay(g.day)+(g.part?'（續）':''),bx+10,y+20,25,125,t.ink,true);travelBookText(ctx,g.date.slice(5),bx+12,y+105,20,125,t.muted);positions.push({last:centers.at(-1),first:centers[0],y:y+artH*.5});
-      });
-      for(let i=0;i<positions.length-1;i++){const a=positions[i],b=positions[i+1],side=i%2===0?1710:195;travelBookArrow(ctx,a.last+(i%2===0?75:-75),a.y,side,a.y);travelBookArrow(ctx,side,a.y,side,b.y);travelBookArrow(ctx,side,b.y,b.first+(i%2===0?75:-75),b.y);}
-      travelBookText(ctx,t.name+'｜依已排行程順序整理・插圖為示意',65,1043,20,W-130,t.muted);return {canvas,label:daily?travelBookDay(groups[0].day)+'_'+groups[0].date:'旅程總覽',entryCount:rows.reduce((n,g)=>n+g.entries.length,0)};
+    function travelBookStartKind(){
+      const info=getInfoConfig(),required=getStoredData('headerInfo',defaultHeaderInfo).requiredInfo||{},flight=info.flight||{},shuttle=info.shuttle||{};
+      if(required.flight!==false&&[flight.outboundNo,flight.returnNo,flight.outboundDate,flight.outboundTime,flight.returnDate,flight.returnTime].some(v=>String(v||'').trim()))return 'plane';
+      if(required.shuttle!==false&&(shuttle.plan?.vehicles?.length||[shuttle.company,shuttle.driver,shuttle.phone1,shuttle.line].some(v=>String(v||'').trim())))return 'car';
+      return '';
     }
-    function travelBookOverview(groups,image){return travelBookRoute(groups,image);}
-    function travelBookDaily(group,image){const pages=[];let batch=[];for(const e of group.entries){const next=[...batch,e];if(batch.length&&!travelBookRoute([{...group,entries:next}],image,true)){pages.push(travelBookRoute([{...group,entries:batch}],image,true));batch=[];}batch.push(e);if(!travelBookRoute([{...group,entries:batch}],image,true))throw new Error('「'+e.title+'」的名稱或時間過長，請先縮短；介紹可保留全文。');}if(batch.length)pages.push(travelBookRoute([{...group,entries:batch}],image,true));return pages.map((p,i)=>({...p,label:p.label+'_'+(i+1)}));}
+    function travelBookCar(ctx,x,y,w,h){
+      const t=travelBookTheme();ctx.save();ctx.translate(x,y);const scale=Math.min(w/250,h/130);ctx.scale(scale,scale);ctx.fillStyle=t.accent;ctx.beginPath();ctx.moveTo(18,95);ctx.lineTo(18,64);ctx.lineTo(57,57);ctx.lineTo(82,23);ctx.lineTo(178,23);ctx.lineTo(207,58);ctx.lineTo(232,64);ctx.lineTo(232,95);ctx.closePath();ctx.fill();ctx.strokeStyle=t.ink;ctx.lineWidth=3;ctx.stroke();ctx.fillStyle=t.bg;ctx.beginPath();ctx.moveTo(87,32);ctx.lineTo(122,32);ctx.lineTo(122,56);ctx.lineTo(69,56);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(132,32);ctx.lineTo(175,32);ctx.lineTo(193,56);ctx.lineTo(132,56);ctx.closePath();ctx.fill();for(const cx of [66,186]){ctx.fillStyle=t.ink;ctx.beginPath();ctx.arc(cx,95,19,0,Math.PI*2);ctx.fill();ctx.fillStyle=t.bg;ctx.beginPath();ctx.arc(cx,95,9,0,Math.PI*2);ctx.fill();}ctx.restore();
+    }
+    function travelBookRoutePages(groups,image){
+      const entries=groups.flatMap(g=>g.entries.map(e=>({...e,day:g.day,date:g.date})));if(!entries.length)return [];
+      const start=travelBookStartKind();const nodes=start?[{start,title:start==='plane'?'旅程出發':'接駁出發'},...entries]:entries;
+      const measure=document.createElement('canvas').getContext('2d'),cw=450,cardW=414;
+      const prepared=nodes.map(e=>({...e,titleLines:travelBookWrap(measure,e.title,29,cardW-32,true),timeLines:travelBookWrap(measure,e.time||'時間未指定',24,cardW-32,true)}));
+      // 固定字級，以內容高度決定每列高度。跨天沿用同一列，頁滿才接下一頁。
+      const rows=[];for(let i=0;i<prepared.length;i+=4){const batch=prepared.slice(i,i+4);const labelH=Math.max(...batch.map(e=>e.titleLines.length*42.05+e.timeLines.length*34.8));const height=Math.max(262,196+labelH);if(height>830)throw new Error('「'+batch.find(e=>e.titleLines.length>12)?.title+'」名稱或時間過長，請縮短後匯出。');rows.push({entries:batch,height});}
+      const sheets=[];let sheet=[],used=0;for(const row of rows){if(sheet.length&&used+row.height>830){sheets.push(sheet);sheet=[];used=0;}sheet.push(row);used+=row.height;}if(sheet.length)sheets.push(sheet);
+      let previousDay='',entryCount=0;
+      return sheets.map((page,p)=>{
+        const canvas=document.createElement('canvas');canvas.width=1920;canvas.height=1080;const t=travelBookTheme(),dates=getTripDays(),ctx=travelBookBase(canvas,travelBookTripTitle(),'完整旅程路線｜'+(dates[0]||'')+' ～ '+(dates.at(-1)||'')+(p?'｜接續上一頁':''));
+        let y=170;const positions=[];const actual=[];
+        page.forEach((row,r)=>{const reverse=r%2===1,centers=[],direction=reverse?-1:1;
+          row.entries.forEach((e,j)=>{const slot=reverse?3-j:j,x=65+slot*cw,w=cardW;ctx.fillStyle=t.panel;ctx.beginPath();ctx.roundRect(x,y,w,row.height-16,16);ctx.fill();
+            const continued=e.day&&e.day===previousDay&&j===0&&r===0&&p>0;
+            travelBookText(ctx,e.start?'出發':travelBookDay(e.day)+(continued?'（續）':'')+'｜'+e.date.slice(5),x+16,y+12,22,w-32,t.muted,true);
+            if(e.start==='car')travelBookCar(ctx,x+90,y+51,250,125);else travelBookArt(ctx,image,e.start?0:travelBookIcon(e.title),x+24,y+44,w-48,130);
+            let ty=y+181;if(!e.start)ty+=travelBookText(ctx,e.time||'時間未指定',x+16,ty,24,w-32,t.accent,true);
+            travelBookText(ctx,e.title,x+16,ty+3,29,w-32,t.ink,true);centers.push({x:x+w/2,y:y+110,left:x,right:x+w});
+            if(j){const a=centers[j-1],b=centers[j];travelBookArrow(ctx,direction>0?a.right+2:a.left-2,a.y,direction>0?b.left-4:b.right+4,b.y);}
+            if(!e.start){previousDay=e.day;entryCount++;actual.push(e);}
+          });positions.push({first:centers[0],last:centers.at(-1),reverse});y+=row.height;
+        });
+        for(let i=0;i<positions.length-1;i++){const a=positions[i].last,b=positions[i+1].first,side=positions[i].reverse?42:1870;travelBookArrow(ctx,positions[i].reverse?a.left-2:a.right+2,a.y,side,a.y);travelBookArrow(ctx,side,a.y,side,b.y);travelBookArrow(ctx,side,b.y,positions[i+1].reverse?b.right+2:b.left-2,b.y);}
+        travelBookText(ctx,t.name+'｜插圖為示意｜路線 '+(p+1)+'／'+sheets.length+(p<sheets.length-1?'｜路線接續下一頁 →':''),65,1035,21,1780,t.muted);
+        return {canvas,label:'旅程總覽_'+(p+1),entryCount:actual.length,entries:actual};
+      });
+    }
+    function travelBookOverview(groups,image){return travelBookRoutePages(groups,image)[0]||null;}
     async function loadTravelBookArt(){const image=new Image();const ready=new Promise((resolve,reject)=>{image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('插圖載入失敗'));});image.src=TRAVEL_BOOK_ASSETS[travelBookStyle()];return ready;}
     function travelBookIntroPages(image){
       const pages=[],measure=document.createElement('canvas').getContext('2d'),t=travelBookTheme();
@@ -2533,10 +2576,14 @@
         while(lines.length){const canvas=document.createElement('canvas');canvas.width=1920;canvas.height=1080;const ctx=travelBookBase(canvas,travelBookDay(e.day)+'｜景點／餐廳介紹',e.date+(e.time?'　'+e.time:''));travelBookArt(ctx,image,travelBookIcon(e.title),55,205,650,700);ctx.strokeStyle=t.accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(735,190);ctx.lineTo(735,980);ctx.stroke();const titles=travelBookWrap(ctx,e.title+(part?'（續）':''),43,1030,true);if(titles.length>5)throw new Error('景點名稱過長，請縮短後匯出');let y=185+travelBookText(ctx,e.title+(part?'（續）':''),790,185,43,1030,t.ink,true)+26;const capacity=Math.max(1,Math.floor((965-y)/43));const batch=lines.splice(0,capacity);ctx.font='29px "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif';ctx.fillStyle=t.ink;ctx.textBaseline='top';batch.forEach((l,j)=>ctx.fillText(l,790,y+j*43));travelBookText(ctx,t.name+'｜'+(e.day==='待安排'?'此項目尚未安排':'插圖為示意')+'｜'+(part+1),65,1035,20,1780,t.muted);pages.push({canvas,label:travelBookDay(e.day)+'_'+e.title+'_介紹_'+(++part)});}
       }return pages;
     }
-    function buildTravelBookOutputs(image,includeIntros=true){const groups=travelBookGroups(),mode=document.getElementById('travel-book-mode').value,overview=groups.length&&mode!=='daily'?travelBookOverview(groups,image):null;if(groups.length&&mode!=='daily'&&!overview){document.getElementById('travel-book-overflow').classList.remove('hidden');throw new Error('完整行程超過單張可讀範圍，請選擇下方的「分成每日頁」後重新匯出。');}const routes=overview?[overview]:groups.flatMap(g=>travelBookDaily(g,image));return [...routes,...(includeIntros?travelBookIntroPages(image):[])];}
-    function acceptTravelBookDaily(){document.getElementById('travel-book-mode').value='daily';document.getElementById('travel-book-overflow').classList.add('hidden');showToast('已選每日分頁，可重新製圖或下載 PDF');}
-    async function generateTravelBook(){if(!scenicPdfDraft.length)return showToast('目前沒有行程');const button=document.getElementById('travel-book-generate');button.disabled=true;button.textContent='製圖中…';try{await document.fonts?.ready;const image=await loadTravelBookArt();clearTravelBookPreview();const outputs=buildTravelBookOutputs(image,true),box=document.getElementById('travel-book-preview');for(const out of outputs){const blob=await new Promise(resolve=>out.canvas.toBlob(resolve,'image/png'));if(!blob)throw new Error('圖片無法匯出');const url=URL.createObjectURL(blob);travelBookUrls.push(url);const row=document.createElement('div'),img=document.createElement('img'),link=document.createElement('a');img.src=url;img.alt=out.label;img.className='w-full rounded-lg border';link.href=url;link.download=out.label.replace(/[\\/:*?"<>|]/g,'_')+'.png';link.textContent='下載 '+out.label;link.className='block text-center bg-emerald-600 text-white p-2 rounded-lg text-xs';row.append(img,link);box.appendChild(row);out.canvas.width=1;out.canvas.height=1;}showToast('已製作 '+outputs.length+' 張，可逐張下載');}catch(e){showToast(e.message||'製圖失敗');}finally{button.disabled=false;button.textContent='製作總覽與介紹圖';}}
-
+    function buildTravelBookOutputs(image,includeIntros=true){return [...travelBookRoutePages(travelBookGroups(),image),...(includeIntros?travelBookIntroPages(image):[])];}
+    async function generateTravelBook(){
+      if(!scenicPdfDraft.length)return showToast('目前沒有可匯出的景點');const button=document.getElementById('travel-book-generate'),revision=++travelBookPreviewRevision;button.disabled=true;button.textContent='預覽製作中…';
+      try{await document.fonts?.ready;const image=await loadTravelBookArt();if(revision!==travelBookPreviewRevision)return;const outputs=buildTravelBookOutputs(image,true),box=document.getElementById('travel-book-preview');travelBookUrls.forEach(URL.revokeObjectURL);travelBookUrls=[];box.innerHTML='';
+        for(const out of outputs){const blob=await new Promise(resolve=>out.canvas.toBlob(resolve,'image/png'));out.canvas.width=1;out.canvas.height=1;if(revision!==travelBookPreviewRevision)return;if(!blob)throw new Error('預覽無法製作');const url=URL.createObjectURL(blob);travelBookUrls.push(url);const row=document.createElement('figure'),img=document.createElement('img'),caption=document.createElement('figcaption');img.src=url;img.alt=out.label;img.className='w-full rounded-lg border';caption.textContent=out.label.replaceAll('_',' ');caption.className='text-xs text-center text-slate-600 py-1';row.append(img,caption);box.appendChild(row);}
+        showToast('預覽共 '+outputs.length+' 頁；下載會合成一份 PDF');
+      }catch(e){showToast(e.message||'預覽製作失敗');}finally{button.disabled=false;button.textContent='預覽整份 PDF';}
+    }
     function scenicPdfBlob(pages){
       const encoder=new TextEncoder(),chunks=[],offsets=[0];let length=0;
       const put=data=>{const bytes=typeof data==='string'?encoder.encode(data):data;chunks.push(bytes);length+=bytes.length;};
@@ -2552,12 +2599,12 @@
     }
     async function downloadScenicPdf(){
       if(!scenicPdfDraft.length)return showToast('目前沒有可匯出的行程');
-      const button=document.getElementById('scenic-pdf-download');button.disabled=true;button.textContent='產製中…';
+      const button=document.getElementById('scenic-pdf-download'),revision=travelBookPreviewRevision;button.disabled=true;button.textContent='產製中…';
       try{
         if(document.fonts?.ready)await document.fonts.ready;
-        const image=await loadTravelBookArt();const outputs=buildTravelBookOutputs(image,true);const blob=scenicPdfBlob(outputs.map(p=>p.canvas)),title=getStoredData('headerInfo',defaultHeaderInfo).title||'旅遊';
+        const image=await loadTravelBookArt();if(revision!==travelBookPreviewRevision)return;const outputs=buildTravelBookOutputs(image,true);const blob=scenicPdfBlob(outputs.map(p=>p.canvas)),title=getStoredData('headerInfo',defaultHeaderInfo).title||'旅遊';outputs.forEach(p=>{p.canvas.width=1;p.canvas.height=1;});
         const name=title.replace(/[\\/:*?"<>|]/g,'_')+'_'+travelBookTheme().name+'_行程與景點介紹.pdf',url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);showToast('PDF 已產製，請查看下載或 PDF 預覽');
-      }catch(e){console.error(e);showToast(e.message||'PDF 產製失敗，請稍後重試');}finally{button.disabled=false;button.textContent='下載 PDF';}
+      }catch(e){console.error(e);showToast(e.message||'PDF 產製失敗，請稍後重試');}finally{button.disabled=false;button.textContent='下載整份 PDF';}
     }
 
 
