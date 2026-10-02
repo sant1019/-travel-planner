@@ -104,13 +104,11 @@
     .trip-login-heading h3 { font-size: 22px; font-weight: 800; color: #102c48; }
     .trip-login-heading p { margin-top: 3px; font-size: 13px; color: #64748b; }
     .trip-login-fields { display: flex; flex-direction: column; gap: 12px; }
-    .trip-login-fields label:not(.trip-login-remember) { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 600; }
+    .trip-login-fields label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 600; }
     .trip-login-fields input:not([type="checkbox"]) { width: 100%; min-width: 0; height: 42px; padding: 9px 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f5f8fa; font-size: 16px; outline-color: #078ba0; }
     .trip-password-wrap { position: relative; }
     .trip-password-wrap input { padding-right: 42px !important; }
     .trip-password-wrap button { position: absolute; right: 0; top: 0; width: 42px; height: 42px; color: #64748b; }
-    .trip-login-remember { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #475569; }
-    .trip-login-remember input { accent-color: #078ba0; width: 15px; height: 15px; }
     #trip-login-status { font-size: 11px; line-height: 1.5; color: #64748b; }
     #trip-login-status:empty { display: none; }
     .trip-login-submit { padding: 11px; border-radius: 10px; color: white; font-weight: 700; font-size: 15px; background: linear-gradient(110deg,#06abb1,#074779); }
@@ -130,7 +128,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-24</span>
+        <span id="test-version-badge" class="trip-version">FC-26</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -550,7 +548,7 @@
         <div><label for="trip-login-nickname">個人暱稱</label><input id="trip-login-nickname" name="username" autocomplete="username" autocapitalize="none" maxlength="30" placeholder="輸入暱稱" required></div>
         <div><label for="trip-login-password">個人密碼</label><div class="trip-password-wrap"><input id="trip-login-password" name="password" type="password" autocomplete="current-password" placeholder="輸入個人密碼" required><button type="button" onclick="toggleTripPassword('trip-login-password',this)" aria-label="顯示個人密碼" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div></div>
         <div id="trip-confirm-field" class="hidden"><label for="trip-login-confirm">確認個人密碼</label><input id="trip-login-confirm" type="password" autocomplete="new-password" placeholder="再次輸入個人密碼"></div>
-        <div><label class="trip-login-remember"><input id="trip-login-remember" type="checkbox">記住登入狀態</label><p class="text-[10px] text-slate-400 mt-1">同分頁重新整理時自動恢復登入；登出後需重新驗證。</p></div>
+        <p class="text-[10px] text-slate-400">登入後會自動恢復登入狀態；選擇登出後需重新登入。</p>
         <p id="trip-login-status" role="status" aria-live="polite"></p>
         <button type="submit" id="trip-login-submit" class="trip-login-submit">登入</button>
       </form>
@@ -722,7 +720,7 @@
       <div id="fixed-planner-list" class="space-y-2"></div>
       <button onclick="openFixedActivityEditor()" class="w-full border border-sky-200 bg-sky-50 text-sky-700 font-bold py-2.5 rounded-xl text-xs">＋ 新增固定活動</button>
 
-      <div id="fixed-activity-editor" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
+      <div id="fixed-editor-home"><div id="fixed-activity-editor" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
         <input type="hidden" id="fixed-edit-id">
         <div><label class="text-[11px] font-bold text-slate-600 block mb-1">活動／店家名稱</label>
           <input id="fixed-name" oninput="previewFixedMap()" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs" placeholder="例如：會安回憶秀">
@@ -732,16 +730,18 @@
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">日期限制</label><select id="fixed-date-rule" onchange="renderFixedDateOptions()" class="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white"><option value="flexible">日期皆可</option><option value="specific">指定日期</option><option value="weekday">指定星期</option></select></div>
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">日期／星期</label><select id="fixed-date-value" class="w-full p-2 border border-slate-200 rounded-xl text-xs bg-white"></select></div>
         </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">已訂／偏好時間</label><input id="fixed-time" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="20:00"></div>
-          <div><label class="text-[11px] font-bold text-slate-600 block mb-1">停留時間</label><input id="fixed-duration" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="2 小時"></div>
-        </div>
-        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">營業時間</label><input id="fixed-opening-hours" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="09:00–18:00；星期一休息（跨夜請手動安排）"></div>
-        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">表演場次</label><input id="fixed-sessions" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：17:00、20:00"></div>
-        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：票已訂、只能晚場"></textarea></div>
+        <label class="flex gap-2 text-[11px] text-amber-800"><input id="fixed-manual-only" type="checkbox">跨夜或另有特殊限制，儲存後由主辦人安排</label>
+        <div id="fixed-format-warning" class="hidden text-[11px] text-amber-800 bg-amber-50 p-2 rounded-lg"></div>
+        <div class="space-y-2"><label class="flex items-center gap-2 text-[11px] font-bold text-slate-600"><input type="checkbox" id="fixed-has-time" onchange="toggleFixedPreferred()">指定已訂／偏好時間</label><div id="fixed-preferred-picker" class="hidden"></div><p class="text-[10px] text-slate-400">未指定時，系統會依場次或營業空檔安排。</p></div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">停留時間</label><div class="flex gap-2"><select id="fixed-stay-hours" aria-label="停留小時" class="flex-1 min-w-0 p-2 border rounded-lg bg-white text-xs"></select><select id="fixed-stay-minutes" aria-label="停留分鐘" class="flex-1 min-w-0 p-2 border rounded-lg bg-white text-xs"></select></div></div>
+        <div class="space-y-2"><label class="text-[11px] font-bold text-slate-600 block">營業時間</label><div id="fixed-hours-rows" class="space-y-2"></div><button type="button" onclick="addFixedHours()" class="text-sky-700 text-xs">＋新增營業時段</button><p class="text-[10px] text-slate-400">午休可分成兩段；全天營業請選 00:00 至 24:00。未設定採 09:00 至 21:00。</p></div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">每週公休日（可複選）</label><div id="fixed-closed-days" class="flex flex-wrap gap-2 text-[11px]"></div></div>
+        <div class="space-y-2"><label class="text-[11px] font-bold text-slate-600 block">表演場次</label><div id="fixed-session-rows" class="space-y-2"></div><button type="button" onclick="addFixedSession()" class="text-sky-700 text-xs">＋新增表演場次</button></div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="自由填寫提醒；日期、時間與公休日請使用上方選項設定"></textarea></div>
         <div class="flex gap-2"><button onclick="cancelFixedActivityEditor()" class="flex-1 bg-white border border-slate-200 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveFixedActivity()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
       </div>
 
+      </div>
       <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs">關閉</button>
     </div>
 
@@ -1571,13 +1571,14 @@
     const cloudClient = (window.supabase && window.supabase.createClient)
       ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
       : null;
-    let cloudPassword = sessionStorage.getItem('perfect_cloud_password') || '';
-    localStorage.removeItem('perfect_cloud_password');
+    let cloudPassword = localStorage.getItem('perfect_cloud_password') || sessionStorage.getItem('perfect_cloud_password') || '';
+    if(cloudPassword)localStorage.setItem('perfect_cloud_password',cloudPassword);
     let cloudConnected = false;
     let currentMember = null;
 
     function memberTokenKey(){return `perfect_member_token_${roomId}`;}
-    function getMemberToken(){return sessionStorage.getItem(memberTokenKey())||'';}
+    function getMemberToken(){const token=localStorage.getItem(memberTokenKey())||sessionStorage.getItem(memberTokenKey())||'';if(token){localStorage.setItem(memberTokenKey(),token);sessionStorage.removeItem(memberTokenKey());}return token;}
+    function clearMemberToken(){localStorage.removeItem(memberTokenKey());sessionStorage.removeItem(memberTokenKey());}
     function memberLoginError(error){
       const code=String(error?.message||error||'');
       if(code.includes('member_password_not_set'))return '此暱稱尚未設定個人密碼，請由主辦人在 Supabase 補設';
@@ -1588,7 +1589,7 @@
     }
     function useAuthenticatedMember(data){
       if(!data?.token||!data?.member?.id)throw new Error(data?.error||'invalid_member_credentials');
-      sessionStorage.setItem(memberTokenKey(),data.token);localStorage.setItem(`perfect_last_nickname_${roomId}`,data.member.nickname);saveMemberIdentity(data.member);refreshUI();
+      localStorage.setItem(memberTokenKey(),data.token);sessionStorage.removeItem(memberTokenKey());localStorage.setItem(`perfect_last_nickname_${roomId}`,data.member.nickname);saveMemberIdentity(data.member);refreshUI();
     }
     function memberStorageKey(targetRoom = roomId) { return `perfect_member_${targetRoom}`; }
 
@@ -1641,7 +1642,7 @@
           const {data,error}=await cloudClient.rpc('get_trip_member_session',{p_room_id:roomId,p_member_token:token});
           if(!error&&data?.id){saveMemberIdentity(data);refreshUI();return;}
         }catch(e){}
-        sessionStorage.removeItem(memberTokenKey());
+        clearMemberToken();
       }
       currentMember=null;renderMemberIdentity();refreshUI();
       if(showIfMissing)await openMemberIdentityModal();
@@ -1946,9 +1947,8 @@
       cloudPassword = password;
       cloudConnected = true;
       localStorage.setItem('danang_room_id', roomId);
-      localStorage.removeItem('perfect_cloud_password');
-      if(sessionStorage.getItem('perfect_remember_login')==='true')sessionStorage.setItem('perfect_cloud_password',password);
-      else sessionStorage.removeItem('perfect_cloud_password');
+      localStorage.setItem('perfect_cloud_password',password);
+      sessionStorage.setItem('perfect_cloud_password',password);
       const display = document.getElementById('room-name-display');
       if (display) display.textContent = roomId;
       setCloudStatus(`已連線：${roomId}`, true);
@@ -2025,7 +2025,7 @@
           cloudSectionPending[key] = localData;
         }
         setCloudStatus('同步失敗，資料已保留在本機');
-        if(error?.message?.includes('member_login_required')){currentMember=null;sessionStorage.removeItem(memberTokenKey());refreshUI();openMemberIdentityModal();return;}
+        if(error?.message?.includes('member_login_required')){currentMember=null;clearMemberToken();refreshUI();openMemberIdentityModal();return;}
       }
 
       if (Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) {
@@ -2204,11 +2204,13 @@
     }
     function renderFixedPlannerList() {
       const box=document.getElementById('fixed-planner-list'); if(!box)return;
-      const list=getFixedActivities();
+      const list=getFixedActivities(),editor=document.getElementById('fixed-activity-editor'),home=document.getElementById('fixed-editor-home'),editing=document.getElementById('fixed-edit-id')?.value;
+      if(editor&&home)home.appendChild(editor);
       box.innerHTML=list.length?list.map(x=>{
         const days=fixedAssignments(x.id),status=days.length?'已安排至 '+days.map(d=>'Day '+d).join('、'):'待安排';
-        return `<div class="bg-white border border-slate-200 rounded-xl p-3 space-y-2"><div class="font-bold text-xs">${escapeHtml(x.name)}</div><div class="text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${x.forced&&days.length?'（主辦人手動安排）':''}</div><div class="text-[10px] text-slate-500">${escapeHtml(x.dateRule==='flexible'?'日期皆可':x.dateValue)} ${escapeHtml(x.time||'')} ${escapeHtml(x.duration||'')}</div>${!days.length&&x.scheduleReason?`<p class="text-[10px] text-amber-700">${escapeHtml(x.scheduleReason)}</p>`:''}${x.openingHours?`<p class="text-[10px]">營業時間：${escapeHtml(x.openingHours)}</p>`:''}${x.sessions?`<p class="text-[10px]">場次：${escapeHtml(x.sessions)}</p>`:''}${x.note?`<p class="text-[10px]">${escapeHtml(x.note)}</p>`:''}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}')" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div></div>`;
+        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl p-3 space-y-2"><div class="font-bold text-xs">${escapeHtml(x.name)}</div><div class="text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${x.forced&&days.length?'（主辦人手動安排）':''}</div><div class="text-[10px] text-slate-500">${escapeHtml(x.dateRule==='flexible'?'日期皆可':x.dateValue)} ${escapeHtml(x.time||'')} ${escapeHtml(x.duration||'')}</div>${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}${x.openingHours?`<p class="text-[10px]">營業時間：${escapeHtml(x.openingHours)}</p>`:''}${x.sessions?`<p class="text-[10px]">場次：${escapeHtml(x.sessions)}</p>`:''}${x.note?`<p class="text-[10px]">${escapeHtml(x.note)}</p>`:''}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div>`;
       }).join(''):'<div class="text-xs text-slate-400 text-center py-4">尚未建立固定活動</div>';
+      if(editor&&!editor.classList.contains('hidden')&&editing){const card=[...box.querySelectorAll('[data-fixed-id]')].find(el=>el.dataset.fixedId===editing);if(card)card.querySelector('.fixed-editor-slot').appendChild(editor);}
     }
 
     function renderFixedDateOptions(saved=''){
@@ -2224,32 +2226,81 @@
       }else {select.innerHTML='<option value="">日期皆可</option>';}
       select.disabled=rule==='flexible';
     }
-    function openFixedActivityEditor(id='') {
-      document.getElementById('fixed-activity-editor').classList.remove('hidden');
-      const x=getFixedActivities().find(v=>v.id===id);
+    function openFixedActivityEditor(id='',trigger=null) {
+      id=String(id);
+      const editor=document.getElementById('fixed-activity-editor'),card=trigger?.closest('[data-fixed-id]')||[...document.querySelectorAll('#fixed-planner-list [data-fixed-id]')].find(el=>el.dataset.fixedId===id);
+      (card?.querySelector('.fixed-editor-slot')||document.getElementById('fixed-editor-home')).appendChild(editor);editor.classList.remove('hidden');
+      const x=getFixedActivities().find(v=>String(v.id)===id);
       document.getElementById('fixed-edit-id').value=id;
       document.getElementById('fixed-name').value=x?.name||'';
       document.getElementById('fixed-date-rule').value=x?.dateRule||'flexible';
       renderFixedDateOptions(x?.dateValue||'');
-      document.getElementById('fixed-opening-hours').value=x?.openingHours||'';
-      document.getElementById('fixed-sessions').value=x?.sessions||'';
-      document.getElementById('fixed-time').value=x?.time||'';
-      document.getElementById('fixed-duration').value=x?.duration||'';
-      document.getElementById('fixed-note').value=x?.note||'';
+      initFixedStructuredFields(x||{});
+      document.getElementById('fixed-note').value=[x?.note,document.getElementById('fixed-format-warning').textContent||''].filter(Boolean).join('\n');
       previewFixedMap();
+      requestAnimationFrame(()=>editor.scrollIntoView({behavior:'smooth',block:'start'}));
     }
-    function cancelFixedActivityEditor(){document.getElementById('fixed-activity-editor').classList.add('hidden');}
+    function cancelFixedActivityEditor(){const editor=document.getElementById('fixed-activity-editor');editor.classList.add('hidden');document.getElementById('fixed-editor-home').appendChild(editor);document.getElementById('fixed-edit-id').value='';}
     function previewFixedMap(){const name=document.getElementById('fixed-name')?.value.trim()||'';const box=document.getElementById('fixed-map-preview'),link=document.getElementById('fixed-map-link');if(name.length>=2){link.href=buildAutoMapLink(name);box.classList.remove('hidden')}else box.classList.add('hidden');}
     function saveFixedActivity(){
       if (!requireRoom() || !isOrganizer()) return;
       const name=document.getElementById('fixed-name').value.trim(); if(!name)return showToast('請輸入活動或店家名稱');
-      const id=document.getElementById('fixed-edit-id').value,list=getFixedActivities(),old=list.find(x=>x.id===id);
+      const id=document.getElementById('fixed-edit-id').value,list=getFixedActivities(),old=list.find(x=>String(x.id)===id);
       const rule=document.getElementById('fixed-date-rule').value,dateValue=document.getElementById('fixed-date-value').value;
+      if(rule==='weekday'&&!['星期日','星期一','星期二','星期三','星期四','星期五','星期六'].includes(dateValue))return showToast('請選擇有效星期');
       if(rule==='specific'&&!getTripDays().includes(dateValue))return showToast('請選擇旅遊期程內的日期');
-      const data={...old,forced:false,id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),time:document.getElementById('fixed-time').value.trim(),duration:document.getElementById('fixed-duration').value.trim(),note:document.getElementById('fixed-note').value.trim(),map:buildAutoMapLink(name),openingHours:document.getElementById('fixed-opening-hours').value.trim(),sessions:document.getElementById('fixed-sessions').value.trim()};
-      const idx=list.findIndex(x=>x.id===id); if(idx>=0)list[idx]=data;else list.push(data);
+      let structured;try{structured=readFixedStructuredFields();}catch(e){return showToast(e.message);}
+      const data={...old,forced:false,id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),...structured,note:document.getElementById('fixed-note').value.trim(),map:buildAutoMapLink(name)};
+      const idx=list.findIndex(x=>String(x.id)===id); if(idx>=0)list[idx]=data;else list.push(data);
       cancelFixedActivityEditor();arrangeFixedActivities(list);renderFixedPlannerList();const days=fixedAssignments(data.id);showToast(days.length?'已儲存，已安排至 Day '+days.join('、'):'已儲存，待安排');
     }
+    function fixedTimeSelects(value='',end=false){
+      const parsed=plannerMinutes(value),h=parsed===null?0:Math.floor(parsed/60),m=parsed===null?0:parsed%60;
+      return `<div class="flex items-center gap-1"><select aria-label="小時" class="fixed-hour flex-1 min-w-0 p-2 border rounded-lg bg-white text-xs">${Array.from({length:end?25:24},(_,n)=>`<option value="${n}" ${h===n?'selected':''}>${String(n).padStart(2,'0')} 時</option>`).join('')}</select><select aria-label="分鐘" class="fixed-minute flex-1 min-w-0 p-2 border rounded-lg bg-white text-xs">${Array.from({length:60},(_,n)=>`<option value="${n}" ${m===n?'selected':''}>${String(n).padStart(2,'0')} 分</option>`).join('')}</select></div>`;
+    }
+    function fixedPickerValue(row){const h=Number(row.querySelector('.fixed-hour').value),m=Number(row.querySelector('.fixed-minute').value);if(h===24&&m!==0)throw new Error('24 時只能選 00 分');return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');}
+    function toggleFixedPreferred(){document.getElementById('fixed-preferred-picker').classList.toggle('hidden',!document.getElementById('fixed-has-time').checked);}
+    function addFixedHours(start='09:00',end='18:00'){
+      const row=document.createElement('div');row.className='fixed-hours-row border rounded-xl p-2 space-y-1';row.innerHTML=`<div class="flex justify-between text-[10px]"><b>營業時段</b><button type="button" onclick="this.closest('.fixed-hours-row').remove()" class="text-rose-600">刪除</button></div><div class="fixed-start">${fixedTimeSelects(start)}</div><p class="text-center text-[10px] text-slate-500">至</p><div class="fixed-end">${fixedTimeSelects(end,true)}</div>`;document.getElementById('fixed-hours-rows').appendChild(row);
+    }
+    function addFixedSession(value='20:00'){
+      const row=document.createElement('div');row.className='fixed-session-row border rounded-xl p-2 space-y-1';row.innerHTML=`<div class="flex justify-between text-[10px]"><b>表演場次</b><button type="button" onclick="this.closest('.fixed-session-row').remove()" class="text-rose-600">刪除</button></div>${fixedTimeSelects(value)}`;document.getElementById('fixed-session-rows').appendChild(row);
+    }
+    function initFixedStructuredFields(a={}){
+      document.getElementById('fixed-manual-only').checked=!!a.manualOnly;
+      const issues=[];let raw=String(a.time||'').trim(),value=raw;
+      if(/^\d{4}$/.test(raw))value=raw.slice(0,2)+':'+raw.slice(2);
+      if(raw&&(plannerMinutes(value)===null||plannerMinutes(value)===1440))issues.push('原有偏好時間：'+raw);
+      document.getElementById('fixed-has-time').checked=!!raw;
+      document.getElementById('fixed-preferred-picker').innerHTML=fixedTimeSelects(value);toggleFixedPreferred();
+      const duration=plannerDuration(a.duration);document.getElementById('fixed-stay-hours').innerHTML=Array.from({length:24},(_,n)=>`<option value="${n}" ${Math.floor((duration||60)/60)===n?'selected':''}>${n} 小時</option>`).join('');
+      document.getElementById('fixed-stay-minutes').innerHTML=Array.from({length:60},(_,n)=>`<option value="${n}" ${(duration||60)%60===n?'selected':''}>${n} 分鐘</option>`).join('');
+      if(a.duration&&(!duration||duration>=1440))issues.push('原有停留時間：'+a.duration);
+      document.getElementById('fixed-hours-rows').innerHTML='';document.getElementById('fixed-session-rows').innerHTML='';
+      document.getElementById('fixed-closed-days').innerHTML=['日','一','二','三','四','五','六'].map((d,n)=>`<label class="inline-flex gap-1 items-center"><input type="checkbox" value="${n}">週${d}</label>`).join('');
+      let hours=String(a.openingHours||'').trim();
+      hours=hours.replace(/(?:星期|週|周)([一二三四五六日天])\s*(?:休息|公休|不營業)/g,(_,d)=>{document.querySelector(`#fixed-closed-days input[value="${'日一二三四五六'.indexOf(d==='天'?'日':d)}"]`).checked=true;return '';});
+      hours=hours.replace(/(\d{1,2}:\d{2})\s*[-–—~～至]\s*(\d{1,2}:\d{2})/g,(_,start,end)=>{if(plannerMinutes(start)!==null&&plannerMinutes(end)!==null)addFixedHours(start,end);else issues.push('原有營業時段：'+start+'–'+end);return '';});
+      hours=hours.replace(/[、,，;；\s]/g,'');if(hours==='全天'||hours==='24小時'){addFixedHours('00:00','24:00');hours='';}if(hours)issues.push('原有營業時間：'+a.openingHours);
+      const sessions=String(a.sessions||'');plannerTimes(sessions).filter(n=>n<1440).forEach(n=>addFixedSession(plannerClock(n)));
+      if(plannerTimes(sessions).includes(1440)||sessions.replace(/\d{1,2}:\d{2}/g,'').replace(/[、,，;；\s]/g,'')||((sessions.match(/\d{1,2}:\d{2}/g)||[]).length!==plannerTimes(sessions).length))issues.push('原有表演場次：'+sessions);
+      const warning=document.getElementById('fixed-format-warning');warning.textContent=issues.length?'以下舊資料請重新選擇後再儲存：'+issues.join('；'):'';warning.classList.toggle('hidden',!issues.length);
+    }
+    function readFixedStructuredFields(){
+      const manualOnly=document.getElementById('fixed-manual-only').checked;
+      const time=document.getElementById('fixed-has-time').checked?fixedPickerValue(document.getElementById('fixed-preferred-picker')):'';
+      const durationMinutes=Number(document.getElementById('fixed-stay-hours').value)*60+Number(document.getElementById('fixed-stay-minutes').value);
+      if(durationMinutes<=0)throw new Error('停留時間至少 1 分鐘');
+      const ranges=[...document.querySelectorAll('#fixed-hours-rows .fixed-hours-row')].map(row=>{
+        const start=fixedPickerValue(row.querySelector('.fixed-start')),end=fixedPickerValue(row.querySelector('.fixed-end'));
+        if(!manualOnly&&plannerMinutes(end)<=plannerMinutes(start))throw new Error('營業結束需晚於開始；跨夜活動請拆成兩個時段並由主辦人確認');return [start,end];
+      });
+      const sorted=ranges.map(([a,b])=>[plannerMinutes(a),plannerMinutes(b)]).sort((a,b)=>a[0]-b[0]);if(!manualOnly&&sorted.some((r,i)=>i&&r[0]<sorted[i-1][1]))throw new Error('營業時段不可重疊');
+      const closed=[...document.querySelectorAll('#fixed-closed-days input:checked')].map(x=>'星期'+'日一二三四五六'[Number(x.value)]+'休息');
+      const sessions=[...new Set([...document.querySelectorAll('#fixed-session-rows .fixed-session-row')].map(fixedPickerValue))].sort();
+      return {manualOnly,time,duration:durationMinutes+' 分鐘',openingHours:[...ranges.map(([a,b])=>a+'–'+b),...closed].join('；'),sessions:sessions.join('、')};
+    }
+
     function plannerMinutes(value) {
       const m=String(value||'').match(/^(\d{1,2}):(\d{2})$/);
       if(!m)return null;const h=+m[1],n=+m[2];return h<24&&n<60?h*60+n:(h===24&&n===0?1440:null);
@@ -2265,6 +2316,7 @@
       return null;
     }
     function plannerRules(activity) {
+      if(activity.manualOnly)return {error:'跨夜或特殊限制，需主辦人手動安排（請參閱備註）'};
       const duration=plannerDuration(activity.duration);
       if(!duration||duration>1440)return {error:'停留時間無法判讀，請填「2 小時」或「90 分鐘」'};
       const preferred=plannerTimes(activity.time),sessions=plannerTimes(activity.sessions);
@@ -2277,8 +2329,6 @@
       rest=rest.replace(/[、,，;；\s]/g,'');
       if(rest==='24小時'||rest==='全天') {ranges.push([0,1440]);rest='';}
       if(rest||ranges.some(([a,b])=>a===null||b===null||b<=a))return {error:'營業時間或跨夜限制無法判讀，請改用時段格式或手動安排'};
-      // Free-form constraints must be confirmed by an organizer; do not guess.
-      if(/只能|不得|不能|限於|僅限|最晚|最早|休息|公休/.test(activity.note||''))return {error:'備註有額外限制，請主辦人確認並手動安排'};
       return {duration,preferred:preferred[0],sessions,ranges:ranges.length?ranges:[[540,1260]],closedDays};
     }
     function plannerAllowedDate(a,date) {
@@ -2329,7 +2379,7 @@
         for(const [i,date] of getTripDays().entries()){
           const day=String(i+1),items=getItineraryWithTransfers(data)[day]?.items||[],slot=plannerSlot(a,date,items);
           if(slot.start!==undefined){const score=items.length;if(!picked||score<picked.score)picked={day,slot,score};}
-          else reason=slot.reason;
+          else if(plannerAllowedDate(a,date))reason=slot.reason;
         }
         if(picked){
           data[picked.day] ||= {items:[]};data[picked.day].items.push(fixedItineraryItem(a,picked.slot,previous.get(a.id)||a.pendingItem));
@@ -4169,7 +4219,6 @@
       document.getElementById('input-room-password').value='';
       document.getElementById('input-room-password').placeholder=cloudConnected&&cloudPassword.length>=6?'留空即可沿用目前房間密碼':'輸入房間密碼';
       document.getElementById('trip-login-nickname').value=localStorage.getItem(`perfect_last_nickname_${roomId}`)||loadStoredMember()?.nickname||'';
-      document.getElementById('trip-login-remember').checked=sessionStorage.getItem('perfect_remember_login')==='true';
       setTripLoginMode(false);
       ['input-room-password','trip-login-password'].forEach(id=>{document.getElementById(id).type='password';});
       document.querySelectorAll('#modal-sync-room .trip-password-wrap button').forEach(b=>{b.setAttribute('aria-pressed','false');b.querySelector('i').className='fa-regular fa-eye';});
@@ -4190,7 +4239,7 @@
       if(tripLoginRegister && (password.length<6 || new TextEncoder().encode(password).length>72))return setTripLoginStatus('個人密碼至少六個字元，最多 72 bytes',true);
       if(tripLoginRegister && password!==document.getElementById('trip-login-confirm').value)return setTripLoginStatus('兩次個人密碼不一致',true);
       if(!cloudClient)return setTripLoginStatus('無法連線，請重新整理後再試',true);
-      const registering=tripLoginRegister,remember=document.getElementById('trip-login-remember').checked;
+      const registering=tripLoginRegister;
       tripLoginBusy=true;document.querySelectorAll('#modal-sync-room input,#modal-sync-room button').forEach(el=>el.disabled=true);
       setTripLoginStatus('正在驗證房間…');
       try{
@@ -4200,10 +4249,9 @@
         const {data,error}=await cloudClient.rpc(registering?'register_trip_member_secure':'login_trip_member_secure',{p_room_id:target,p_password:roomPassword,p_nickname:nickname,p_member_password:password});
         if(error || data?.error || !data?.token || !data?.member?.id){setTripLoginStatus(memberLoginError(error||data?.error||'invalid_member_credentials'),true);return;}
         const previousRoom=roomId,previousToken=getMemberToken();
-        sessionStorage.setItem('perfect_remember_login',String(remember));
         roomId=target;applyRoomState(state||{});activateCloudRoom(target,roomPassword,false);useAuthenticatedMember(data);
         if(previousToken && previousToken!==data.token){
-          if(previousRoom!==target)sessionStorage.removeItem(`perfect_member_token_${previousRoom}`);
+          if(previousRoom!==target){localStorage.removeItem(`perfect_member_token_${previousRoom}`);sessionStorage.removeItem(`perfect_member_token_${previousRoom}`);}
           // Supabase RPC is a thenable builder, not a native Promise with .catch().
           // Retiring the previous token must not turn a successful login into an error.
           Promise.resolve().then(()=>cloudClient.rpc('logout_trip_member_secure',{p_room_id:previousRoom,p_member_token:previousToken})).catch(()=>{});
@@ -4323,7 +4371,7 @@
       for(const key of Object.keys(cloudSectionPending))await flushSectionPush(key);
       if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return showToast('資料尚未同步完成，請先確認連線再登出');
       const oldToken=getMemberToken();if(oldToken){try{await cloudClient.rpc('logout_trip_member_secure',{p_room_id:roomId,p_member_token:oldToken});}catch(e){}}
-      sessionStorage.removeItem(memberTokenKey());
+      clearMemberToken();
       sessionStorage.removeItem('perfect_remember_login');
       cloudConnected=false; cloudPassword=''; currentMember=null;
       localStorage.removeItem('perfect_cloud_password');sessionStorage.removeItem('perfect_cloud_password');
