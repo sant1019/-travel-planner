@@ -119,6 +119,16 @@
     .trip-room-create { margin-top: 12px; font-size: 10px; color: #64748b; }
     .trip-room-create p { margin-top: 5px; }
     .trip-room-create button { padding: 7px 0; color: #078b9f; font-weight: 600; }
+      .fc32-utility{gap:7px;padding:5px 10px;position:relative;}
+    .fc32-utility .trip-member{max-width:29%;margin:0;padding:3px 0;border:0;flex-shrink:1;font-size:10px;}
+    .fc32-room-link{display:flex;align-items:center;gap:4px;flex:1;min-width:0;text-align:left;border-left:1px solid #ffffff40;padding-left:7px;}
+    .fc32-room-link .trip-sync-status{font-size:9px;}
+    .fc32-menu-wrap{flex-shrink:0;}
+    .fc32-menu-button{font-size:10px;white-space:nowrap;padding:4px 0 4px 7px;border-left:1px solid #ffffff40;}
+    #fc32-menu{position:absolute;right:8px;top:100%;z-index:50;width:235px;max-width:calc(100vw - 24px);padding:6px;background:#fff;color:#1e293b;border-radius:12px;box-shadow:0 8px 24px #0f172a33;}
+    #fc32-menu button{display:block;width:100%;text-align:left;font-size:13px;padding:11px 9px;border-radius:7px;}
+    #fc32-menu button:hover{background:#ecfdf5;}
+    @media(max-width:350px){.fc32-utility{gap:4px;padding:5px 6px;}.fc32-room-link{gap:3px;padding-left:4px;}.fc32-room-link .trip-sync-status{font-size:8px;}.fc32-menu-button{font-size:9px;padding-left:4px;}}
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
@@ -128,7 +138,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-31</span>
+        <span id="test-version-badge" class="trip-version">FC-32</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -143,13 +153,11 @@
         </button>
       </div>
       <div class="trip-utility">
-        <button onclick="openSyncModal()" class="max-w-md mx-auto trip-room" aria-label="房間登入與同步設定">
-          <i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i>
-          <span id="room-name-display" class="trip-room-name">danang2026</span>
-          <span id="cloud-header-status" class="trip-sync-status">尚未連線</span>
-          <span id="member-header-badge" onclick="event.stopPropagation(); openMemberSettingsModal()" class="hidden trip-member" title="成員設定"></span>
-          <i class="fa-solid fa-chevron-down trip-room-arrow" aria-hidden="true"></i>
-        </button>
+        <div class="max-w-md mx-auto trip-room fc32-utility">
+          <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="成員設定" aria-label="目前身份與成員設定">尚未登入</button>
+          <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
+          <div class="fc32-menu-wrap"><button id="fc32-menu-button" onclick="fc32ToggleMenu()" aria-expanded="false" aria-controls="fc32-menu" class="fc32-menu-button">景點介紹功能 <i class="fa-solid fa-chevron-down" aria-hidden="true"></i></button><div id="fc32-menu" class="hidden" role="menu"></div></div>
+        </div>
       </div>
     </header>
 
@@ -349,7 +357,6 @@
     </section>
 
     <section id="page-info" class="page-content hidden space-y-3">
-      <div class="bg-white p-3 rounded-2xl space-y-2"><button onclick="openPlaceLibrary()" class="w-full p-3 rounded-xl bg-emerald-50 text-emerald-800 font-bold text-xs">搜尋共用景點介紹</button><button onclick="openPlaceExport()" class="w-full p-3 rounded-xl bg-amber-50 text-amber-900 font-bold text-xs">主辦人｜匯出景點介紹清單</button><button onclick="openPlaceAdmin()" class="w-full p-3 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs">平台管理者｜共用介紹庫管理</button></div>
       <!-- 資訊顯示設定 -->
       <div class="bg-indigo-50 border border-indigo-100 px-2.5 py-2 rounded-xl space-y-1.5">
         <div class="flex items-center justify-between"><h2 class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-sliders mr-1.5"></i>資訊顯示設定</h2><span class="text-[9px] text-indigo-500">個人顯示設定</span></div>
@@ -493,8 +500,20 @@
     </div>
     <div id="modal-place-admin" class="bg-white rounded-2xl p-5 w-full max-w-md hidden max-h-[90vh] overflow-y-auto space-y-4">
       <div class="sticky top-0 bg-white flex justify-between items-center"><h3 class="font-bold text-emerald-800">共用介紹庫管理</h3><button onclick="closeModal()" aria-label="關閉介紹庫管理" class="text-2xl p-2">×</button></div><p id="fc31-admin-status" class="text-sm text-slate-600"></p>
-      <div id="fc31-admin-setup" class="hidden p-3 bg-amber-50 rounded-xl space-y-2"><p class="text-xs">首次安裝後，使用你的房間主辦人帳號登入，再輸入安裝說明的一次性啟用碼。成功後平台管理權限綁定這個成員帳號。</p><input id="fc31-setup-code" type="password" autocomplete="off" class="w-full p-2 border rounded-lg" placeholder="一次性平台管理者啟用碼"><button onclick="fc31ClaimAdmin()" class="w-full p-2 bg-emerald-600 text-white rounded-lg text-sm">啟用我的平台管理權限</button></div>
-      <div id="fc31-admin-tools" class="hidden space-y-5">
+      <form id="fc32-login" onsubmit="event.preventDefault();fc32Login()" class="space-y-3">
+        <p class="text-xs text-slate-600">平台管理者使用獨立帳號登入，切換房間不影響管理權限。登入會自動恢復，最長 30 天。</p>
+        <label class="block text-xs">管理者帳號<input id="fc32-username" autocomplete="username" autocapitalize="none" pattern="[a-zA-Z0-9_]{3,40}" required class="w-full p-2 border rounded-lg"></label>
+        <label class="block text-xs">密碼<input id="fc32-password" type="password" autocomplete="current-password" required class="w-full p-2 border rounded-lg"></label><button class="w-full p-2 bg-emerald-600 text-white rounded-lg">登入平台管理者</button>
+      </form>
+      <form id="fc31-admin-setup" onsubmit="event.preventDefault();fc31ClaimAdmin()" class="hidden p-3 bg-amber-50 rounded-xl space-y-3">
+        <p class="text-xs">首次設定：請先登入原本已啟用管理權限的房間與成員；尚未啟用時，請登入主辦人並填入原安裝說明的啟用碼。完成後只需專用帳號登入。</p>
+        <label class="block text-xs">新管理者帳號（3–40 個英文字母、數字或底線）<input id="fc32-new-username" required pattern="[a-zA-Z0-9_]{3,40}" autocomplete="username" autocapitalize="none" class="w-full p-2 border rounded-lg"></label>
+        <label class="block text-xs">新密碼（至少 12 字，最多 72 位元組）<input id="fc32-new-password" required minlength="12" type="password" autocomplete="new-password" class="w-full p-2 border rounded-lg"></label>
+        <label class="block text-xs">確認新密碼<input id="fc32-confirm-password" required type="password" autocomplete="new-password" class="w-full p-2 border rounded-lg"></label>
+        <label class="block text-xs">原一次性啟用碼（已啟用管理者可留空）<input id="fc31-setup-code" type="password" autocomplete="off" class="w-full p-2 border rounded-lg"></label><button class="w-full p-2 bg-emerald-600 text-white rounded-lg">建立獨立管理者帳號</button>
+      </form>
+
+      <div id="fc31-admin-tools" class="hidden space-y-5"><button onclick="fc32Logout()" class="text-xs p-2 border rounded-lg">登出平台管理者</button>
         <section class="p-3 bg-emerald-50 rounded-xl space-y-3"><h4 class="font-bold text-sm">上傳整理完成的介紹檔</h4><p class="text-xs">選擇 JSON，預覽新增、更新與無法辨識項目後，再確認匯入。每檔最多 200 筆、5 MB。原始行程清單尚未整理，不能直接匯入。</p><input id="fc31-import-file" type="file" accept=".json,application/json" onchange="fc31PreviewImport(this.files[0])" class="w-full text-xs"><div id="fc31-import-preview" class="space-y-3"></div><button id="fc31-import-commit" disabled onclick="fc31CommitImport()" class="w-full p-3 bg-emerald-600 text-white rounded-lg disabled:opacity-40 text-sm">確認匯入選取項目</button></section>
         <section class="space-y-3"><div class="flex justify-between items-center"><h4 class="font-bold text-sm">待審投稿</h4><button onclick="fc31RefreshAdmin()" class="text-xs p-2 rounded bg-slate-100">重新整理</button></div><div id="fc31-queue" class="space-y-3"></div></section>
         <section class="space-y-3"><h4 class="font-bold text-sm">錯誤回報</h4><div id="fc31-reports" class="space-y-3"></div></section>
@@ -614,7 +633,7 @@
         <label class="text-[11px] font-bold text-slate-600 block mb-1">更改我的暱稱</label>
         <input type="text" id="input-member-new-nickname" maxlength="30" placeholder="輸入新暱稱" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
-      <button onclick="openMemberIdentityModal()" class="w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換成員／建立自己的身分</button>
+      <button onclick="openMemberIdentityModal()" class="w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換成員／建立自己的身份</button>
       <p id="member-settings-status" class="text-[10px] text-slate-400"></p>
       <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
@@ -1638,7 +1657,7 @@
     function renderMemberIdentity() {
       const badge = document.getElementById('member-header-badge');
       if (!badge) return;
-      if (!currentMember) { badge.textContent = ''; badge.classList.add('hidden'); return; }
+      if (!currentMember) { badge.textContent = '尚未登入'; badge.classList.remove('hidden'); return; }
       badge.textContent = currentMember.role === 'organizer' ? `${currentMember.nickname}・主辦` : currentMember.nickname;
       badge.classList.remove('hidden');
     }
@@ -1679,7 +1698,7 @@
     }
     async function openMemberIdentityModal(){openSyncModal(true);}
     async function loginMemberIdentity(){
-      if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setMemberStatus('資料正在同步，請稍後再切換身分',true);
+      if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setMemberStatus('資料正在同步，請稍後再切換身份',true);
       if(!cloudConnected)return;
       const nickname=document.getElementById('input-member-login-nickname').value.trim();
       const password=document.getElementById('input-member-login-password').value;
@@ -1694,7 +1713,7 @@
       }catch(e){setMemberStatus(memberLoginError(e),true);}
     }
     async function createMemberIdentity(){
-      if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setMemberStatus('資料正在同步，請稍後再切換身分',true);
+      if(Object.keys(cloudSectionPending).length || Object.values(cloudSectionInFlight).some(Boolean))return setMemberStatus('資料正在同步，請稍後再切換身份',true);
       if(!cloudConnected)return;
       const nickname=document.getElementById('input-member-nickname').value.trim();
       const password=document.getElementById('input-member-password').value;
@@ -1725,7 +1744,7 @@
       closeModal();
       const current = document.getElementById('member-settings-current');
       const input = document.getElementById('input-member-new-nickname');
-      if (current) current.textContent = `目前身分：${currentMember.nickname}${currentMember.role === 'organizer' ? '（主辦人）' : ''}`;
+      if (current) current.textContent = `目前身份：${currentMember.nickname}${currentMember.role === 'organizer' ? '（主辦人）' : ''}`;
       if (input) input.value = currentMember.nickname || '';
       setMemberSettingsStatus('');
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -1734,7 +1753,7 @@
     }
 
     async function saveMemberNickname() {
-      if (!cloudClient || !cloudConnected || !cloudPassword || !currentMember) return setMemberSettingsStatus('目前沒有可修改的成員身分', true);
+      if (!cloudClient || !cloudConnected || !cloudPassword || !currentMember) return setMemberSettingsStatus('目前沒有可修改的成員身份', true);
       const input = document.getElementById('input-member-new-nickname');
       const nickname = (input?.value || '').trim();
       if (!nickname) return setMemberSettingsStatus('請輸入暱稱', true);
@@ -1982,7 +2001,7 @@
       renderInfoPage();
       updateRoomEditingLock();
 
-      // 房間一驗證成功就獨立啟動成員身分檢查，
+      // 房間一驗證成功就獨立啟動成員身份檢查，
       // 不再等待後續 pullCloudState，避免同步流程阻擋暱稱視窗。
       if(checkMember)setTimeout(() => ensureMemberIdentity(true), 300);
     }
@@ -2199,7 +2218,7 @@
 
     function isOrganizer() {
       // currentMember 在雲端重新連線/同步期間可能短暫為 null。
-      // 此時改讀本機已驗證過的成員身分，避免主辦人按鈕被錯誤隱藏。
+      // 此時改讀本機已驗證過的成員身份，避免主辦人按鈕被錯誤隱藏。
       const member = getMemberToken() ? currentMember : null;
       return !!(member && member.role === 'organizer');
     }
@@ -2527,10 +2546,10 @@
     function placeGuideFields(kind){return kind==='fixed'?{title:'fixed-name',map:'fixed-guide-map',intro:'fixed-guide',box:'fixed-guide-results'}:{title:'input-itin-title',map:'input-itin-map',intro:'input-itin-guide',box:'itin-guide-results'};}
     function placeGuideReset(kind){placeGuideRequest[kind]++;placeGuideCandidates[kind]=[];document.getElementById(placeGuideFields(kind).box).innerHTML='';}
     function placeGuideIdentity(raw){try{const u=new URL(raw);if(!(/^((www|maps)\.)?google\.(com|com\.tw|co\.jp|com\.vn)$/.test(u.hostname)||u.hostname==='maps.app.goo.gl'||u.hostname==='goo.gl'))return '';const id=u.searchParams.get('query_place_id')||u.searchParams.get('place_id');if(id&&/^[A-Za-z0-9_-]{5,250}$/.test(id))return 'place:'+id;const cid=u.searchParams.get('cid');if(cid&&/^\d{1,30}$/.test(cid))return 'cid:'+cid;const ft=decodeURIComponent(u.href).match(/!1s(0x[0-9a-f]+:0x[0-9a-f]+)/i);return ft?'ftid:'+ft[1].toLowerCase():'';}catch(e){return '';}}
-    function placeGuideError(error){const msg=String(error?.message||error||'');return /PGRST202|Could not find|does not exist/.test(msg)?'共用介紹庫尚未安裝，請先執行 FC-29 SQL；房間介紹仍可正常儲存。':/unauthorized|organizer_required/.test(msg)?'請以有效的主辦人身分登入後再使用共用介紹庫。':'無法連線共用介紹庫，請稍後重試。';}
+    function placeGuideError(error){const msg=String(error?.message||error||'');return /PGRST202|Could not find|does not exist/.test(msg)?'共用介紹庫尚未安裝，請先執行 FC-29 SQL；房間介紹仍可正常儲存。':/unauthorized|organizer_required/.test(msg)?'請以有效的主辦人身份登入後再使用共用介紹庫。':'無法連線共用介紹庫，請稍後重試。';}
     let fc31Index=[],fc31Identity='',fc31LoadTask=null,fc31SearchRevision=0,fc31AdminIdentity='',fc31ImportRows=[],fc31ImportRevision=0,fc31Queue=[],fc31Reports=[],fc31History=[],fc31HistoryKey='',fc31CurrentVersion=0,fc31ExportText='',fc31ExportJson=null;
     function fc31Session(){return roomId+'|'+(currentMember?.id||'')+'|'+getMemberToken();}
-    function fc31Message(e){if(e?.name==='SyntaxError')return 'JSON 檔案格式不正確，請使用整理完成的介紹檔。';const m=String(e?.message||e||'');const pairs=[[/PGRST202|Could not find|does not exist/,'尚未安裝 FC-31 資料庫，請先執行 FC31_place_library.sql。'],[/platform_admin_required/,'此帳號不是平台管理者。房間主辦人可投稿，但不能審核或匯入。'],[/organizer_required/,'此操作限房間主辦人。'],[/unauthorized/,'登入已失效，請重新登入。'],[/invalid_setup_code/,'啟用碼錯誤或已使用；請使用安裝說明中的一次性啟用碼。'],[/version_conflict/,'介紹已被更新，請重新預覽。待審投稿可退回，請投稿者以最新版重新提交。'],[/place_identity_required/,'地圖缺少地點識別碼，請補上完整 Google Maps 地點連結。'],[/daily_limit/,'今日投稿或回報已達上限，請明天再試。'],[/invalid_|duplicate_place/,'檔案內容或格式不正確，請確認名稱、介紹、地圖與來源。'],[/submission_already_reviewed/,'這筆投稿已處理，請重新整理。']];return pairs.find(([p])=>p.test(m))?.[1]||(m.includes('介紹庫資料過多')?m:'無法完成操作，請檢查連線後重試。');}
+    function fc31Message(e){if(e?.name==='SyntaxError')return 'JSON 檔案格式不正確，請使用整理完成的介紹檔。';const m=String(e?.message||e||'');const pairs=[[/platform_session_expired|platform_login_required/,'平台管理者登入已失效，請重新登入。'],[/platform_login_failed/,'管理者帳號或密碼錯誤。'],[/platform_login_limited/,'嘗試次數過多，請 15 分鐘後再試。'],[/platform_already_configured/,'已建立管理者帳號，請直接登入。'],[/invalid_platform_credentials/,'帳號須為 3–40 個英文字母、數字或底線；密碼至少 12 字且不超過 72 位元組。'],[/PGRST202|Could not find|does not exist/,'請先安裝 FC-32 資料庫更新檔 FC32_platform_admin.sql。'],[/platform_admin_required/,'此帳號不是平台管理者。房間主辦人可投稿，但不能審核或匯入。'],[/organizer_required/,'此操作限房間主辦人。'],[/unauthorized/,'登入已失效，請重新登入。'],[/invalid_setup_code/,'啟用碼錯誤或已使用；請使用安裝說明中的一次性啟用碼。'],[/version_conflict/,'介紹已被更新，請重新預覽。待審投稿可退回，請投稿者以最新版重新提交。'],[/place_identity_required/,'地圖缺少地點識別碼，請補上完整 Google Maps 地點連結。'],[/daily_limit/,'今日投稿或回報已達上限，請明天再試。'],[/invalid_|duplicate_place/,'檔案內容或格式不正確，請確認名稱、介紹、地圖與來源。'],[/submission_already_reviewed/,'這筆投稿已處理，請重新整理。']];return pairs.find(([p])=>p.test(m))?.[1]||(m.includes('介紹庫資料過多')?m:'無法完成操作，請檢查連線後重試。');}
     async function fc31Rpc(name,payload={}){if(!requireRoom())throw new Error('unauthorized');const session=fc31Session();const {data,error}=await cloudClient.rpc(name,{p_room_id:roomId,p_member_token:getMemberToken(),...payload});if(session!==fc31Session())throw new Error('unauthorized');if(error)throw error;return data;}
     function fc31Normalize(v){return String(v||'').normalize('NFKC').toLowerCase().replace(/[\s\p{P}\p{S}]/gu,'');}
     function fc31Rank(query,title){const q=fc31Normalize(query),t=fc31Normalize(title);if(!q||!t)return 0;if(q===t)return 1;if(t.includes(q)||q.includes(t))return .85;const grams=x=>new Set([...x].slice(1).map((c,i)=>[...x][i]+c)),a=grams(q),b=grams(t);if(!a.size||!b.size)return 0;return [...a].filter(x=>b.has(x)).length/Math.max(a.size,b.size);}
@@ -2552,21 +2571,32 @@
     function openPlaceExport(){if(!requireRoom()||!isOrganizer())return showToast('景點清單匯出限房間主辦人');const rows=fc31CollectItinerary(),title=getStoredData('headerInfo',defaultHeaderInfo).title||'旅程';fc31ExportJson={format:'FC31-itinerary-request-v1',trip_title:title,exported_at:new Date().toISOString(),items:rows};fc31ExportText=[title+'｜景點介紹整理清單',...rows.map((e,i)=>`${i+1}. 第 ${e.day} 天｜${e.date}\n地點：${e.title}\n地圖：${e.map_url||'尚未填寫'}\n現有介紹：${e.intro||'尚未填寫'}\n行程說明：${e.notes||'無'}`)].join('\n\n');document.getElementById('fc31-export-text').value=fc31ExportText;fc31OpenModal('modal-place-export');}
     function fc31Download(content,name,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
     async function fc31Copy(text){try{await navigator.clipboard.writeText(text);showToast('已複製');}catch(e){const t=document.createElement('textarea');t.value=text;document.body.append(t);t.select();const ok=document.execCommand?.('copy');t.remove();if(!ok)showToast('無法自動複製，請在清單欄位長按全選複製');else showToast('已複製');}}
-    async function openPlaceAdmin(){if(!requireRoom())return;fc31AdminIdentity='';fc31ImportRows=[];fc31ImportRevision++;fc31OpenModal('modal-place-admin');document.getElementById('fc31-admin-tools').classList.add('hidden');document.getElementById('fc31-admin-setup').classList.add('hidden');document.getElementById('fc31-import-preview').innerHTML='';document.getElementById('fc31-import-commit').disabled=true;document.getElementById('fc31-admin-status').textContent='驗證管理權限中…';try{const data=await fc31Rpc('fc31_status');if(data.admin){fc31AdminIdentity=fc31Session();document.getElementById('fc31-admin-tools').classList.remove('hidden');document.getElementById('fc31-admin-status').textContent='已驗證平台管理者';await fc31RefreshAdmin();}else{document.getElementById('fc31-admin-status').textContent='這個帳號沒有平台管理權限。';document.getElementById('fc31-admin-setup').classList.toggle('hidden',!data.setup_available);}}catch(e){document.getElementById('fc31-admin-status').textContent=fc31Message(e);}}
-    async function fc31ClaimAdmin(){try{await fc31Rpc('fc31_claim_admin',{p_setup_code:document.getElementById('fc31-setup-code').value.trim()});document.getElementById('fc31-setup-code').value='';await openPlaceAdmin();}catch(e){showToast(fc31Message(e));}}
-    async function fc31AdminCall(action,payload={}){if(fc31AdminIdentity!==fc31Session())throw new Error('platform_admin_required');return fc31Rpc('fc31_admin',{p_action:action,p_payload:payload});}
-    async function fc31RefreshAdmin(){const box=document.getElementById('fc31-queue'),reports=document.getElementById('fc31-reports');box.textContent='載入待審投稿…';try{fc31Queue=await fc31AdminCall('queue');const index=await fc31LoadIndex(true);box.innerHTML='';fc31Queue.forEach((q,i)=>{const row=fc31RenderCandidate({...q.payload,version:'待審',updated_at:q.created_at},()=>{});row.querySelector('button').remove();const current=index.find(g=>g.place_key===q.place_key);const compare=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='比較目前共用版本';text.textContent=current?'第 '+current.version+' 版：\n'+current.intro:'目前尚無已核准介紹';text.className='text-xs whitespace-pre-wrap';compare.append(summary,text);row.append(compare);for(const [label,decision] of [['核准','approve'],['退回','reject']]){const b=document.createElement('button');b.textContent=label;b.className='mr-2 p-2 rounded-lg bg-white text-xs border';b.onclick=()=>fc31Review(i,decision);row.append(b);}box.append(row);});if(!fc31Queue.length)box.textContent='目前沒有待審投稿。';if(fc31Queue.length===200){const note=document.createElement('p');note.textContent='目前顯示前 200 筆，處理後重新整理可載入後續投稿。';box.append(note);}fc31Reports=await fc31AdminCall('reports');reports.innerHTML='';fc31Reports.forEach((r,i)=>{const row=document.createElement('div');row.className='p-3 bg-rose-50 rounded-lg';const p=document.createElement('p');p.textContent=(r.title||r.place_key)+'\n'+r.message;p.className='text-sm whitespace-pre-wrap';const b=document.createElement('button');b.textContent='標記已處理';b.className='text-xs p-2 bg-white rounded border';b.onclick=()=>fc31ResolveReport(i);row.append(p,b);reports.append(row);});if(!fc31Reports.length)reports.textContent='目前沒有待處理回報。';}catch(e){box.textContent=fc31Message(e);}}
+    let fc32Token=localStorage.getItem('fc32_platform_token')||'',fc32Username='';
+    async function fc32Rpc(name,payload={}){if(!cloudClient)throw new Error('unauthorized');const {data,error}=await cloudClient.rpc(name,payload);if(error)throw error;if(data?.error)throw new Error(data.error);return data;}
+    async function fc32Verify(){const token=fc32Token;if(!token)return false;const d=await fc32Rpc('fc32_auth',{p_action:'status',p_token:token});if(token!==fc32Token)return false;if(!d.admin){fc32ClearAdmin();return false;}fc31AdminIdentity=token;fc32Username=d.username;return true;}
+    function fc32ClearAdmin(){fc32Token='';fc32Username='';fc31AdminIdentity='';localStorage.removeItem('fc32_platform_token');fc31ImportRevision++;fc31ImportRows=[];fc31Queue=[];fc31Reports=[];fc31History=[];document.getElementById('fc31-admin-tools')?.classList.add('hidden');for(const id of ['fc31-queue','fc31-reports','fc31-history-results','fc31-import-preview','fc31-merge-preview']){const e=document.getElementById(id);if(e)e.textContent='';}document.getElementById('fc31-import-file').value='';document.getElementById('fc31-import-commit').disabled=true;}
+    async function openPlaceAdmin(){fc31ImportRows=[];fc31ImportRevision++;fc31OpenModal('modal-place-admin');document.getElementById('fc31-admin-tools').classList.add('hidden');document.getElementById('fc31-admin-setup').classList.add('hidden');document.getElementById('fc32-login').classList.add('hidden');document.getElementById('fc31-admin-status').textContent='驗證管理者登入…';try{if(await fc32Verify()){document.getElementById('fc31-admin-tools').classList.remove('hidden');document.getElementById('fc31-admin-status').textContent='平台管理者：'+fc32Username;await fc31RefreshAdmin();}else{const d=await fc32Rpc('fc32_auth',{p_action:'configuration'});document.getElementById('fc32-login').classList.toggle('hidden',!d.configured);document.getElementById('fc31-admin-setup').classList.toggle('hidden',d.configured);document.getElementById('fc31-admin-status').textContent=d.configured?'請登入平台管理者帳號':'首次建立獨立平台管理者帳號';}}catch(e){document.getElementById('fc31-admin-status').textContent=fc31Message(e);}}
+    async function fc32Login(){try{const d=await fc32Rpc('fc32_auth',{p_action:'login',p_username:document.getElementById('fc32-username').value.trim(),p_password:document.getElementById('fc32-password').value});fc32Token=d.token;localStorage.setItem('fc32_platform_token',fc32Token);document.getElementById('fc32-password').value='';await openPlaceAdmin();}catch(e){document.getElementById('fc31-admin-status').textContent=fc31Message(e);}}
+    async function fc31ClaimAdmin(){if(!requireRoom())return;const p=document.getElementById('fc32-new-password').value;if(p!==document.getElementById('fc32-confirm-password').value)return showToast('兩次密碼不一致');if(p.length<12||new TextEncoder().encode(p).length>72)return showToast('密碼至少 12 字且不超過 72 位元組');try{const username=document.getElementById('fc32-new-username').value.trim();await fc31Rpc('fc32_bootstrap',{p_setup_code:document.getElementById('fc31-setup-code').value.trim(),p_username:username,p_password:p});for(const id of ['fc32-new-password','fc32-confirm-password','fc31-setup-code'])document.getElementById(id).value='';document.getElementById('fc32-username').value=username;document.getElementById('fc32-password').value=p;await fc32Login();}catch(e){document.getElementById('fc31-admin-status').textContent=fc31Message(e);}}
+    async function fc32Logout(){const token=fc32Token;try{if(token)await fc32Rpc('fc32_auth',{p_action:'logout',p_token:token});fc32ClearAdmin();closeModal();showToast('已登出平台管理者');}catch(e){showToast('登出未完成，請稍後重試。');}}
+    async function fc31AdminCall(action,payload={}){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');try{const d=await fc32Rpc('fc32_admin',{p_token:token,p_action:action,p_payload:payload});if(token!==fc32Token)throw new Error('platform_session_expired');return d;}catch(e){if(/platform_session_expired/.test(e.message)&&token===fc32Token)fc32ClearAdmin();throw e;}}
+    async function fc32AdminIndex(){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');let out=[],after='';for(let page=0;page<50;page++){const rows=await fc32Rpc('fc32_index',{p_token:token,p_after:after});if(token!==fc32Token)throw new Error('platform_session_expired');out.push(...rows);if(rows.length<200)return out;after=rows.at(-1).place_key;}throw new Error('index_limit');}
+    function fc32HideMenu(){document.getElementById('fc32-menu').classList.add('hidden');document.getElementById('fc32-menu-button').setAttribute('aria-expanded','false');}
+    async function fc32ToggleMenu(){const box=document.getElementById('fc32-menu');if(!box.classList.contains('hidden'))return fc32HideMenu();box.innerHTML='';const logged=!!(cloudConnected&&currentMember&&getMemberToken());const add=(label,fn)=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','menuitem');b.textContent=label;b.onclick=()=>{fc32HideMenu();fn();};box.append(b);};if(logged){add('搜尋共用景點介紹',openPlaceLibrary);add('我的投稿狀態',async()=>{openPlaceLibrary();await fc31MySubmissions();});if(isOrganizer())add('主辦人｜匯出景點介紹清單',openPlaceExport);}else add('登入房間',openSyncModal);add('平台管理者登入／首次設定',openPlaceAdmin);box.classList.remove('hidden');document.getElementById('fc32-menu-button').setAttribute('aria-expanded','true');try{if(await fc32Verify()){if(box.classList.contains('hidden'))return;box.lastElementChild.textContent='平台管理者｜共用介紹庫管理';add('登出平台管理者',fc32Logout);}}catch(e){/* 開啟管理者視窗時顯示連線錯誤。 */}}
+    document.addEventListener('click',e=>{if(!e.target.closest('.fc32-menu-wrap'))fc32HideMenu();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')fc32HideMenu();});
+    async function fc31RefreshAdmin(){const box=document.getElementById('fc31-queue'),reports=document.getElementById('fc31-reports');box.textContent='載入待審投稿…';try{fc31Queue=await fc31AdminCall('queue');const index=await fc32AdminIndex();box.innerHTML='';fc31Queue.forEach((q,i)=>{const row=fc31RenderCandidate({...q.payload,version:'待審',updated_at:q.created_at},()=>{});row.querySelector('button').remove();const current=index.find(g=>g.place_key===q.place_key);const compare=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='比較目前共用版本';text.textContent=current?'第 '+current.version+' 版：\n'+current.intro:'目前尚無已核准介紹';text.className='text-xs whitespace-pre-wrap';compare.append(summary,text);row.append(compare);for(const [label,decision] of [['核准','approve'],['退回','reject']]){const b=document.createElement('button');b.textContent=label;b.className='mr-2 p-2 rounded-lg bg-white text-xs border';b.onclick=()=>fc31Review(i,decision);row.append(b);}box.append(row);});if(!fc31Queue.length)box.textContent='目前沒有待審投稿。';if(fc31Queue.length===200){const note=document.createElement('p');note.textContent='目前顯示前 200 筆，處理後重新整理可載入後續投稿。';box.append(note);}fc31Reports=await fc31AdminCall('reports');reports.innerHTML='';fc31Reports.forEach((r,i)=>{const row=document.createElement('div');row.className='p-3 bg-rose-50 rounded-lg';const p=document.createElement('p');p.textContent=(r.title||r.place_key)+'\n'+r.message;p.className='text-sm whitespace-pre-wrap';const b=document.createElement('button');b.textContent='標記已處理';b.className='text-xs p-2 bg-white rounded border';b.onclick=()=>fc31ResolveReport(i);row.append(p,b);reports.append(row);});if(!fc31Reports.length)reports.textContent='目前沒有待處理回報。';}catch(e){box.textContent=fc31Message(e);}}
     async function fc31Review(index,decision){const q=fc31Queue[index];if(!q)return;const note=decision==='reject'?prompt('退回原因：',''):'';if(note===null)return;if(!confirm(decision==='approve'?'核准後所有人都可以使用此介紹，確定核准？':'確定退回此投稿？'))return;try{await fc31AdminCall('review',{id:q.id,decision,note});await fc31RefreshAdmin();}catch(e){showToast(fc31Message(e));}}
     async function fc31ResolveReport(i){const r=fc31Reports[i];if(!r)return;try{await fc31AdminCall('resolve_report',{id:r.id});await fc31RefreshAdmin();}catch(e){showToast(fc31Message(e));}}
     function fc31ValidateImport(raw){const guides=Array.isArray(raw)?raw:raw?.guides;if(!Array.isArray(guides)||!guides.length||guides.length>200)throw new Error('invalid_batch');return guides;}
     async function fc31PreviewImport(file){const revision=++fc31ImportRevision;fc31ImportRows=[];document.getElementById('fc31-import-commit').disabled=true;const box=document.getElementById('fc31-import-preview');box.textContent='讀取檔案與比對資料庫…';try{if(!file||file.size>5000000)throw new Error('invalid_batch');const guides=fc31ValidateImport(JSON.parse(await file.text()));const rows=await fc31AdminCall('preview',{guides});if(revision!==fc31ImportRevision)return;fc31ImportRows=rows;box.innerHTML='';rows.forEach((r,i)=>{const row=document.createElement('div');row.className='p-3 rounded-xl space-y-2';row.style.background=r.valid?'#EAF2E5':'#FBE7E2';const heading=document.createElement('p');heading.textContent=r.title+'｜'+(r.valid?r.action+'（目前第 '+r.expected_version+' 版）':fc31Message(r.error));heading.className='text-sm font-bold';row.append(heading);if(r.valid){const label=document.createElement('label'),check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.importIndex=i;label.append(check,' 匯入此項');row.append(label);const d=document.createElement('details'),sum=document.createElement('summary'),p=document.createElement('p');sum.textContent='檢查新舊內容、地圖與來源';p.textContent='目前：\n'+(r.current?.intro||'尚無介紹')+'\n\n準備匯入：\n'+r.guide.intro+'\n\n地圖：'+r.guide.map_url+'\n來源：'+(r.guide.sources||[]).join('\n');p.className='text-xs whitespace-pre-wrap break-all';d.append(sum,p);row.append(d);}box.append(row);});document.getElementById('fc31-import-commit').disabled=!rows.some(r=>r.valid);}catch(e){if(revision===fc31ImportRevision)box.textContent=fc31Message(e);}}
     async function fc31CommitImport(){const btn=document.getElementById('fc31-import-commit'),selected=[...document.querySelectorAll('[data-import-index]')].filter(e=>e.checked).map(e=>fc31ImportRows[Number(e.dataset.importIndex)]).filter(r=>r?.valid);if(!selected.length)return showToast('請選擇至少一筆有效介紹');if(!confirm('將匯入 '+selected.length+' 筆介紹；更新項目會保留舊版本。確認匯入？'))return;btn.disabled=true;try{await fc31AdminCall('import',{guides:selected.map(r=>({...r.guide,expected_version:r.expected_version}))});fc31ImportRows=[];document.getElementById('fc31-import-preview').textContent='已完成 '+selected.length+' 筆匯入。';await fc31RefreshAdmin();}catch(e){showToast(fc31Message(e));btn.disabled=false;}}
-    async function fc31ShowHistory(){const title=document.getElementById('fc31-history-query').value.trim(),box=document.getElementById('fc31-history-results');box.textContent='搜尋版本紀錄…';try{const rows=fc31Candidates(await fc31LoadIndex(true),title,'');box.innerHTML='';rows.forEach(g=>{const b=document.createElement('button');b.textContent=g.title+'｜查看第 '+g.version+' 版及歷史';b.className='block w-full p-2 text-sm bg-slate-100 rounded mb-2';b.onclick=()=>fc31LoadHistory(g.place_key,g.version);box.append(b);});if(!rows.length)box.textContent='沒有找到已核准介紹。';}catch(e){box.textContent=fc31Message(e);}}
+    async function fc31ShowHistory(){const title=document.getElementById('fc31-history-query').value.trim(),box=document.getElementById('fc31-history-results');box.textContent='搜尋版本紀錄…';try{const rows=fc31Candidates(await fc32AdminIndex(),title,'');box.innerHTML='';rows.forEach(g=>{const b=document.createElement('button');b.textContent=g.title+'｜查看第 '+g.version+' 版及歷史';b.className='block w-full p-2 text-sm bg-slate-100 rounded mb-2';b.onclick=()=>fc31LoadHistory(g.place_key,g.version);box.append(b);});if(!rows.length)box.textContent='沒有找到已核准介紹。';}catch(e){box.textContent=fc31Message(e);}}
     async function fc31LoadHistory(key,current){const box=document.getElementById('fc31-history-results');try{fc31History=await fc31AdminCall('history',{place_key:key});fc31HistoryKey=key;fc31CurrentVersion=current;box.innerHTML='';fc31History.forEach((h,i)=>{const row=fc31RenderCandidate({...h.snapshot,updated_at:h.created_at},()=>{});row.querySelector('button').remove();const reason=document.createElement('p');reason.textContent=h.reason;row.append(reason);if(h.version!==current||h.place_key!==key){const b=document.createElement('button');b.textContent='還原為此版本';b.className='p-2 bg-white rounded text-xs border';b.onclick=()=>fc31Restore(i);row.append(b);}box.append(row);});}catch(e){box.textContent=fc31Message(e);}}
     let fc31MergeChoices=[];
-    async function fc31FindMerge(){const title=document.getElementById('fc31-merge-query').value.trim(),box=document.getElementById('fc31-merge-preview');try{fc31MergeChoices=fc31Candidates(await fc31LoadIndex(true),title,'');const options=fc31MergeChoices.map((g,i)=>`<option value="${i}">${escapeHtml(g.title)}｜${escapeHtml(g.place_key)}</option>`).join('');document.getElementById('fc31-merge-source').innerHTML=options;document.getElementById('fc31-merge-target').innerHTML=options;box.textContent=fc31MergeChoices.map((g,i)=>`${i+1}. ${g.title}\n地圖：${g.map_url}\n介紹：${g.intro}`).join('\n\n');}catch(e){box.textContent=fc31Message(e);}}
+    async function fc31FindMerge(){const title=document.getElementById('fc31-merge-query').value.trim(),box=document.getElementById('fc31-merge-preview');try{fc31MergeChoices=fc31Candidates(await fc32AdminIndex(),title,'');const options=fc31MergeChoices.map((g,i)=>`<option value="${i}">${escapeHtml(g.title)}｜${escapeHtml(g.place_key)}</option>`).join('');document.getElementById('fc31-merge-source').innerHTML=options;document.getElementById('fc31-merge-target').innerHTML=options;box.textContent=fc31MergeChoices.map((g,i)=>`${i+1}. ${g.title}\n地圖：${g.map_url}\n介紹：${g.intro}`).join('\n\n');}catch(e){box.textContent=fc31Message(e);}}
     async function fc31Merge(){const source=fc31MergeChoices[Number(document.getElementById('fc31-merge-source').value)],target=fc31MergeChoices[Number(document.getElementById('fc31-merge-target').value)];if(!source||!target||source.place_key===target.place_key)return showToast('請選擇兩筆不同地點，並確認地圖確為同一地點');if(!confirm(`已確認「${source.title}」和「${target.title}」是同一地點？合併後保留「${target.title}」的介紹，兩者舊版本均會保留。不同分店不能合併。`))return;try{await fc31AdminCall('merge',{source_key:source.place_key,target_key:target.place_key,source_version:source.version,target_version:target.version});fc31MergeChoices=[];document.getElementById('fc31-merge-preview').textContent='已合併，搜尋結果與地圖別名已更新。';await fc31RefreshAdmin();}catch(e){showToast(fc31Message(e));}}
-    async function fc31Restore(i){const h=fc31History[i];if(!h||!confirm('還原此介紹？會建立新版本，現有版本也會保留。'))return;try{const g=await fc31AdminCall('restore',{place_key:h.place_key||fc31HistoryKey,version:h.version,expected_version:fc31CurrentVersion});await fc31LoadIndex(true);await fc31LoadHistory(g.place_key,g.version);}catch(e){showToast(fc31Message(e));}}
+    async function fc31Restore(i){const h=fc31History[i];if(!h||!confirm('還原此介紹？會建立新版本，現有版本也會保留。'))return;try{const g=await fc31AdminCall('restore',{place_key:h.place_key||fc31HistoryKey,version:h.version,expected_version:fc31CurrentVersion});await fc32AdminIndex();await fc31LoadHistory(g.place_key,g.version);}catch(e){showToast(fc31Message(e));}}
     const TRAVEL_BOOK_THEMES={
       caramel:{name:'焦糖印章版',bg:'#FAF6EE',ink:'#292722',accent:'#AE692C',muted:'#76634D',panel:'#EEE3D2'},
       light:{name:'暖白旅誌版',bg:'#FAF6EE',ink:'#233E50',accent:'#BF6851',muted:'#557060',panel:'#EAEFE8'},
@@ -4348,7 +4378,7 @@
 
     function closeModal(force = false) {
       const memberModal = document.getElementById('modal-member-identity');
-      // 尚未完成身分設定時，暱稱視窗不可略過或被其他關閉動作收起。
+      // 尚未完成身份設定時，暱稱視窗不可略過或被其他關閉動作收起。
       if (!force && memberModal && !memberModal.classList.contains('hidden') && !currentMember) return;
       if(tripLoginBusy)return;
       document.getElementById('modal-backdrop').classList.remove('trip-login-overlay');
