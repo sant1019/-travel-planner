@@ -128,7 +128,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-26</span>
+        <span id="test-version-badge" class="trip-version">FC-27</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -2199,6 +2199,32 @@
       document.getElementById('modal-fixed-planner').classList.remove('hidden');
     }
 
+    function fixedOpeningDisplay(value){
+      const closed=new Set();
+      const hours=String(value||'').replace(/(?:星期|週|周)([一二三四五六日天])\s*(?:休息|公休|不營業)/g,(_,d)=>{closed.add('日一二三四五六'.indexOf(d==='天'?'日':d));return '';}).split(/[；;]/).map(x=>x.trim()).filter(Boolean).join('、');
+      const order=[1,2,3,4,5,6,0],names='日一二三四五六';
+      const weekdays=order.filter(d=>closed.has(d)),open=order.filter(d=>!closed.has(d));
+      let calendar='';
+      if(closed.size===7)calendar='每週皆公休';
+      else if(closed.size>open.length)calendar='只營業星期'+open.map(d=>names[d]).join('、');
+      else if(closed.size)calendar='星期'+weekdays.map(d=>names[d]).join('、')+'公休';
+      return {hours,calendar};
+    }
+    function fixedActivityDetailLines(a){
+      const opening=fixedOpeningDisplay(a.openingHours);
+      return [a.dateRule==='specific'?'指定日期：'+a.dateValue:a.dateRule==='weekday'?'指定星期：'+a.dateValue:'日期限制：日期皆可',a.time&&'已訂／偏好時間：'+a.time,'停留時間：'+(a.duration||'1 小時（排程預設）'),opening.hours&&'營業時間：'+opening.hours,opening.calendar,a.sessions&&'表演場次：'+a.sessions,a.note&&'備註：'+a.note].filter(Boolean);
+    }
+    function fixedActivityDescription(a){return fixedActivityDetailLines(a).map(escapeHtml).join('<br>');}
+    function itineraryDescriptionForDisplay(item){
+      const a=item.fixedActivityId&&getFixedActivities().find(x=>x.id===item.fixedActivityId);
+      if(!a)return item.desc||'';
+      const formatted=fixedActivityDescription(a);
+      const legacy=escapeHtml([a.note,'停留 '+(a.duration||'1 小時（排程預設）'),a.openingHours&&'營業時間：'+a.openingHours,a.sessions&&'場次：'+a.sessions].filter(Boolean).join('；'));
+      // Preserve a description edited in the daily itinerary as additional content.
+      const generated=item.fixedDescription||legacy;
+      return item.desc&&item.desc!==generated&&item.desc!==formatted?formatted+'<br>補充說明：'+item.desc:formatted;
+    }
+
     function fixedAssignments(id, data=getStoredData('itinerary',defaultItineraryData)) {
       return Object.entries(data).filter(([day,d])=>d.items?.some(x=>x.fixedActivityId===id)).map(([day])=>day);
     }
@@ -2208,7 +2234,7 @@
       if(editor&&home)home.appendChild(editor);
       box.innerHTML=list.length?list.map(x=>{
         const days=fixedAssignments(x.id),status=days.length?'已安排至 '+days.map(d=>'Day '+d).join('、'):'待安排';
-        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl p-3 space-y-2"><div class="font-bold text-xs">${escapeHtml(x.name)}</div><div class="text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${x.forced&&days.length?'（主辦人手動安排）':''}</div><div class="text-[10px] text-slate-500">${escapeHtml(x.dateRule==='flexible'?'日期皆可':x.dateValue)} ${escapeHtml(x.time||'')} ${escapeHtml(x.duration||'')}</div>${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}${x.openingHours?`<p class="text-[10px]">營業時間：${escapeHtml(x.openingHours)}</p>`:''}${x.sessions?`<p class="text-[10px]">場次：${escapeHtml(x.sessions)}</p>`:''}${x.note?`<p class="text-[10px]">${escapeHtml(x.note)}</p>`:''}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div>`;
+        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl p-3 space-y-2"><div class="font-bold text-xs">${escapeHtml(x.name)}</div><div class="text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${x.forced&&days.length?'（主辦人手動安排）':''}</div><div class="text-[10px] text-slate-500 leading-relaxed">${fixedActivityDescription(x)}</div>${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div>`;
       }).join(''):'<div class="text-xs text-slate-400 text-center py-4">尚未建立固定活動</div>';
       if(editor&&!editor.classList.contains('hidden')&&editing){const card=[...box.querySelectorAll('[data-fixed-id]')].find(el=>el.dataset.fixedId===editing);if(card)card.querySelector('.fixed-editor-slot').appendChild(editor);}
     }
@@ -2361,7 +2387,7 @@
     }
     function plannerClock(n){return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
     function fixedItineraryItem(a,slot,previous={}) {
-      return {...previous,id:previous.id||'fixed-itin-'+a.id,fixedActivityId:a.id,title:a.name,time:slot?`${plannerClock(slot.start)} - ${plannerClock(slot.end)}`:a.time||'時間待確認',duration:a.duration||'1 小時',desc:escapeHtml([a.note,'停留 '+(a.duration||'1 小時（排程預設）'),a.openingHours&&'營業時間：'+a.openingHours,a.sessions&&'場次：'+a.sessions].filter(Boolean).join('；')),map:a.map||buildAutoMapLink(a.name)};
+      return {...previous,id:previous.id||'fixed-itin-'+a.id,fixedActivityId:a.id,title:a.name,time:slot?`${plannerClock(slot.start)} - ${plannerClock(slot.end)}`:a.time||'時間待確認',duration:a.duration||'1 小時',desc:fixedActivityDescription(a),fixedDescription:fixedActivityDescription(a),map:a.map||buildAutoMapLink(a.name)};
     }
     function arrangeFixedActivities(list=getFixedActivities()) {
       if(!requireRoom()||!isOrganizer())return;
@@ -2429,7 +2455,7 @@
     function scenicPlainText(value){const el=document.createElement('div');el.innerHTML=String(value||'').replace(/<br\s*\/?\s*>/gi,'\n');return el.textContent||'';}
     function scenicEntry(item,day,date){
       const guides=scenicGuideCatalog.filter(g=>g.match.test(item.title||item.name||''));
-      return {day,date,title:scenicPlainText(item.title||item.name),time:item.time||'',duration:item.duration||'',text:guides.map(g=>g.text).join('\n\n')||'尚無已查證的景點特色介紹，請補充。',note:scenicPlainText([item.desc,item.comment,item.note].filter(Boolean).join('\n')),sources:[...new Set(guides.map(g=>g.source))]};
+      return {day,date,title:scenicPlainText(item.title||item.name),time:item.time||'',duration:item.duration||'',text:guides.map(g=>g.text).join('\n\n')||'尚無已查證的景點特色介紹，請補充。',note:scenicPlainText([item.fixedActivityId?itineraryDescriptionForDisplay(item):item.desc,item.comment,item.note].filter(Boolean).join('\n')),sources:[...new Set(guides.map(g=>g.source))]};
     }
     function openScenicPdfModal(){
       closeModal();const days=getTripDays(),data=getItineraryWithTransfers(getStoredData('itinerary',defaultItineraryData));scenicPdfDraft=[];
@@ -2978,7 +3004,7 @@
               ` : (isOrganizer() && item.autoTransfer ? `<button onclick="openAirportTransferModal()" class="text-sky-600 text-[10px] p-1">編輯接駁</button>` : '')}
             </div>
           </div>
-          ${item.desc ? `<div class="text-xs text-slate-600 leading-relaxed">${item.desc}</div>` : ''}
+          ${itineraryDescriptionForDisplay(item) ? `<div class="text-xs text-slate-600 leading-relaxed">${itineraryDescriptionForDisplay(item)}</div>` : ''}
           ${item.comment ? `
             <div class="bg-amber-50/90 border border-amber-200/70 p-2.5 rounded-xl text-[11px] text-amber-900 mt-1 flex items-start space-x-1.5">
               <i class="fa-regular fa-comment-dots text-amber-600 mt-0.5 shrink-0"></i>
