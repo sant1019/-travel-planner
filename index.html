@@ -124,7 +124,7 @@
   </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
-<div id="room-login-warning" class="bg-amber-100 text-amber-900 text-xs p-2 text-center">尚未完成房間／成員登入，資料編輯已鎖定。<button onclick="cloudConnected ? openMemberIdentityModal() : openSyncModal()" class="font-bold underline">登入房間／成員</button></div>
+<div id="room-login-warning" class="bg-amber-100 text-amber-900 text-xs p-2 text-center">尚未登入，無法編輯資料　<button onclick="cloudConnected ? openMemberIdentityModal() : openSyncModal()" class="font-bold underline">登入</button></div>
 
   <div class="sticky top-0 z-50 shadow-sm bg-white">
     <!-- Top Navigation Header -->
@@ -213,6 +213,7 @@
       <!-- Weather Forecast Header -->
       <div id="weather-banner" class="bg-gradient-to-r from-blue-500 to-sky-400 text-white p-3 rounded-2xl shadow-sm space-y-1"></div>
 
+      <button onclick="openScenicPdfModal()" class="w-full bg-white border border-sky-200 text-sky-700 font-bold py-3 rounded-2xl text-xs"><i class="fa-solid fa-file-pdf mr-1.5"></i>匯出行程與景點介紹 PDF</button>
       <!-- Itinerary List -->
       <div id="itinerary-items-container" class="space-y-3"></div>
 
@@ -704,11 +705,20 @@
       </div>
     </div>
 
+    <div id="modal-scenic-pdf" class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-sky-800">行程與景點特色介紹 PDF</h3>
+      <p class="text-[11px] text-slate-500">依 Day 順序匯出，另列待安排景點。已查證的主要景點附來源；其他項目保留行程說明，可在下方補充本次 PDF 的介紹、停留時間及提醒。修改僅用於本次匯出。</p>
+      <div id="scenic-pdf-list" class="space-y-3"></div>
+      <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 bg-slate-100 py-2.5 rounded-xl text-xs">取消</button><button id="scenic-pdf-download" onclick="downloadScenicPdf()" class="flex-1 bg-sky-600 text-white py-2.5 rounded-xl text-xs font-bold">下載 PDF</button></div>
+      <p class="text-[10px] text-slate-400">iPhone 若開啟 PDF 預覽，可按分享 → 儲存到「檔案」。</p>
+    </div>
+
     <!-- Fixed Itinerary Smart Planner Modal -->
     <div id="modal-fixed-planner" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
       <h3 class="text-sm font-extrabold text-slate-800"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>固定行程設定與智慧排程</h3>
-      <p class="text-[10px] text-slate-500">手動填寫固定活動的營業時間與表演場次，再依日期限制安排到行程。</p>
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10px] text-amber-800"><b>優先順序：</b>指定日期／星期與場次 → 營業時間 → 已訂時間 → 地點鄰近。</div>
+      <p class="text-[10px] text-slate-500">儲存時自動依日期、營業時間、場次及空檔安排；無法安排者由主辦人指定日期。</p>
+      <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10px] text-amber-800"><b>安排規則：</b>優先安排日期／場次受限的活動，避開已排行程。未填營業時間採 09:00–21:00；未填停留時間暫以 1 小時安排。不含交通時間，請主辦人確認。</div>
+      <button onclick="saveAndArrangeFixedActivities()" class="w-full bg-sky-600 text-white py-2.5 rounded-xl text-xs font-bold">儲存並自動安排全部景點</button>
       <div id="fixed-planner-list" class="space-y-2"></div>
       <button onclick="openFixedActivityEditor()" class="w-full border border-sky-200 bg-sky-50 text-sky-700 font-bold py-2.5 rounded-xl text-xs">＋ 新增固定活動</button>
 
@@ -726,7 +736,7 @@
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">已訂／偏好時間</label><input id="fixed-time" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="20:00"></div>
           <div><label class="text-[11px] font-bold text-slate-600 block mb-1">停留時間</label><input id="fixed-duration" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="2 小時"></div>
         </div>
-        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">營業時間</label><input id="fixed-opening-hours" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：09:00–18:00；星期一休息"></div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">營業時間</label><input id="fixed-opening-hours" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="09:00–18:00；星期一休息（跨夜請手動安排）"></div>
         <div><label class="text-[11px] font-bold text-slate-600 block mb-1">表演場次</label><input id="fixed-sessions" class="w-full p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：17:00、20:00"></div>
         <div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：票已訂、只能晚場"></textarea></div>
         <div class="flex gap-2"><button onclick="cancelFixedActivityEditor()" class="flex-1 bg-white border border-slate-200 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveFixedActivity()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
@@ -2189,11 +2199,16 @@
       document.getElementById('modal-fixed-planner').classList.remove('hidden');
     }
 
+    function fixedAssignments(id, data=getStoredData('itinerary',defaultItineraryData)) {
+      return Object.entries(data).filter(([day,d])=>d.items?.some(x=>x.fixedActivityId===id)).map(([day])=>day);
+    }
     function renderFixedPlannerList() {
-      const box=document.getElementById('fixed-planner-list'); if(!box) return;
+      const box=document.getElementById('fixed-planner-list'); if(!box)return;
       const list=getFixedActivities();
-      if(!list.length){box.innerHTML='<div class="text-center text-xs text-slate-400 py-4 border border-dashed border-slate-200 rounded-xl">尚未建立固定活動</div>';return;}
-      box.innerHTML=list.map(x=>`<div class="bg-white border border-slate-200 rounded-xl p-3"><div class="flex justify-between gap-2"><div class="min-w-0"><div class="font-extrabold text-xs">${x.name}</div><div class="text-[10px] text-slate-500 mt-1">${x.dateRule==='flexible'?'日期皆可':(x.dateValue||'有限制')}${x.time?'・'+x.time:''}${x.duration?'・停留 '+x.duration:''}</div>${x.note?`<div class="text-[10px] text-amber-700 mt-1">⚠️ ${x.note}</div>`:''}${x.openingHours?`<div class="text-[10px] text-slate-500 mt-1">營業時間：${escapeHtml(x.openingHours)}</div>`:''}${x.sessions?`<div class="text-[10px] text-slate-500 mt-1">場次：${escapeHtml(x.sessions)}</div>`:''}</div><div class="shrink-0"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600 p-1">排入 Day</button><button onclick="openFixedActivityEditor('${x.id}')" class="text-sky-600 p-1">✎</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500 p-1">🗑</button></div></div></div>`).join('');
+      box.innerHTML=list.length?list.map(x=>{
+        const days=fixedAssignments(x.id),status=days.length?'已安排至 '+days.map(d=>'Day '+d).join('、'):'待安排';
+        return `<div class="bg-white border border-slate-200 rounded-xl p-3 space-y-2"><div class="font-bold text-xs">${escapeHtml(x.name)}</div><div class="text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${x.forced&&days.length?'（主辦人手動安排）':''}</div><div class="text-[10px] text-slate-500">${escapeHtml(x.dateRule==='flexible'?'日期皆可':x.dateValue)} ${escapeHtml(x.time||'')} ${escapeHtml(x.duration||'')}</div>${!days.length&&x.scheduleReason?`<p class="text-[10px] text-amber-700">${escapeHtml(x.scheduleReason)}</p>`:''}${x.openingHours?`<p class="text-[10px]">營業時間：${escapeHtml(x.openingHours)}</p>`:''}${x.sessions?`<p class="text-[10px]">場次：${escapeHtml(x.sessions)}</p>`:''}${x.note?`<p class="text-[10px]">${escapeHtml(x.note)}</p>`:''}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}')" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div></div>`;
+      }).join(''):'<div class="text-xs text-slate-400 text-center py-4">尚未建立固定活動</div>';
     }
 
     function renderFixedDateOptions(saved=''){
@@ -2226,40 +2241,201 @@
     function cancelFixedActivityEditor(){document.getElementById('fixed-activity-editor').classList.add('hidden');}
     function previewFixedMap(){const name=document.getElementById('fixed-name')?.value.trim()||'';const box=document.getElementById('fixed-map-preview'),link=document.getElementById('fixed-map-link');if(name.length>=2){link.href=buildAutoMapLink(name);box.classList.remove('hidden')}else box.classList.add('hidden');}
     function saveFixedActivity(){
-      if (!requireRoom()) return;
+      if (!requireRoom() || !isOrganizer()) return;
       const name=document.getElementById('fixed-name').value.trim(); if(!name)return showToast('請輸入活動或店家名稱');
       const id=document.getElementById('fixed-edit-id').value,list=getFixedActivities(),old=list.find(x=>x.id===id);
       const rule=document.getElementById('fixed-date-rule').value,dateValue=document.getElementById('fixed-date-value').value;
       if(rule==='specific'&&!getTripDays().includes(dateValue))return showToast('請選擇旅遊期程內的日期');
-      const data={...old,id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),time:document.getElementById('fixed-time').value.trim(),duration:document.getElementById('fixed-duration').value.trim(),note:document.getElementById('fixed-note').value.trim(),map:buildAutoMapLink(name),openingHours:document.getElementById('fixed-opening-hours').value.trim(),sessions:document.getElementById('fixed-sessions').value.trim()};
+      const data={...old,forced:false,id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),time:document.getElementById('fixed-time').value.trim(),duration:document.getElementById('fixed-duration').value.trim(),note:document.getElementById('fixed-note').value.trim(),map:buildAutoMapLink(name),openingHours:document.getElementById('fixed-opening-hours').value.trim(),sessions:document.getElementById('fixed-sessions').value.trim()};
       const idx=list.findIndex(x=>x.id===id); if(idx>=0)list[idx]=data;else list.push(data);
-      pushStateToCloud('fixedActivities',list);cancelFixedActivityEditor();renderFixedPlannerList();showToast('固定活動已儲存');
+      cancelFixedActivityEditor();arrangeFixedActivities(list);renderFixedPlannerList();const days=fixedAssignments(data.id);showToast(days.length?'已儲存，已安排至 Day '+days.join('、'):'已儲存，待安排');
+    }
+    function plannerMinutes(value) {
+      const m=String(value||'').match(/^(\d{1,2}):(\d{2})$/);
+      if(!m)return null;const h=+m[1],n=+m[2];return h<24&&n<60?h*60+n:(h===24&&n===0?1440:null);
+    }
+    function plannerTimes(value) {
+      return (String(value||'').match(/\d{1,2}:\d{2}/g)||[]).map(plannerMinutes).filter(x=>x!==null);
+    }
+    function plannerDuration(value) {
+      if(!String(value||'').trim())return 60;
+      let t=String(value).trim(),m=t.match(/^(\d+(?:\.\d+)?)\s*(?:小時|時|hours?|h)(?:\s*(\d+)\s*(?:分鐘|分|min))?$/i);
+      if(m)return +m[1]*60+(+m[2]||0);
+      m=t.match(/^(\d+)\s*(?:分鐘|分|minutes?|min)$/i);if(m)return +m[1];
+      return null;
+    }
+    function plannerRules(activity) {
+      const duration=plannerDuration(activity.duration);
+      if(!duration||duration>1440)return {error:'停留時間無法判讀，請填「2 小時」或「90 分鐘」'};
+      const preferred=plannerTimes(activity.time),sessions=plannerTimes(activity.sessions);
+      if(activity.time && (preferred.length!==1||!/^\s*\d{1,2}:\d{2}\s*$/.test(activity.time)))return {error:'偏好時間請填單一時間，如 20:00'};
+      if(activity.sessions && (!sessions.length || activity.sessions.replace(/\d{1,2}:\d{2}/g,'').replace(/[、,，;；\s]/g,'')))return {error:'場次無法判讀，請填「17:00、20:00」'};
+      const ranges=[];let rest=String(activity.openingHours||'').trim();
+      const closedDays=[];
+      rest=rest.replace(/(?:星期|週|周)([一二三四五六日天])\s*(?:休息|公休|不營業)/g,(_,d)=>{closedDays.push('日一二三四五六'.indexOf(d==='天'?'日':d));return '';});
+      rest=rest.replace(/(\d{1,2}:\d{2})\s*[-–—~～至]\s*(\d{1,2}:\d{2})/g,(_,a,b)=>{ranges.push([plannerMinutes(a),plannerMinutes(b)]);return '';});
+      rest=rest.replace(/[、,，;；\s]/g,'');
+      if(rest==='24小時'||rest==='全天') {ranges.push([0,1440]);rest='';}
+      if(rest||ranges.some(([a,b])=>a===null||b===null||b<=a))return {error:'營業時間或跨夜限制無法判讀，請改用時段格式或手動安排'};
+      // Free-form constraints must be confirmed by an organizer; do not guess.
+      if(/只能|不得|不能|限於|僅限|最晚|最早|休息|公休/.test(activity.note||''))return {error:'備註有額外限制，請主辦人確認並手動安排'};
+      return {duration,preferred:preferred[0],sessions,ranges:ranges.length?ranges:[[540,1260]],closedDays};
+    }
+    function plannerAllowedDate(a,date) {
+      if(a.dateRule==='specific')return [date,date.replaceAll('-','/'),`${Number(date.slice(5,7))}/${Number(date.slice(8,10))}`].includes(a.dateValue);
+      if(a.dateRule==='weekday')return ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][new Date(date+'T00:00:00Z').getUTCDay()]===a.dateValue;
+      return true;
+    }
+    function plannerOccupied(items) {
+      return items.map(x=>{
+        const t=plannerTimes(x.time);if(t.length>=2 && t[1]>t[0])return [t[0],t[1]];
+        if(t.length===1)return [t[0],Math.min(1440,t[0]+(plannerDuration(x.duration)||60))];
+        return [0,1440]; // Existing activity with unknown time needs manual review.
+      });
+    }
+    function plannerSlot(a,date,items) {
+      const r=plannerRules(a);if(r.error)return {reason:r.error};
+      if(!plannerAllowedDate(a,date)||r.closedDays.includes(new Date(date+'T00:00:00Z').getUTCDay()))return {reason:'日期限制或公休日不符合旅遊日期'};
+      const busy=plannerOccupied(items),starts=[];
+      if(r.preferred!==undefined)starts.push(r.preferred);
+      else if(r.sessions.length)starts.push(...r.sessions);
+      else for(const [lo,hi] of r.ranges)for(let n=lo;n+r.duration<=hi;n+=15)starts.push(n);
+      for(const start of starts){
+        const end=start+r.duration;
+        if(r.sessions.length&&!r.sessions.includes(start))continue;
+        if(!r.ranges.some(([lo,hi])=>start>=lo&&end<=hi))continue;
+        if(busy.some(([lo,hi])=>start<hi&&end>lo))continue;
+        return {start,end};
+      }
+      return {reason:'營業時間、場次或既有行程沒有符合條件的空檔'};
+    }
+    function plannerClock(n){return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
+    function fixedItineraryItem(a,slot,previous={}) {
+      return {...previous,id:previous.id||'fixed-itin-'+a.id,fixedActivityId:a.id,title:a.name,time:slot?`${plannerClock(slot.start)} - ${plannerClock(slot.end)}`:a.time||'時間待確認',duration:a.duration||'1 小時',desc:escapeHtml([a.note,'停留 '+(a.duration||'1 小時（排程預設）'),a.openingHours&&'營業時間：'+a.openingHours,a.sessions&&'場次：'+a.sessions].filter(Boolean).join('；')),map:a.map||buildAutoMapLink(a.name)};
+    }
+    function arrangeFixedActivities(list=getFixedActivities()) {
+      if(!requireRoom()||!isOrganizer())return;
+      const data=JSON.parse(JSON.stringify(getStoredData('itinerary',defaultItineraryData))),previous=new Map();
+      const ids=new Set(list.filter(a=>!a.forced).map(a=>a.id));
+      Object.values(data).forEach(d=>{d.items=(d.items||[]).filter(x=>{if(ids.has(x.fixedActivityId)){previous.set(x.fixedActivityId,x);return false;}return true;});});
+      const ordered=[...list].sort((a,b)=>((b.dateRule!=='flexible'?4:0)+(b.time?2:0)+(b.sessions?1:0))-((a.dateRule!=='flexible'?4:0)+(a.time?2:0)+(a.sessions?1:0)));
+      for(const a of ordered){
+        if(a.forced&&fixedAssignments(a.id,data).length)continue;
+        a.forced=false;let picked=null,reason=plannerRules(a).error||'旅遊日期內沒有適合的空檔';
+        const matches=Object.entries(data).flatMap(([day,d])=>(d.items||[]).filter(x=>!x.fixedActivityId&&x.title?.replace(/\p{Extended_Pictographic}|\uFE0F/gu,'').trim()===a.name).map(item=>({day,item})));
+        if(matches.length>1){a.scheduleReason='現有行程有多筆同名項目，請主辦人手動確認';continue;}
+        const matching=matches[0];
+        if(matching){previous.set(a.id,matching.item);data[matching.day].items=data[matching.day].items.filter(x=>x.id!==matching.item.id);}
+        for(const [i,date] of getTripDays().entries()){
+          const day=String(i+1),items=getItineraryWithTransfers(data)[day]?.items||[],slot=plannerSlot(a,date,items);
+          if(slot.start!==undefined){const score=items.length;if(!picked||score<picked.score)picked={day,slot,score};}
+          else reason=slot.reason;
+        }
+        if(picked){
+          data[picked.day] ||= {items:[]};data[picked.day].items.push(fixedItineraryItem(a,picked.slot,previous.get(a.id)||a.pendingItem));
+          data[picked.day].items.sort((x,y)=>(plannerTimes(x.time)[0]??1440)-(plannerTimes(y.time)[0]??1440));a.scheduleReason='';delete a.pendingItem;
+        }else {a.scheduleReason=reason;if(previous.has(a.id))a.pendingItem=previous.get(a.id);}
+      }
+      pushStateToCloud('fixedActivities',list);pushStateToCloud('itinerary',data);renderFixedPlannerList();
+    }
+    function saveAndArrangeFixedActivities(){
+      if(!requireRoom()||!isOrganizer())return;
+      if(!document.getElementById('fixed-activity-editor').classList.contains('hidden'))return saveFixedActivity();
+      arrangeFixedActivities();const list=getFixedActivities(),n=list.filter(a=>fixedAssignments(a.id).length).length;showToast(`已安排 ${n} 個，待安排 ${list.length-n} 個`);
     }
     function deleteFixedActivity(id){
-      if (!requireRoom()) return;pushStateToCloud('fixedActivities',getFixedActivities().filter(x=>x.id!==id));renderFixedPlannerList();showToast('固定活動已刪除');}
-    function scheduleFixedActivity(id){
-      if(!requireRoom() || !isOrganizer())return;
-      const activity=getFixedActivities().find(x=>x.id===id);if(!activity)return;
-      const data=getStoredData('itinerary',defaultItineraryData);
-      const existing=Object.entries(data).find(([day,x])=>x.items?.some(i=>i.fixedActivityId===id));
-      if(existing)return showToast('已安排至 Day '+existing[0]);
-      const validDays=getTripDays().map((_,i)=>String(i+1));
-      const day=prompt('排入哪一天？請輸入 Day 編號（'+validDays.join('、')+'）',validDays[0]);if(day===null)return;
-      if(!validDays.includes(day.trim()))return showToast('請輸入有效的 Day 編號');
-      const chosen=day.trim(),date=getTripDays()[Number(chosen)-1];
-      if(activity.dateRule==='specific'){
-        const match=activity.dateValue===date || activity.dateValue===date.replaceAll('-','/') || activity.dateValue===`${Number(date.slice(5,7))}/${Number(date.slice(8,10))}`;
-        if(!match)return showToast('此活動限定 '+activity.dateValue+'，請選擇對應的 Day');
-      }
-      if(activity.dateRule==='weekday'){
-        const weekday=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'][new Date(date+'T00:00:00Z').getUTCDay()];
-        if(weekday!==activity.dateValue)return showToast('此活動限定 '+activity.dateValue+'，請選擇符合的 Day');
-      }
-      if(!confirm('確定將此活動安排至 Day '+chosen+'？'))return;
-      if(!data[chosen])data[chosen]={items:[]};
-      data[chosen].items.push({id:'fixed-itin-'+Date.now(),fixedActivityId:id,title:activity.name,time:activity.time||'待安排',desc:escapeHtml([activity.note,activity.duration ? '停留 '+activity.duration : '',activity.openingHours?'營業時間：'+activity.openingHours:'',activity.sessions?'場次：'+activity.sessions:''].filter(Boolean).join('；')),map:buildAutoMapLink(activity.name)});
-      pushStateToCloud('itinerary',data);showToast('已安排至 Day '+day);
+      if(!requireRoom()||!isOrganizer())return;
+      if(!confirm('刪除此固定活動設定？已安排的行程會保留，可在每日行程另行刪除。'))return;
+      pushStateToCloud('fixedActivities',getFixedActivities().filter(a=>a.id!==id));renderFixedPlannerList();
     }
+    function scheduleFixedActivity(id){
+      if(!requireRoom()||!isOrganizer())return;
+      const list=getFixedActivities(),a=list.find(x=>x.id===id);if(!a)return;
+      const data=getStoredData('itinerary',defaultItineraryData),days=getTripDays();
+      const answer=prompt('主辦人指定 Day 編號（1–'+days.length+'）。手動安排可覆蓋日期、營業時間及衝突限制；請自行確認。',fixedAssignments(id,data)[0]||'1');if(answer===null)return;
+      const day=answer.trim();if(!/^\d+$/.test(day)||Number(day)<1||Number(day)>days.length)return showToast('請輸入有效 Day 編號');
+      const key=String(Number(day)),items=(data[key]?.items||[]).filter(x=>x.fixedActivityId!==id),slot=plannerSlot(a,days[Number(key)-1],items);
+      if(!confirm('確定手動安排至 Day '+key+'？'+(slot.start===undefined?'\n'+slot.reason+'；本次將強制安排，時間請另行確認。':'')))return;
+      let old=a.pendingItem;Object.values(data).forEach(d=>{d.items=(d.items||[]).filter(x=>{if(x.fixedActivityId===id){old=x;return false;}return true;});});
+      data[key] ||= {items:[]};data[key].items.push(fixedItineraryItem(a,slot.start!==undefined?slot:null,old));
+      a.forced=true;a.scheduleReason='';delete a.pendingItem;
+      pushStateToCloud('fixedActivities',list);pushStateToCloud('itinerary',data);renderFixedPlannerList();showToast('已安排至 Day '+key);
+    }
+
+    // Stable attraction summaries checked against the linked primary sources on 2026-10-02.
+    const scenicGuideCatalog=[
+      {match:/會安古[鎮城]|Hoi An Ancient/i,text:'會安曾是重要貿易港口，古城保留不同文化交融的建築與街巷。特色是老屋、會館與河畔燈籠夜景；可沿古城步行觀察建築細節，再到秋盆河旁欣賞夜色。',source:'https://vietnam.travel/things-to-do/top-things-to-do-hoi-an'},
+      {match:/美山|My Son/i,text:'美山聖地是占婆王國的重要宗教遺址，也是 UNESCO 世界文化遺產。山谷中的塔廟遺構呈現占婆建築與宗教文化，適合觀察紅磚塔身、雕刻及遺址群的空間配置。',source:'https://whc.unesco.org/en/list/949/'},
+      {match:/五行山|Marble Mountains/i,text:'五行山結合石灰岩山峰、天然洞穴與寺院，是峴港具有宗教意義的景點。特色是洞內光影、寺院建築與山上景觀；參觀寺院宜穿著端莊。',source:'https://vietnam.travel/things-to-do/around-marble-mountains'},
+      {match:/巴拿山|Ba Na|Sun World/i,text:'巴拿山可搭乘纜車登山，主要特色包含黃金橋、法式村落、花園及遊樂設施。可依團員體力安排橋上觀景、園區散步與遊樂活動。',source:'https://vietnam.travel/things-to-do/must-visit-places-in-da-nang'},
+      {match:/山茶|靈應寺|Son Tra|Linh Ung/i,text:'山茶半島有森林與海岸景觀；靈應寺以大型觀音像與寺院空間為特色。適合安排海岸觀景與寺院參觀，欣賞峴港山海景色。',source:'https://www.vietnam.travel/things-to-do/must-do-da-nang-an-insider-list'},
+      {match:/Teh Dar/i,text:'Teh Dar 是 Lune Production 的越南竹馬戲演出，在會安 Lune Center 表演。可欣賞竹材道具與肢體表演，感受越南文化題材的舞台呈現；演出日期與場次需確認官方售票資訊。',source:'https://www.luneproduction.com/teh-dar'},
+      {match:/會安回憶|Hoi An Memories/i,text:'會安回憶演出以會安歷史為題材，透過舞台表演呈現城市文化與發展故事。演出地點在河畔的 Hoi An Memories Land；請依官方公告確認場次。',source:'https://hoianmemoriesland.com/en/art-performance-en'},
+      {match:/椰子船|迦南島|Cam Thanh/i,text:'Cam Thanh 椰林水道以傳統圓形竹籃船體驗為特色。旅客可搭船穿梭水道，觀察河岸椰林與當地水上生活；行程中的表演活動以預訂內容為準。',source:'https://vietnam.vnanet.vn/english/english/tin-tuc/cam-thanh-%E2%80%93-land-of-coconuts-164335.html'},
+      {match:/漢市場|Han Market/i,text:'漢市場販售服飾、布料、紀念品與地方食品，可認識峴港日常市場與伴手禮文化。特色包括越南傳統服飾、乾貨與地方食材。',source:'https://danangfantasticity.com/en/local-markets/han-market-2'},
+      {match:/龍橋|Dragon Bridge/i,text:'龍橋以跨越韓江的龍形橋體為特色，是峴港市區的代表景觀。可從河岸欣賞橋體與城市夜景；噴火、噴水演出請另外確認最新公告。',source:'https://danangfantasticity.com/en/dragon-bridge'}
+    ];
+    let scenicPdfDraft=[];
+    function scenicPlainText(value){const el=document.createElement('div');el.innerHTML=String(value||'').replace(/<br\s*\/?\s*>/gi,'\n');return el.textContent||'';}
+    function scenicEntry(item,day,date){
+      const guides=scenicGuideCatalog.filter(g=>g.match.test(item.title||item.name||''));
+      return {day,date,title:scenicPlainText(item.title||item.name),time:item.time||'',duration:item.duration||'',text:guides.map(g=>g.text).join('\n\n')||'尚無已查證的景點特色介紹，請補充。',note:scenicPlainText([item.desc,item.comment,item.note].filter(Boolean).join('\n')),sources:[...new Set(guides.map(g=>g.source))]};
+    }
+    function openScenicPdfModal(){
+      closeModal();const days=getTripDays(),data=getItineraryWithTransfers(getStoredData('itinerary',defaultItineraryData));scenicPdfDraft=[];
+      days.forEach((date,i)=>(data[i+1]?.items||[]).forEach(item=>scenicPdfDraft.push(scenicEntry(item,'Day '+(i+1),date))));
+      getFixedActivities().filter(a=>!fixedAssignments(a.id).length).forEach(a=>scenicPdfDraft.push(scenicEntry(a,'待安排','')));
+      document.getElementById('scenic-pdf-list').innerHTML=scenicPdfDraft.length?scenicPdfDraft.map((e,i)=>`<div class="border border-slate-200 rounded-xl p-3 space-y-2"><h4 class="text-xs font-bold text-sky-800">${e.day} ${escapeHtml(e.date)}｜${escapeHtml(e.title)}</h4><label class="text-[10px] text-slate-500">景點特色介紹</label><textarea aria-label="景點特色介紹" class="w-full border rounded-lg p-2 text-xs h-28" oninput="scenicPdfDraft[${i}].text=this.value">${escapeHtml(e.text)}</textarea><label class="text-[10px] text-slate-500">停留時間／參觀提醒</label><textarea aria-label="停留時間與參觀提醒" class="w-full border rounded-lg p-2 text-xs h-20" oninput="scenicPdfDraft[${i}].note=this.value">${escapeHtml([e.duration&&'停留時間：'+e.duration,e.note].filter(Boolean).join('\n'))}</textarea>${e.sources.map(url=>`<a class="block text-[10px] text-sky-600 underline break-all" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">資料來源：${escapeHtml(url)}</a>`).join('')}</div>`).join(''):'<p class="text-xs text-slate-400">目前沒有可匯出的行程。</p>';
+      scenicPdfDraft.forEach(e=>{e.note=[e.duration&&'停留時間：'+e.duration,e.note].filter(Boolean).join('\n');});
+      document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-scenic-pdf').classList.remove('hidden');
+    }
+    function scenicCanvasPages(){
+      const pages=[],W=1240,H=1754,margin=90,limit=H-110;let canvas,ctx,y;
+      function page(){canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);pages.push(canvas);y=margin;}
+      function line(text,size,color,bold=false){
+        if(y+size*1.7>limit)page();ctx.font=`${bold?'bold ':''}${size}px "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif`;ctx.fillStyle=color;ctx.fillText(text,margin,y+size);y+=size*1.65;
+      }
+      function paragraph(text,size=25,color='#334155',bold=false){
+        for(const part of String(text||'').split('\n')){
+          let buffer='';ctx.font=`${bold?'bold ':''}${size}px "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif`;
+          for(const ch of part){if(ctx.measureText(buffer+ch).width>W-margin*2&&buffer){line(buffer,size,color,bold);buffer='';}buffer+=ch;}line(buffer,size,color,bold);
+        }
+      }
+      page();const info=getStoredData('headerInfo',defaultHeaderInfo);
+      paragraph((info.title||'旅遊')+'｜行程與景點介紹',38,'#075985',true);paragraph(getTripDays()[0]+' ～ '+getTripDays().at(-1),23);paragraph('主要景點資料查證日期：2026-10-02',19,'#64748b');paragraph('營業時間、票價與演出場次請於出發前確認。未填停留時間者未另外推估。',19,'#64748b');y+=20;
+      let group='';
+      for(const e of scenicPdfDraft){
+        if(e.day!==group){if(y>limit-250)page();y+=15;paragraph(e.day+(e.date?'｜'+e.date:''),30,'#0369a1',true);group=e.day;}
+        if(y>limit-200)page();paragraph(e.title,27,'#0f172a',true);
+        if(e.time)paragraph('行程時間：'+e.time,22,'#475569');paragraph(e.text||'尚未補充景點特色介紹。');
+        if(e.note){paragraph('行程說明與提醒',21,'#b45309',true);paragraph(e.note,22);}
+        e.sources.forEach(url=>paragraph('資料來源：'+url,17,'#64748b'));y+=22;
+      }
+      pages.forEach((c,i)=>{const g=c.getContext('2d');g.font='20px sans-serif';g.fillStyle='#64748b';g.textAlign='center';g.fillText(`${i+1} / ${pages.length}`,W/2,H-55);});return pages;
+    }
+    function scenicPdfBlob(pages){
+      const encoder=new TextEncoder(),chunks=[],offsets=[0];let length=0;
+      const put=data=>{const bytes=typeof data==='string'?encoder.encode(data):data;chunks.push(bytes);length+=bytes.length;};
+      const object=(id,data)=>{offsets[id]=length;put(`${id} 0 obj\n`);put(data);put('\nendobj\n');};
+      put('%PDF-1.4\n');object(1,'<< /Type /Catalog /Pages 2 0 R >>');object(2,`<< /Type /Pages /Count ${pages.length} /Kids [${pages.map((_,i)=>`${3+i*3} 0 R`).join(' ')}] >>`);
+      pages.forEach((c,i)=>{
+        const id=3+i*3,jpg=Uint8Array.from(atob(c.toDataURL('image/jpeg',0.93).split(',')[1]),ch=>ch.charCodeAt(0));
+        object(id,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im0 ${id+1} 0 R >> >> /Contents ${id+2} 0 R >>`);
+        offsets[id+1]=length;put(`${id+1} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${c.width} /Height ${c.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`);put(jpg);put('\nendstream\nendobj\n');
+        const stream='q 595.28 0 0 841.89 0 0 cm /Im0 Do Q';object(id+2,`<< /Length ${encoder.encode(stream).length} >>\nstream\n${stream}\nendstream`);
+      });
+      const xref=length;put(`xref\n0 ${offsets.length}\n0000000000 65535 f \n`);offsets.slice(1).forEach(n=>put(String(n).padStart(10,'0')+' 00000 n \n'));put(`trailer\n<< /Size ${offsets.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);return new Blob(chunks,{type:'application/pdf'});
+    }
+    async function downloadScenicPdf(){
+      if(!scenicPdfDraft.length)return showToast('目前沒有可匯出的行程');
+      const button=document.getElementById('scenic-pdf-download');button.disabled=true;button.textContent='產製中…';
+      try{
+        if(document.fonts?.ready)await document.fonts.ready;
+        const blob=scenicPdfBlob(scenicCanvasPages()),title=getStoredData('headerInfo',defaultHeaderInfo).title||'旅遊';
+        const name=title.replace(/[\\/:*?"<>|]/g,'_')+'_景點介紹.pdf',url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);showToast('PDF 已產製，請查看下載或 PDF 預覽');
+      }catch(e){console.error(e);showToast('PDF 產製失敗，請稍後重試');}finally{button.disabled=false;button.textContent='下載 PDF';}
+    }
+
 
     // 航空公司選位／餐點提醒規則（由先前版本恢復）
     const AIRLINE_RULES = {
@@ -3943,7 +4119,7 @@
       document.getElementById('modal-backdrop').classList.remove('trip-login-overlay');
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
-        'modal-room-session', 'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
+        'modal-scenic-pdf', 'modal-room-session', 'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
@@ -4339,6 +4515,7 @@
 
     function refreshUI() {
       renderHeaderInfo();
+      if (!document.getElementById('modal-fixed-planner').classList.contains('hidden')) renderFixedPlannerList();
       renderTripDayButtons();
       renderItinerary();
       renderPackingList();
