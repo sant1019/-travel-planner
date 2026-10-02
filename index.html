@@ -130,7 +130,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-23</span>
+        <span id="test-version-badge" class="trip-version">FC-24</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -549,7 +549,7 @@
         <div><label for="trip-login-nickname">個人暱稱</label><input id="trip-login-nickname" name="username" autocomplete="username" autocapitalize="none" maxlength="30" placeholder="輸入暱稱" required></div>
         <div><label for="trip-login-password">個人密碼</label><div class="trip-password-wrap"><input id="trip-login-password" name="password" type="password" autocomplete="current-password" placeholder="輸入個人密碼" required><button type="button" onclick="toggleTripPassword('trip-login-password',this)" aria-label="顯示個人密碼" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div></div>
         <div id="trip-confirm-field" class="hidden"><label for="trip-login-confirm">確認個人密碼</label><input id="trip-login-confirm" type="password" autocomplete="new-password" placeholder="再次輸入個人密碼"></div>
-        <label class="trip-login-remember"><input id="trip-login-remember" type="checkbox">記住登入狀態</label>
+        <div><label class="trip-login-remember"><input id="trip-login-remember" type="checkbox">記住登入狀態</label><p class="text-[10px] text-slate-400 mt-1">同分頁重新整理時自動恢復登入；登出後需重新驗證。</p></div>
         <p id="trip-login-status" role="status" aria-live="polite"></p>
         <button type="submit" id="trip-login-submit" class="trip-login-submit">登入</button>
       </form>
@@ -564,6 +564,7 @@
       <button type="button" onclick="closeModal(true)" class="absolute top-2 right-2 w-8 h-8 text-xl text-slate-400" aria-label="關閉">×</button>
       <h3 class="text-sm font-bold text-slate-800 mb-4">房間已登入</h3>
       <button type="button" onclick="logoutCloudRoom()" class="w-full bg-rose-50 text-rose-600 py-3 rounded-xl text-sm font-bold">登出房間</button>
+      <button type="button" onclick="closeModal(true)" class="w-full mt-2 bg-slate-100 text-slate-600 py-3 rounded-xl text-sm font-bold">取消</button>
     </div>
 
     <!-- Member Identity Modal -->
@@ -3969,7 +3970,10 @@
       button.querySelector('i').className=show?'fa-regular fa-eye-slash':'fa-regular fa-eye';
     }
     function setTripLoginMode(register){
-      if(tripLoginBusy)return;tripLoginRegister=register;
+      if(tripLoginBusy)return;
+      if(register)document.getElementById('trip-login-nickname').value='';
+      else if(tripLoginRegister)prefillTripNickname();
+      tripLoginRegister=register;
       document.getElementById('trip-confirm-field').classList.toggle('hidden',!register);
       document.getElementById('trip-login-confirm').required=register;
       document.getElementById('trip-login-password').autocomplete=register?'new-password':'current-password';
