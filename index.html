@@ -132,6 +132,19 @@
     #fc32-menu button:hover{background:#ecfdf5;}
     @media(max-width:350px){.fc32-utility{padding:5px 6px;}.fc32-room-link{gap:4px;padding:0 5px;}.fc32-room-link .trip-sync-status{font-size:8px;}.fc32-menu-button{font-size:9px;padding:4px 6px;}}
   </style>
+<style>
+.fc44-flight{background:linear-gradient(110deg,#4f46e5,#9333ea);color:#fff;border:0}
+.fc44-flight .fc44-flight-edit{background:rgba(255,255,255,.18);color:#fff}
+.fc44-flight .fc44-booking{background:rgba(255,255,255,.13);border-color:rgba(255,255,255,.2)}
+.fc44-flight .fc44-booking-title{color:#fef08a}
+.fc44-flight .fc44-booking-copy{color:#fff}
+.fc44-flight .fc44-booking-copy .text-indigo-500{color:#ede9fe}
+.fc44-flight .fc44-flight-footnote{color:#ede9fe}
+.fc44-time-row{display:flex;align-items:baseline;gap:.5rem;line-height:1.7;margin-top:.2rem}
+.fc44-time-label{flex-shrink:0}
+.fc44-time-value{display:inline-block;font-weight:800;border-radius:.5rem;padding:.05rem .5rem;background:rgba(36,12,100,.35);font-variant-numeric:tabular-nums}
+.fc44-depart{color:#ffe58a}.fc44-arrive{color:#9df7db}
+</style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
 <div id="room-login-warning" class="bg-amber-100 text-amber-900 text-xs p-2 text-center">尚未登入，無法編輯資料　<button onclick="cloudConnected ? openMemberIdentityModal() : openSyncModal()" class="font-bold underline">登入</button></div>
@@ -140,7 +153,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-43</span>
+        <span id="test-version-badge" class="trip-version">FC-44</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -667,7 +680,7 @@
 
     <div id="modal-room-members" class="hidden bg-white rounded-2xl p-5 w-full max-w-sm shadow-xl space-y-3 max-h-[80vh] overflow-y-auto">
       <div class="flex justify-between items-center"><h3 class="font-bold text-slate-800">成員管理</h3><button onclick="closeModal()" aria-label="關閉成員管理" class="p-2 text-slate-500">✕</button></div>
-      <p class="text-xs text-slate-500">目前房間的所有成員。刪除會撤銷登入資格，旅程內容保留。</p>
+      <p class="text-xs text-slate-500">團員備註僅主辦人可查看與編輯。刪除會撤銷登入資格，旅程內容保留。</p>
       <div class="flex justify-between items-center"><p id="fc43-member-status" role="status" class="text-xs text-slate-500"></p><button onclick="fc43LoadMembers()" class="text-xs text-sky-700 p-2">重新整理</button></div>
       <div id="fc43-member-list" class="space-y-2"></div>
     </div>
@@ -1740,7 +1753,7 @@
     }
 
     let fc43Members=[],fc43MemberBusy=false,fc43MemberRequest=0;
-    function fc43MemberError(e){const msg=String(e?.message||e||'');return /PGRST202|Could not find/.test(msg)?'請先在 Supabase 執行 FC43_member_management.sql。':/cannot_delete_self/.test(msg)?'不能刪除自己的帳號。':/member_not_found/.test(msg)?'成員已不存在，請重新整理名單。':/organizer_required|member_login_required/.test(msg)?'請以有效的主辦人帳號登入。':'無法完成操作，請稍後再試。';}
+    function fc43MemberError(e){const msg=String(e?.message||e||'');return /PGRST202|Could not find/.test(msg)?'請先在 Supabase 執行 FC44_member_notes.sql。':/cannot_delete_self/.test(msg)?'不能刪除自己的帳號。':/member_not_found/.test(msg)?'成員已不存在，請重新整理名單。':/organizer_required|member_login_required/.test(msg)?'請以有效的主辦人帳號登入。':'無法完成操作，請稍後再試。';}
     async function fc43OpenMembers(){
       if(!requireRoom()||!isOrganizer())return;
       closeModal();document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-room-members').classList.remove('hidden');await fc43LoadMembers();
@@ -1749,21 +1762,47 @@
       if(!cloudConnected||!currentMember||!isOrganizer())return;
       const targetRoom=roomId,token=getMemberToken(),request=++fc43MemberRequest;
       const status=document.getElementById('fc43-member-status');status.textContent='讀取中…';document.getElementById('fc43-member-list').replaceChildren();
-      try{const {data,error}=await cloudClient.rpc('fc43_manage_members',{p_room_id:targetRoom,p_member_token:token,p_action:'list',p_member_id:null});if(error)throw error;
+      try{const {data,error}=await cloudClient.rpc('fc44_manage_members',{p_room_id:targetRoom,p_member_token:token,p_action:'list',p_member_id:null});if(error)throw error;
         if(request!==fc43MemberRequest||roomId!==targetRoom||getMemberToken()!==token)return;
         if(!Array.isArray(data))throw new Error('invalid_member_list');fc43Members=data;
         status.textContent=`共 ${data.length} 位成員`;
-        const list=document.getElementById('fc43-member-list');for(const m of data){const row=document.createElement('div');row.className='flex items-center justify-between gap-3 border rounded-xl p-3';const name=document.createElement('div');name.className='min-w-0 break-words text-sm';name.textContent=m.nickname+'｜'+(m.role==='organizer'?'主辦人':'成員');row.append(name);
-          if(String(m.id)===String(currentMember.id)){const self=document.createElement('span');self.className='shrink-0 text-xs text-slate-400';self.textContent='自己';row.append(self);}else{const button=document.createElement('button');button.type='button';button.className='shrink-0 px-3 py-2 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold';button.textContent='刪除';button.disabled=fc43MemberBusy;button.onclick=()=>fc43DeleteMember(m.id);row.append(button);}list.append(row);}
+        const list=document.getElementById('fc43-member-list');for(const m of data)list.append(fc44RenderMember(m));
       }catch(e){if(request===fc43MemberRequest&&roomId===targetRoom&&getMemberToken()===token)status.textContent=fc43MemberError(e);}
     }
+    function fc44RenderMember(m){
+      const row=document.createElement('div');row.className='border rounded-xl p-3 space-y-2';
+      const header=document.createElement('div');header.className='flex items-center justify-between gap-3';
+      const name=document.createElement('div');name.className='min-w-0 break-words text-sm font-bold';name.textContent=m.nickname+'｜'+(m.role==='organizer'?'主辦人':'成員');header.append(name);
+      if(String(m.id)===String(currentMember.id)){const self=document.createElement('span');self.className='shrink-0 text-xs text-slate-400';self.textContent='自己';header.append(self);}
+      else{const b=document.createElement('button');b.type='button';b.className='shrink-0 px-3 py-2 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold';b.textContent='刪除';b.disabled=fc43MemberBusy;b.onclick=()=>fc43DeleteMember(m.id);header.append(b);}row.append(header);
+      const note=document.createElement('p');note.className='text-xs whitespace-pre-wrap break-words text-slate-600';note.textContent='備註：'+(m.note||'尚未填寫');row.append(note);
+      const edit=document.createElement('button');edit.type='button';edit.className='text-xs text-sky-700 font-bold py-1';edit.textContent='編輯備註';edit.disabled=fc43MemberBusy;
+      const editor=document.createElement('div');editor.className='hidden space-y-2';
+      const label=document.createElement('label');label.className='block text-xs font-bold';label.textContent='團員備註';
+      const input=document.createElement('textarea');input.id='fc44-note-'+String(m.id);label.htmlFor=input.id;input.rows=3;input.maxLength=300;input.value=m.note||'';input.className='w-full p-2 border rounded-xl text-sm';
+      const tip=document.createElement('p');tip.className='text-xs text-slate-400';tip.textContent='最多 300 字，僅主辦人可查看與編輯';
+      const buttons=document.createElement('div');buttons.className='flex justify-end gap-2';const cancel=document.createElement('button');cancel.type='button';cancel.textContent='取消';cancel.className='bg-slate-100 px-3 py-2 rounded-lg text-xs';
+      const save=document.createElement('button');save.type='button';save.textContent='儲存備註';save.className='bg-sky-600 text-white px-3 py-2 rounded-lg text-xs font-bold';
+      cancel.onclick=()=>{input.value=m.note||'';editor.classList.add('hidden');edit.classList.remove('hidden');};edit.onclick=()=>{editor.classList.remove('hidden');edit.classList.add('hidden');input.focus();};save.onclick=()=>fc44SaveNote(m,input,save,cancel);
+      buttons.append(cancel,save);editor.append(label,input,tip,buttons);row.append(edit,editor);return row;
+    }
+    async function fc44SaveNote(m,input,save,cancel){
+      if(fc43MemberBusy||!cloudConnected||!currentMember||!isOrganizer())return;
+      const note=input.value;if(Array.from(note).length>300)return showToast('備註最多 300 字');
+      const targetRoom=roomId,token=getMemberToken();fc43MemberBusy=true;input.disabled=save.disabled=cancel.disabled=true;document.querySelectorAll('#fc43-member-list button').forEach(b=>b.disabled=true);
+      try{const {error}=await cloudClient.rpc('fc44_manage_members',{p_room_id:targetRoom,p_member_token:token,p_action:'note',p_member_id:String(m.id),p_note:note,p_expected_note:m.note||''});if(error)throw error;
+        if(roomId===targetRoom&&getMemberToken()===token){showToast('團員備註已儲存');await fc43LoadMembers();}}
+      catch(e){if(roomId===targetRoom&&getMemberToken()===token)document.getElementById('fc43-member-status').textContent=String(e?.message||'').includes('note_conflict')?'備註已被其他主辦人修改；請先保留輸入內容，再重新整理名單。':fc43MemberError(e);}
+      finally{fc43MemberBusy=false;input.disabled=save.disabled=cancel.disabled=false;document.querySelectorAll('#fc43-member-list button').forEach(b=>b.disabled=false);}
+    }
+
     async function fc43DeleteMember(id){
       if(fc43MemberBusy||!cloudConnected||!isOrganizer()||!currentMember)return;
       const m=fc43Members.find(x=>String(x.id)===String(id));if(!m)return;
       if(String(id)===String(currentMember.id))return showToast('不能刪除自己的帳號。');
       if(!confirm(`確定刪除「${m.nickname}」？\n此成員在所有裝置的登入資格將失效，已建立的旅程內容會保留。\n若仍知道房間密碼，可重新註冊加入。`))return;
       const targetRoom=roomId,token=getMemberToken();fc43MemberBusy=true;document.querySelectorAll('#fc43-member-list button').forEach(b=>b.disabled=true);
-      try{const {error}=await cloudClient.rpc('fc43_manage_members',{p_room_id:targetRoom,p_member_token:token,p_action:'delete',p_member_id:String(id)});if(error)throw error;if(roomId===targetRoom&&getMemberToken()===token){showToast('已刪除成員並撤銷登入資格');await fc43LoadMembers();}}
+      try{const {error}=await cloudClient.rpc('fc44_manage_members',{p_room_id:targetRoom,p_member_token:token,p_action:'delete',p_member_id:String(id)});if(error)throw error;if(roomId===targetRoom&&getMemberToken()===token){showToast('已刪除成員並撤銷登入資格');await fc43LoadMembers();}}
       catch(e){if(roomId===targetRoom&&getMemberToken()===token)document.getElementById('fc43-member-status').textContent=fc43MemberError(e);}
       finally{fc43MemberBusy=false;document.querySelectorAll('#fc43-member-list button').forEach(b=>b.disabled=false);}
     }
@@ -3008,9 +3047,9 @@
         }
       }
 
-      return `<div class="bg-indigo-50 border border-indigo-100 rounded-xl p-2.5 mt-2">
-        <div class="font-extrabold text-indigo-800">${escapeHtml(String(number || '').toUpperCase())}｜${escapeHtml(airline.name)}</div>
-        <div class="mt-1 space-y-1 text-[10px] text-slate-700">${mealHtml}<div>${seatHtml}</div></div>
+      return `<div class="fc44-booking bg-indigo-50 border border-indigo-100 rounded-xl p-2.5 mt-2">
+        <div class="fc44-booking-title font-extrabold text-indigo-800">${escapeHtml(String(number || '').toUpperCase())}｜${escapeHtml(airline.name)}</div>
+        <div class="fc44-booking-copy mt-1 space-y-1 text-[10px] text-slate-700">${mealHtml}<div>${seatHtml}</div></div>
       </div>`;
     }
 
@@ -3033,7 +3072,7 @@
       renderInfoPage(); showToast('你的資訊顯示設定已更新');
     }
     function canEditInfo(type){ return cloudConnected && isOrganizer(); }
-    function infoEditButton(type){return canEditInfo(type)?`<button onclick="openInfoEdit('${type}')" class="text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded-lg">✏️ 編輯</button>`:'';}
+    function infoEditButton(type){return canEditInfo(type)?`<button onclick="openInfoEdit('${type}')" class="${type==='flight'?'fc44-flight-edit':''} text-[10px] text-indigo-600 font-bold bg-indigo-50 px-2 py-1 rounded-lg">✏️ 編輯</button>`:'';}
     function renderInfoPage(){
       const c=getInfoConfig(),v={...c.visibility};
       const required=getStoredData('headerInfo',defaultHeaderInfo).requiredInfo || {};
@@ -3044,17 +3083,17 @@
       let h='';
       if(v.flight){
         const headerInfo = getStoredData('headerInfo', defaultHeaderInfo);
-        h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs">
+        h+=`<div class="fc44-flight p-4 rounded-2xl shadow-sm text-xs">
           <div class="flex justify-between"><h3 class="font-bold">✈️ 班機資訊</h3>${infoEditButton('flight')}</div>
           <div class="mt-2 space-y-1">
-            <p>🛫 去程 <b>${escapeHtml(c.flight.outboundNo)}</b>｜起飛 ${escapeHtml(formatDateZh(c.flight.outboundDate))} ${escapeHtml(c.flight.outboundTime)}</p>
-            ${(c.flight.outboundArrivalDate||c.flight.outboundArrivalTime)?`<p class="text-slate-500">　抵達 ${escapeHtml(formatDateZh(c.flight.outboundArrivalDate||''))} ${escapeHtml(c.flight.outboundArrivalTime||'')}</p>`:''}
+            <p class="font-bold ">🛫 去程 ${escapeHtml(c.flight.outboundNo)}</p><p class="fc44-time-row"><span class="fc44-time-label">起飛</span><span class="fc44-time-value fc44-depart">${escapeHtml(formatDateZh(c.flight.outboundDate))} ${escapeHtml(c.flight.outboundTime)}</span></p>
+            ${(c.flight.outboundArrivalDate||c.flight.outboundArrivalTime)?`<p class="fc44-time-row"><span class="fc44-time-label">抵達</span><span class="fc44-time-value fc44-arrive">${escapeHtml(formatDateZh(c.flight.outboundArrivalDate||''))} ${escapeHtml(c.flight.outboundArrivalTime||'')}</span></p>`:''}
             ${buildFlightReminderHtml(c.flight.outboundNo,c.flight.outboundDate,c.flight.outboundTime,headerInfo.startDate)}
-            <p class="pt-1">🛬 回程 <b>${escapeHtml(c.flight.returnNo)}</b>｜起飛 ${escapeHtml(formatDateZh(c.flight.returnDate))} ${escapeHtml(c.flight.returnTime)}</p>
-            ${(c.flight.returnArrivalDate||c.flight.returnArrivalTime)?`<p class="text-slate-500">　抵達 ${escapeHtml(formatDateZh(c.flight.returnArrivalDate||''))} ${escapeHtml(c.flight.returnArrivalTime||'')}</p>`:''}
+            <p class="font-bold pt-3">🛬 回程 ${escapeHtml(c.flight.returnNo)}</p><p class="fc44-time-row"><span class="fc44-time-label">起飛</span><span class="fc44-time-value fc44-depart">${escapeHtml(formatDateZh(c.flight.returnDate))} ${escapeHtml(c.flight.returnTime)}</span></p>
+            ${(c.flight.returnArrivalDate||c.flight.returnArrivalTime)?`<p class="fc44-time-row"><span class="fc44-time-label">抵達</span><span class="fc44-time-value fc44-arrive">${escapeHtml(formatDateZh(c.flight.returnArrivalDate||''))} ${escapeHtml(c.flight.returnArrivalTime||'')}</span></p>`:''}
             ${buildFlightReminderHtml(c.flight.returnNo,c.flight.returnDate,c.flight.returnTime,headerInfo.endDate)}
           </div>
-          <p class="text-[9px] text-slate-400 mt-2">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
+          <p class="fc44-flight-footnote text-[9px] mt-2">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
         </div>`;
       }
       if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 交通接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p class="text-sky-600 font-bold">${c.shuttle.plan ? '已設定 '+c.shuttle.plan.vehicles.length+' 個車次：'+escapeHtml(c.shuttle.plan.vehicles.map(x=>x.name).join('、')) : '尚未設定車次'}</p><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
@@ -4863,7 +4902,7 @@
     function getInfoReminders(){const c=getInfoConfig();return Array.isArray(c.reminders)?c.reminders:initialInfoReminders;}
     function renderInfoReminders(){
       const box=document.getElementById('info-reminders');if(!box)return;
-      box.innerHTML=`<div class="flex items-center justify-between"><h3 class="text-xs font-bold">提醒事項</h3>${isOrganizer()?'<button onclick="openInfoReminderEditor()" class="text-indigo-600 font-bold text-xs">＋新增提醒</button>':''}</div>`+getInfoReminders().map(x=>`<div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-2"><div class="flex justify-between gap-2"><h3 class="text-xs font-bold text-amber-900">${escapeHtml(x.title)}</h3>${isOrganizer()?`<div class="flex gap-3 shrink-0"><button onclick="openInfoReminderEditor('${x.id}')" class="text-xs text-indigo-600">編輯</button><button onclick="deleteInfoReminder('${x.id}')" class="text-xs text-rose-600">刪除</button></div>`:''}</div><p class="text-[11px] text-amber-800 whitespace-pre-wrap">${escapeHtml(x.body)}</p><div class="flex gap-3 text-[11px] font-bold">${safeExternalUrl(x.link)?`<a href="${escapeHtml(safeExternalUrl(x.link))}" target="_blank" rel="noopener noreferrer" class="text-sky-600">↗ 資訊連結</a>`:''}${safeExternalUrl(x.video)?`<a href="${escapeHtml(safeExternalUrl(x.video))}" target="_blank" rel="noopener noreferrer" class="text-rose-600">▶ 影片連結</a>`:''}</div></div>`).join('');
+      box.innerHTML=`<div class="flex items-center justify-between"><h3 class="text-xs font-bold">提醒事項</h3>${isOrganizer()?'<button onclick="openInfoReminderEditor()" class="text-indigo-600 font-bold text-xs">＋新增提醒</button>':''}</div>`+getInfoReminders().map(x=>`<div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 space-y-2"><div class="flex justify-between gap-2"><h3 class="text-xs font-bold text-amber-900">${escapeHtml(x.title)}</h3>${isOrganizer()?`<div class="flex gap-3 shrink-0"><button onclick="openInfoReminderEditor('${x.id}')" class="text-xs text-indigo-600">編輯</button><button onclick="deleteInfoReminder('${x.id}')" class="text-xs text-rose-600">刪除</button></div>`:''}</div><p class="text-[11px] text-amber-800 whitespace-pre-wrap">${escapeHtml(x.body)}</p><div class="flex gap-2 text-[11px] font-bold pt-1">${safeExternalUrl(x.link)?`<a href="${escapeHtml(safeExternalUrl(x.link))}" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-emerald-600 text-white rounded-xl px-2 py-2.5 shadow-sm">↗ 資訊連結</a>`:''}${safeExternalUrl(x.video)?`<a href="${escapeHtml(safeExternalUrl(x.video))}" target="_blank" rel="noopener noreferrer" class="flex-1 text-center bg-rose-600 text-white rounded-xl px-2 py-2.5 shadow-sm">▶ 影片連結</a>`:''}</div></div>`).join('');
     }
     function openInfoReminderEditor(id=''){
       if(!requireRoom()||!isOrganizer())return showToast('只有主辦人可以編輯提醒');
