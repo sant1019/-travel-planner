@@ -140,7 +140,7 @@
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-41</span>
+        <span id="test-version-badge" class="trip-version">FC-43</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -363,6 +363,7 @@
       <div class="bg-indigo-50 border border-indigo-100 px-2.5 py-2 rounded-xl space-y-1.5">
         <div class="flex items-center justify-between"><h2 class="text-xs font-extrabold text-indigo-900"><i class="fa-solid fa-sliders mr-1.5"></i>資訊顯示設定</h2><span class="text-[9px] text-indigo-500">個人顯示設定</span></div>
         <div class="grid grid-cols-3 gap-1 text-[10px] font-medium text-slate-700">
+          <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-translation" type="checkbox" onchange="saveInfoVisibility()">🌐 翻譯</label>
           <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-exchange" type="checkbox" onchange="saveInfoVisibility()">💱 換匯</label>
           <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-reminders" type="checkbox" onchange="saveInfoVisibility()">📌 提醒事項</label>
           <label class="rounded-lg px-1 py-1.5 flex items-center gap-1 whitespace-nowrap"><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">✈️ 航班</label>
@@ -664,6 +665,12 @@
       <p id="member-identity-status" class="text-[10px] text-slate-400"></p>
     </div>
 
+    <div id="modal-room-members" class="hidden bg-white rounded-2xl p-5 w-full max-w-sm shadow-xl space-y-3 max-h-[80vh] overflow-y-auto">
+      <div class="flex justify-between items-center"><h3 class="font-bold text-slate-800">成員管理</h3><button onclick="closeModal()" aria-label="關閉成員管理" class="p-2 text-slate-500">✕</button></div>
+      <p class="text-xs text-slate-500">目前房間的所有成員。刪除會撤銷登入資格，旅程內容保留。</p>
+      <div class="flex justify-between items-center"><p id="fc43-member-status" role="status" class="text-xs text-slate-500"></p><button onclick="fc43LoadMembers()" class="text-xs text-sky-700 p-2">重新整理</button></div>
+      <div id="fc43-member-list" class="space-y-2"></div>
+    </div>
     <!-- Member Settings Modal -->
     <div id="modal-member-settings" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
       <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-user-pen text-sky-600 mr-1.5"></i>成員設定</h3>
@@ -673,6 +680,7 @@
         <input type="text" id="input-member-new-nickname" maxlength="30" placeholder="輸入新暱稱" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
       <button onclick="openMemberIdentityModal()" class="w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換成員／建立自己的身份</button>
+      <button id="fc43-members-entry" onclick="fc43OpenMembers()" class="hidden w-full bg-sky-50 text-sky-700 py-2 rounded-xl text-xs font-bold">成員管理</button>
       <p id="member-settings-status" class="text-[10px] text-slate-400"></p>
       <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
@@ -1731,6 +1739,46 @@
       el.className = `text-[10px] ${isError ? 'text-rose-600' : 'text-slate-400'}`;
     }
 
+    let fc43Members=[],fc43MemberBusy=false,fc43MemberRequest=0;
+    function fc43MemberError(e){const msg=String(e?.message||e||'');return /PGRST202|Could not find/.test(msg)?'請先在 Supabase 執行 FC43_member_management.sql。':/cannot_delete_self/.test(msg)?'不能刪除自己的帳號。':/member_not_found/.test(msg)?'成員已不存在，請重新整理名單。':/organizer_required|member_login_required/.test(msg)?'請以有效的主辦人帳號登入。':'無法完成操作，請稍後再試。';}
+    async function fc43OpenMembers(){
+      if(!requireRoom()||!isOrganizer())return;
+      closeModal();document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-room-members').classList.remove('hidden');await fc43LoadMembers();
+    }
+    async function fc43LoadMembers(){
+      if(!cloudConnected||!currentMember||!isOrganizer())return;
+      const targetRoom=roomId,token=getMemberToken(),request=++fc43MemberRequest;
+      const status=document.getElementById('fc43-member-status');status.textContent='讀取中…';document.getElementById('fc43-member-list').replaceChildren();
+      try{const {data,error}=await cloudClient.rpc('fc43_manage_members',{p_room_id:targetRoom,p_member_token:token,p_action:'list',p_member_id:null});if(error)throw error;
+        if(request!==fc43MemberRequest||roomId!==targetRoom||getMemberToken()!==token)return;
+        if(!Array.isArray(data))throw new Error('invalid_member_list');fc43Members=data;
+        status.textContent=`共 ${data.length} 位成員`;
+        const list=document.getElementById('fc43-member-list');for(const m of data){const row=document.createElement('div');row.className='flex items-center justify-between gap-3 border rounded-xl p-3';const name=document.createElement('div');name.className='min-w-0 break-words text-sm';name.textContent=m.nickname+'｜'+(m.role==='organizer'?'主辦人':'成員');row.append(name);
+          if(String(m.id)===String(currentMember.id)){const self=document.createElement('span');self.className='shrink-0 text-xs text-slate-400';self.textContent='自己';row.append(self);}else{const button=document.createElement('button');button.type='button';button.className='shrink-0 px-3 py-2 rounded-lg bg-rose-50 text-rose-700 text-xs font-bold';button.textContent='刪除';button.disabled=fc43MemberBusy;button.onclick=()=>fc43DeleteMember(m.id);row.append(button);}list.append(row);}
+      }catch(e){if(request===fc43MemberRequest&&roomId===targetRoom&&getMemberToken()===token)status.textContent=fc43MemberError(e);}
+    }
+    async function fc43DeleteMember(id){
+      if(fc43MemberBusy||!cloudConnected||!isOrganizer()||!currentMember)return;
+      const m=fc43Members.find(x=>String(x.id)===String(id));if(!m)return;
+      if(String(id)===String(currentMember.id))return showToast('不能刪除自己的帳號。');
+      if(!confirm(`確定刪除「${m.nickname}」？\n此成員在所有裝置的登入資格將失效，已建立的旅程內容會保留。\n若仍知道房間密碼，可重新註冊加入。`))return;
+      const targetRoom=roomId,token=getMemberToken();fc43MemberBusy=true;document.querySelectorAll('#fc43-member-list button').forEach(b=>b.disabled=true);
+      try{const {error}=await cloudClient.rpc('fc43_manage_members',{p_room_id:targetRoom,p_member_token:token,p_action:'delete',p_member_id:String(id)});if(error)throw error;if(roomId===targetRoom&&getMemberToken()===token){showToast('已刪除成員並撤銷登入資格');await fc43LoadMembers();}}
+      catch(e){if(roomId===targetRoom&&getMemberToken()===token)document.getElementById('fc43-member-status').textContent=fc43MemberError(e);}
+      finally{fc43MemberBusy=false;document.querySelectorAll('#fc43-member-list button').forEach(b=>b.disabled=false);}
+    }
+    let fc43CheckingSession=false;
+    async function fc43CheckSession(){
+      if(fc43CheckingSession||!cloudConnected||!currentMember||!getMemberToken()||document.hidden)return;
+      const targetRoom=roomId,token=getMemberToken();fc43CheckingSession=true;
+      try{const {data,error}=await cloudClient.rpc('get_trip_member_session',{p_room_id:targetRoom,p_member_token:token});if(roomId!==targetRoom||getMemberToken()!==token)return;
+        if(error&&String(error.message).includes('member_login_required')){clearMemberToken();localStorage.removeItem(memberStorageKey());currentMember=null;closeModal(true);refreshUI();showToast('登入資格已失效，請重新登入');}
+        else if(!error&&data?.id&&currentMember&&(data.role!==currentMember.role||data.nickname!==currentMember.nickname))saveMemberIdentity(data);
+      }finally{fc43CheckingSession=false;}
+    }
+    setInterval(()=>fc43CheckSession().catch(()=>{}),30000);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)fc43CheckSession().catch(()=>{});});
+
     async function fetchRoomMembers() {
       if (!cloudClient || !cloudPassword || !cloudConnected) return [];
       const { data, error } = await cloudClient.rpc('get_trip_room_members', { p_room_id: roomId, p_password: cloudPassword });
@@ -1809,6 +1857,7 @@
       if (current) current.textContent = `目前身份：${currentMember.nickname}${currentMember.role === 'organizer' ? '（主辦人）' : ''}`;
       if (input) input.value = currentMember.nickname || '';
       setMemberSettingsStatus('');
+      document.getElementById('fc43-members-entry').classList.toggle('hidden',!isOrganizer());
       document.getElementById('modal-backdrop').classList.remove('hidden');
       document.getElementById('modal-member-settings').classList.remove('hidden');
       setTimeout(() => { if (input) { input.focus(); input.select(); } }, 50);
@@ -2966,7 +3015,7 @@
     }
 
     const defaultInfoConfig = {
-      visibility: { flight:true, hotel:true, shuttle:true, exchange:true, reminders:true },
+      visibility: { translation:true, flight:true, hotel:true, shuttle:true, exchange:true, reminders:true },
       flight: { outboundNo:'JX703', outboundDate:'12/07', outboundTime:'15:20', outboundArrivalDate:'12/07', outboundArrivalTime:'17:15', returnNo:'JX704', returnDate:'12/12', returnTime:'18:25', returnArrivalDate:'12/12', returnArrivalTime:'' },
       hotel: { h1Dates:'12/07 - 12/09 (2晚)', h1Name:'Little Residence A Boutique Hotel & Spa', h2Dates:'12/09 - 12/12 (3晚)', h2Name:'Chi House Danang Hotel and Apartment' },
       shuttle: { company:'得佳富租賃有限公司', driver:'阿得', phone1:'0972-922097', phone2:'04-25668678', line:'0972922097' }
@@ -2979,7 +3028,7 @@
     function saveInfoVisibility(){
       if (!requireRoom()) return;
       const visibility={};
-      ['exchange','reminders','flight','shuttle','hotel'].forEach(k=>visibility[k]=!!document.getElementById('toggle-info-'+k)?.checked);
+      ['translation','exchange','reminders','flight','shuttle','hotel'].forEach(k=>visibility[k]=!!document.getElementById('toggle-info-'+k)?.checked);
       localStorage.setItem(infoVisibilityKey(),JSON.stringify(visibility));
       renderInfoPage(); showToast('你的資訊顯示設定已更新');
     }
@@ -2989,7 +3038,7 @@
       const c=getInfoConfig(),v={...c.visibility};
       const required=getStoredData('headerInfo',defaultHeaderInfo).requiredInfo || {};
       ['flight','hotel','shuttle'].forEach(k=>{if(required[k] === false)v[k]=false;});
-      ['exchange','reminders','flight','shuttle','hotel'].map(k=>[k,'toggle-info-'+k]).forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;
+      ['translation','exchange','reminders','flight','shuttle','hotel'].map(k=>[k,'toggle-info-'+k]).forEach(([k,id])=>{const e=document.getElementById(id);if(e){e.checked=!!v[k];e.disabled=!cloudConnected || required[k] === false;
         const label=e.closest('label');if(label){label.classList.toggle('info-choice-disabled',e.disabled);label.title=required[k] === false ? '主辦人未勾選本次旅程所需資訊' : '';}}});
       const box=document.getElementById('info-dynamic-sections'); if(!box)return;
       let h='';
@@ -3012,6 +3061,7 @@
       if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
       box.innerHTML=h;
       renderInfoReminders();
+      document.getElementById('info-translation-section').classList.toggle('hidden',!v.translation);
       document.getElementById('info-exchange-section').classList.toggle('hidden',!v.exchange);
       document.getElementById('info-reminders').classList.toggle('hidden',!v.reminders);
     }
@@ -4541,7 +4591,7 @@
       document.getElementById('modal-backdrop').classList.remove('trip-login-overlay');
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
-        'modal-place-library', 'modal-place-export', 'modal-place-admin', 'modal-scenic-pdf', 'modal-room-session', 'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
+        'modal-place-library', 'modal-place-export', 'modal-place-admin', 'modal-scenic-pdf', 'modal-room-session', 'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-room-members', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-itinerary-item', 'modal-move-day',
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
