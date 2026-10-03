@@ -745,7 +745,7 @@
 
     <div id="modal-scenic-pdf" class="bg-white rounded-2xl p-5 w-full max-w-md space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
       <div class="sticky top-0 z-10 bg-white flex items-center justify-between gap-3 pb-2"><h3 class="text-sm font-bold text-emerald-800">旅程總覽與景點／餐廳介紹 PDF</h3><button type="button" onclick="closeScenicPdfModal()" aria-label="取消並關閉 PDF 視窗" class="w-10 h-10 rounded-full bg-slate-100 text-slate-700 text-2xl shrink-0">×</button></div>
-      <p class="text-xs text-slate-600">只列出已排行程的景點、餐廳與購物地點。路線排滿一頁後接續下一頁，再接左圖右文的介紹，合成一份多頁 PDF。以下修改只供本次匯出，長期保存請到行程編輯畫面的「景點／餐廳介紹」欄位儲存。</p>
+      <p class="text-xs text-slate-600">只列出已排行程的景點、餐廳與購物地點。依天數串接插畫路線，排滿一頁後接續下一頁，再接大插圖與大字介紹，合成一份多頁 PDF。以下修改只供本次匯出，長期保存請到行程編輯畫面的「景點／餐廳介紹」欄位儲存。</p>
       <div class="bg-emerald-50 rounded-xl p-3 space-y-2"><label class="text-xs font-bold text-emerald-800">PDF 風格</label><select id="travel-book-style" onchange="clearTravelBookPreview()" class="w-full p-2 text-sm border rounded-lg bg-white"><option value="caramel">焦糖印章版（預設）</option><option value="light">暖白旅誌版</option><option value="dark">暮色復古版</option><option value="pop">繽紛普普版</option></select><button id="travel-book-generate" onclick="generateTravelBook()" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-sm font-bold">預覽整份 PDF</button></div>
       <div id="travel-book-preview" class="space-y-3"></div>
       <label class="block text-sm font-bold text-slate-700">選擇填寫天數<select id="scenic-pdf-day" onchange="renderScenicPdfList()" class="w-full p-2 text-sm border rounded-lg bg-white mt-1"><option value="all">全部天數</option></select></label><p id="scenic-pdf-count" class="text-xs text-slate-500"></p>
@@ -2615,7 +2615,7 @@
     function travelBookText(ctx,text,x,y,size,width,color=travelBookTheme().ink,bold=false){const lines=travelBookWrap(ctx,text,size,width,bold);ctx.fillStyle=color;ctx.textBaseline='top';lines.forEach((l,i)=>ctx.fillText(l,x,y+i*size*1.45));return lines.length*size*1.45;}
     function travelBookArt(ctx,image,index,x,y,w,h=w){const sw=image.width/4,sh=image.height/3,scale=Math.min(w/sw,h/sh),dw=sw*scale,dh=sh*scale;ctx.drawImage(image,(index%4)*sw,Math.floor(index/4)*sh,sw,sh,x+(w-dw)/2,y+(h-dh)/2,dw,dh);}
     function travelBookBase(canvas,title,subtitle){const ctx=canvas.getContext('2d'),t=travelBookTheme();ctx.fillStyle=t.bg;ctx.fillRect(0,0,canvas.width,canvas.height);travelBookText(ctx,title,65,30,48,canvas.width-130,t.ink,true);travelBookText(ctx,subtitle,68,101,23,canvas.width-136,t.muted);ctx.strokeStyle=t.accent;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(65,145);ctx.lineTo(canvas.width-65,145);ctx.stroke();return ctx;}
-    function travelBookTripTitle(){const title=scenicPlainText(getStoredData('headerInfo',defaultHeaderInfo).title||'旅遊').trim();return title.includes('之旅')?title:title+'之旅';}
+    function travelBookTripTitle(){const title=scenicPlainText(getStoredData('headerInfo',defaultHeaderInfo).title||'旅遊').trim();return title;}
     function travelBookArrow(ctx,x1,y1,x2,y2){const t=travelBookTheme(),a=Math.atan2(y2-y1,x2-x1);ctx.strokeStyle=t.accent;ctx.fillStyle=t.accent;ctx.lineWidth=3;ctx.setLineDash(travelBookStyle()==='caramel'?[7,6]:[]);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-13*Math.cos(a-.5),y2-13*Math.sin(a-.5));ctx.lineTo(x2-13*Math.cos(a+.5),y2-13*Math.sin(a+.5));ctx.closePath();ctx.fill();}
     function travelBookStartKind(){
       const info=getInfoConfig(),required=getStoredData('headerInfo',defaultHeaderInfo).requiredInfo||{},flight=info.flight||{},shuttle=info.shuttle||{};
@@ -2627,30 +2627,33 @@
       const t=travelBookTheme();ctx.save();ctx.translate(x,y);const scale=Math.min(w/250,h/130);ctx.scale(scale,scale);ctx.fillStyle=t.accent;ctx.beginPath();ctx.moveTo(18,95);ctx.lineTo(18,64);ctx.lineTo(57,57);ctx.lineTo(82,23);ctx.lineTo(178,23);ctx.lineTo(207,58);ctx.lineTo(232,64);ctx.lineTo(232,95);ctx.closePath();ctx.fill();ctx.strokeStyle=t.ink;ctx.lineWidth=3;ctx.stroke();ctx.fillStyle=t.bg;ctx.beginPath();ctx.moveTo(87,32);ctx.lineTo(122,32);ctx.lineTo(122,56);ctx.lineTo(69,56);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(132,32);ctx.lineTo(175,32);ctx.lineTo(193,56);ctx.lineTo(132,56);ctx.closePath();ctx.fill();for(const cx of [66,186]){ctx.fillStyle=t.ink;ctx.beginPath();ctx.arc(cx,95,19,0,Math.PI*2);ctx.fill();ctx.fillStyle=t.bg;ctx.beginPath();ctx.arc(cx,95,9,0,Math.PI*2);ctx.fill();}ctx.restore();
     }
     function travelBookRoutePages(groups,image){
-      const entries=groups.flatMap(g=>g.entries.map(e=>({...e,day:g.day,date:g.date})));if(!entries.length)return [];
-      const start=travelBookStartKind();const nodes=start?[{start,title:start==='plane'?'旅程出發':'接駁出發'},...entries]:entries;
-      const measure=document.createElement('canvas').getContext('2d'),cw=450,cardW=414;
-      const prepared=nodes.map(e=>({...e,titleLines:travelBookWrap(measure,e.title,29,cardW-32,true),timeLines:travelBookWrap(measure,e.time||'時間未指定',24,cardW-32,true)}));
-      // 固定字級，以內容高度決定每列高度。跨天沿用同一列，頁滿才接下一頁。
-      const rows=[];for(let i=0;i<prepared.length;i+=4){const batch=prepared.slice(i,i+4);const labelH=Math.max(...batch.map(e=>e.titleLines.length*42.05+e.timeLines.length*34.8));const height=Math.max(262,196+labelH);if(height>830)throw new Error('「'+batch.find(e=>e.titleLines.length>12)?.title+'」名稱或時間過長，請縮短後匯出。');rows.push({entries:batch,height});}
-      const sheets=[];let sheet=[],used=0;for(const row of rows){if(sheet.length&&used+row.height>830){sheets.push(sheet);sheet=[];used=0;}sheet.push(row);used+=row.height;}if(sheet.length)sheets.push(sheet);
-      let previousDay='',entryCount=0;
+      if(!groups.length)return [];
+      const measure=document.createElement('canvas').getContext('2d'),rows=[];
+      const start=travelBookStartKind();
+      groups.forEach((g,gi)=>{const entries=g.entries.map(e=>({...e,day:g.day,date:g.date}));if(!gi&&start)entries.unshift({start,title:start==='plane'?'旅程出發':'接駁出發',day:g.day,date:g.date});
+        for(let i=0;i<entries.length;i+=3){const batch=entries.slice(i,i+3);const textHeight=Math.max(...batch.map(e=>travelBookWrap(measure,e.title,36,480,true).length*52+(!e.start?44:0)));
+          rows.push({day:g.day,date:g.date,continued:i>0,entries:batch,minHeight:Math.max(300,240+textHeight)});
+        }
+      });
+      const headerLines=travelBookWrap(measure,travelBookTripTitle(),70,1790,true).length,routeCapacity=headerLines>1?730:825;const sheets=[];let page=[],used=0;for(const row of rows){if(row.minHeight>routeCapacity)throw new Error('景點名稱過長，請縮短後匯出');if(page.length&&used+row.minHeight>routeCapacity){sheets.push(page);page=[];used=0;}page.push(row);used+=row.minHeight;}if(page.length)sheets.push(page);
       return sheets.map((page,p)=>{
-        const canvas=document.createElement('canvas');canvas.width=1920;canvas.height=1080;const t=travelBookTheme(),dates=getTripDays(),ctx=travelBookBase(canvas,travelBookTripTitle(),'完整旅程路線｜'+(dates[0]||'')+' ～ '+(dates.at(-1)||'')+(p?'｜接續上一頁':''));
-        let y=170;const positions=[];const actual=[];
-        page.forEach((row,r)=>{const reverse=r%2===1,centers=[],direction=reverse?-1:1;
-          row.entries.forEach((e,j)=>{const slot=reverse?3-j:j,x=65+slot*cw,w=cardW;ctx.fillStyle=t.panel;ctx.beginPath();ctx.roundRect(x,y,w,row.height-16,16);ctx.fill();
-            const continued=e.day&&e.day===previousDay&&j===0&&r===0&&p>0;
-            travelBookText(ctx,e.start?'出發':travelBookDay(e.day)+(continued?'（續）':'')+'｜'+e.date.slice(5),x+16,y+12,22,w-32,t.muted,true);
-            if(e.start==='car')travelBookCar(ctx,x+90,y+51,250,125);else travelBookArt(ctx,image,e.start?0:travelBookIcon(e.title),x+24,y+44,w-48,130);
-            let ty=y+181;if(!e.start)ty+=travelBookText(ctx,e.time||'時間未指定',x+16,ty,24,w-32,t.accent,true);
-            travelBookText(ctx,e.title,x+16,ty+3,29,w-32,t.ink,true);centers.push({x:x+w/2,y:y+110,left:x,right:x+w});
-            if(j){const a=centers[j-1],b=centers[j];travelBookArrow(ctx,direction>0?a.right+2:a.left-2,a.y,direction>0?b.left-4:b.right+4,b.y);}
-            if(!e.start){previousDay=e.day;entryCount++;actual.push(e);}
-          });positions.push({first:centers[0],last:centers.at(-1),reverse});y+=row.height;
+        const canvas=document.createElement('canvas');canvas.width=1920;canvas.height=1080;const ctx=canvas.getContext('2d'),t=travelBookTheme();ctx.fillStyle=t.bg;ctx.fillRect(0,0,1920,1080);
+        const titleLines=travelBookWrap(ctx,travelBookTripTitle(),70,1790,true);if(titleLines.length>2)throw new Error('旅程標題過長，請縮短後匯出');
+        travelBookText(ctx,travelBookTripTitle(),65,24,70,1790,t.ink,true);
+        travelBookText(ctx,'完整旅程路線圖'+(p?'｜接續上一頁':''),68,titleLines.length===1?115:215,28,1790,t.accent,true);
+        const top=titleLines.length===1?175:270,available=1000-top,total=page.reduce((n,r)=>n+r.minHeight,0);let y=top;const positions=[],actual=[];
+        page.forEach((row,r)=>{const h=available*row.minHeight/total,reverse=r%2===1,centers=[];const badgeX=reverse?1670:40;
+          ctx.fillStyle=t.accent;ctx.beginPath();ctx.roundRect(badgeX,y+18,210,66,33);ctx.fill();travelBookText(ctx,travelBookDay(row.day)+(row.continued?' 續':''),badgeX+17,y+29,31,180,t.bg,true);travelBookText(ctx,row.date,badgeX+8,y+92,23,200,t.muted);
+          const left=reverse?85:300,span=1510/row.entries.length;
+          row.entries.forEach((e,j)=>{const slot=reverse?row.entries.length-1-j:j,x=left+slot*span,w=span-70;
+            const titleH=travelBookWrap(ctx,e.title,36,w,true).length*52,artH=Math.max(75,h-titleH-(e.start?30:72));
+            if(e.start==='car')travelBookCar(ctx,x+30,y+8,w-60,artH);else travelBookArt(ctx,image,e.start?0:travelBookIcon(e.title),x,y+5,w,artH);
+            let ty=y+artH+10;ctx.save();ctx.textAlign='center';if(!e.start)ty+=travelBookText(ctx,e.time||'時間未指定',x+w/2,ty,30,w,t.accent,true)+4;
+            travelBookText(ctx,e.title,x+w/2,ty,36,w,t.ink,true);ctx.restore();centers.push({x:x+w/2,y:y+artH/2,left:x,right:x+w});if(j){const prev=centers[j-1],cur=centers[j];travelBookArrow(ctx,reverse?prev.left-5:prev.right+5,cur.y,reverse?cur.right+5:cur.left-5,cur.y);}if(!e.start)actual.push(e);
+          });positions.push({first:centers[0],last:centers.at(-1),reverse});y+=h;
         });
-        for(let i=0;i<positions.length-1;i++){const a=positions[i].last,b=positions[i+1].first,side=positions[i].reverse?42:1870;travelBookArrow(ctx,positions[i].reverse?a.left-2:a.right+2,a.y,side,a.y);travelBookArrow(ctx,side,a.y,side,b.y);travelBookArrow(ctx,side,b.y,positions[i+1].reverse?b.right+2:b.left-2,b.y);}
-        travelBookText(ctx,t.name+'｜插圖為示意｜路線 '+(p+1)+'／'+sheets.length+(p<sheets.length-1?'｜路線接續下一頁 →':''),65,1035,21,1780,t.muted);
+        for(let i=0;i<positions.length-1;i++){const a=positions[i],b=positions[i+1],side=a.reverse?24:1896;ctx.strokeStyle=t.accent;ctx.lineWidth=4;ctx.setLineDash([7,7]);ctx.beginPath();ctx.moveTo(a.reverse?a.last.left-5:a.last.right+5,a.last.y);ctx.lineTo(side,a.last.y);ctx.lineTo(side,b.first.y);ctx.stroke();ctx.setLineDash([]);travelBookArrow(ctx,side,b.first.y,b.reverse?b.first.right+5:b.first.left-5,b.first.y);}
+        travelBookText(ctx,t.name+'｜插圖為示意｜路線 '+(p+1)+'／'+sheets.length+(p<sheets.length-1?'｜接續下一頁 →':''),65,1030,22,1790,t.muted);
         return {canvas,label:'旅程總覽_'+(p+1),entryCount:actual.length,entries:actual};
       });
     }
@@ -2658,8 +2661,24 @@
     async function loadTravelBookArt(){const image=new Image();const ready=new Promise((resolve,reject)=>{image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('插圖載入失敗'));});image.src=TRAVEL_BOOK_ASSETS[travelBookStyle()];return ready;}
     function travelBookIntroPages(image){
       const pages=[],measure=document.createElement('canvas').getContext('2d'),t=travelBookTheme();
-      for(const e of scenicPdfDraft){const content=[e.text||'尚未填寫景點／餐廳介紹。'];const normalize=v=>String(v||'').replace(/[\s。！？.!?]/g,'');if(e.highlights&&!normalize(e.text).startsWith(normalize(e.highlights)))content.push('必玩／必看／推薦菜色\n'+e.highlights);if(e.note)content.push('參觀提醒\n'+e.note);if(e.sources?.length)content.push('資料來源\n'+e.sources.join('\n'));const lines=content.flatMap(s=>[...travelBookWrap(measure,s,29,1030),'']);let part=0;
-        while(lines.length){const canvas=document.createElement('canvas');canvas.width=1920;canvas.height=1080;const ctx=travelBookBase(canvas,travelBookDay(e.day)+'｜景點／餐廳介紹',e.date+(e.time?'　'+e.time:''));travelBookArt(ctx,image,travelBookIcon(e.title),55,205,650,700);ctx.strokeStyle=t.accent;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(735,190);ctx.lineTo(735,980);ctx.stroke();const titles=travelBookWrap(ctx,e.title+(part?'（續）':''),43,1030,true);if(titles.length>5)throw new Error('景點名稱過長，請縮短後匯出');let y=185+travelBookText(ctx,e.title+(part?'（續）':''),790,185,43,1030,t.ink,true)+26;const capacity=Math.max(1,Math.floor((965-y)/43));const batch=lines.splice(0,capacity);ctx.font='29px "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif';ctx.fillStyle=t.ink;ctx.textBaseline='top';batch.forEach((l,j)=>ctx.fillText(l,790,y+j*43));travelBookText(ctx,t.name+'｜'+(e.day==='待安排'?'此項目尚未安排':'插圖為示意')+'｜'+(part+1),65,1035,20,1780,t.muted);pages.push({canvas,label:travelBookDay(e.day)+'_'+e.title+'_介紹_'+(++part)});}
+      for(const e of scenicPdfDraft){
+        const blocks=[];const add=(text,heading=false)=>{if(String(text||'').trim())blocks.push({text:String(text).trim(),heading});};
+        String(e.text||'尚未填寫景點／餐廳介紹。').split('\n').forEach(line=>add(line,/^(【[^】]+】|簡介|歷史|特色|必玩|必看|推薦|參觀重點)/.test(line)&&line.length<24));
+        const normalize=v=>String(v||'').replace(/[\s。！？.!?]/g,'');if(e.highlights&&!normalize(e.text).startsWith(normalize(e.highlights))){add('必玩／必看／推薦菜色',true);add(e.highlights);}if(e.note){add('參觀提醒',true);add(e.note);}if(e.sources?.length){add('資料來源',true);add(e.sources.join('\n'));}
+        const lines=blocks.flatMap(b=>travelBookWrap(measure,b.text,b.heading?48:42,850,b.heading).map((text,i)=>({text,heading:b.heading,gap:i===0?18:0})));let part=0;
+        while(lines.length){
+          const canvas=document.createElement('canvas');canvas.width=1920;canvas.height=1080;const ctx=canvas.getContext('2d');ctx.fillStyle=t.bg;ctx.fillRect(0,0,1920,1080);
+          travelBookText(ctx,travelBookTripTitle()+'｜'+travelBookDay(e.day),50,28,30,1810,t.muted,true);
+          travelBookText(ctx,e.date+(e.time?'　'+e.time:''),50,78,28,1810,t.accent);
+          travelBookArt(ctx,image,travelBookIcon(e.title),25,140,850,870);ctx.strokeStyle=t.accent;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(910,135);ctx.lineTo(910,1000);ctx.stroke();
+          const title=e.title+(part?'（續）':'');const titleLines=travelBookWrap(ctx,title,76,850,true);if(titleLines.length>5)throw new Error('景點名稱過長，請縮短後匯出');
+          let y=135+travelBookText(ctx,title,965,135,76,850,t.ink,true)+20;
+          ctx.fillStyle=t.accent;ctx.fillRect(965,y,850,5);y+=24;let rendered=0;
+          while(lines.length){const line=lines[0],height=(line.heading?70:62)+line.gap;if(y+height>997)break;lines.shift();y+=line.gap;travelBookText(ctx,line.text,965,y,line.heading?48:42,850,line.heading?t.accent:t.ink,line.heading);y+=line.heading?70:62;rendered++;}
+          if(!rendered)throw new Error('景點名稱過長，請縮短後匯出');
+          travelBookText(ctx,t.name+'｜插圖為示意'+(lines.length?'｜介紹接續下一頁 →':''),50,1030,22,1790,t.muted);
+          pages.push({canvas,label:travelBookDay(e.day)+'_'+e.title+'_介紹_'+(++part)});
+        }
       }return pages;
     }
     function buildTravelBookOutputs(image,includeIntros=true){return [...travelBookRoutePages(travelBookGroups(),image),...(includeIntros?travelBookIntroPages(image):[])];}
