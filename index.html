@@ -216,7 +216,7 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-46</span>
+        <span id="test-version-badge" class="trip-version">FC-47</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -755,6 +755,7 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
       </div>
       <button onclick="openMemberIdentityModal()" class="w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換成員／建立自己的身份</button>
       <button id="fc43-members-entry" onclick="fc43OpenMembers()" class="hidden w-full bg-sky-50 text-sky-700 py-2 rounded-xl text-xs font-bold">成員管理</button>
+      <button type="button" onclick="openPlaceAdmin()" class="w-full text-slate-500 py-1 text-xs">平台管理者登入</button>
       <p id="member-settings-status" class="text-[10px] text-slate-400"></p>
       <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
@@ -922,7 +923,7 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
         <div class="space-y-2"><label class="text-[11px] font-bold text-slate-600 block">營業時間</label><div id="fixed-hours-rows" class="space-y-2"></div><button type="button" onclick="addFixedHours()" class="text-sky-700 text-xs">＋新增營業時段</button><p class="text-[10px] text-slate-400">午休可分成兩段；全天營業請選 00:00 至 24:00。未設定採 09:00 至 21:00。</p></div>
         <div><label class="text-[11px] font-bold text-slate-600 block mb-1">每週公休日（可複選）</label><div id="fixed-closed-days" class="flex flex-wrap gap-2 text-[11px]"></div></div>
         <div class="space-y-2"><label class="text-[11px] font-bold text-slate-600 block">表演場次</label><div id="fixed-session-rows" class="space-y-2"></div><button type="button" onclick="addFixedSession()" class="text-sky-700 text-xs">＋新增表演場次</button></div>
-        <details id="fc46-itin-guide" class="space-y-2 p-3 border border-amber-200 rounded-xl"><summary class="text-xs font-bold cursor-pointer">景點／餐廳介紹</summary><textarea id="fixed-guide" maxlength="12000" class="w-full h-36 p-2 border rounded-lg text-xs" placeholder="分行填寫歷史、特色、必看／必玩、必點推薦；會儲存並同步至房間。"></textarea><label class="block text-xs font-bold">Google Maps 地點連結（可選）</label><input id="fixed-guide-map" type="url" class="w-full p-2 border rounded-lg text-xs" placeholder="貼上正確地點的完整連結；空白沿用名稱搜尋"><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。分享需完整地點識別碼連結，搜尋網址與短網址請先在 Google Maps 開啟。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('fixed')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button><button type="button" onclick="publishPlaceGuide('fixed')" class="p-2 bg-amber-100 rounded text-xs">投稿至共用介紹庫</button></div><div id="fixed-guide-results" class="space-y-2 whitespace-pre-line"></div></div><div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="自由填寫提醒；日期、時間與公休日請使用上方選項設定"></textarea></div>
+        <div class="space-y-2 p-3 border border-amber-200 rounded-xl"><label class="block text-xs font-bold">景點／餐廳介紹</label><textarea id="fixed-guide" maxlength="12000" class="w-full h-36 p-2 border rounded-lg text-xs" placeholder="分行填寫歷史、特色、必看／必玩、必點推薦；會儲存並同步至房間。"></textarea><label class="block text-xs font-bold">Google Maps 地點連結（可選）</label><input id="fixed-guide-map" type="url" class="w-full p-2 border rounded-lg text-xs" placeholder="貼上正確地點的完整連結；空白沿用名稱搜尋"><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。分享需完整地點識別碼連結，搜尋網址與短網址請先在 Google Maps 開啟。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('fixed')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button><button type="button" onclick="publishPlaceGuide('fixed')" class="p-2 bg-amber-100 rounded text-xs">投稿至共用介紹庫</button></div><div id="fixed-guide-results" class="space-y-2 whitespace-pre-line"></div></div><div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="自由填寫提醒；日期、時間與公休日請使用上方選項設定"></textarea></div>
         <div class="flex gap-2"><button onclick="cancelFixedActivityEditor()" class="flex-1 bg-white border border-slate-200 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveFixedActivity()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
       </div>
 
@@ -955,7 +956,7 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
         <label class="text-[11px] font-bold text-slate-600 block mb-1">行程詳細說明：</label>
         <textarea id="input-itin-desc" placeholder="詳細活動內容..." class="w-full h-20 p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none leading-relaxed"></textarea>
       </div>
-      <div class="space-y-2 p-3 border border-amber-200 rounded-xl"><label class="block text-xs font-bold">景點／餐廳介紹</label><textarea id="input-itin-guide" maxlength="12000" class="w-full h-36 p-2 border rounded-lg text-xs" placeholder="分行填寫歷史、特色、必看／必玩、必點推薦；會儲存並同步至房間。"></textarea><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。分享需完整地點識別碼連結，搜尋網址與短網址請先在 Google Maps 開啟。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('itin')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button><button type="button" onclick="publishPlaceGuide('itin')" class="p-2 bg-amber-100 rounded text-xs">投稿至共用介紹庫</button></div><div id="itin-guide-results" class="space-y-2 whitespace-pre-line"></div></details><div><label class="text-[11px] font-bold text-amber-700 block mb-1"><i class="fa-regular fa-comment-dots mr-1"></i>團員補充註解：</label>
+      <details id="fc46-itin-guide" class="space-y-2 p-3 border border-amber-200 rounded-xl"><summary class="text-xs font-bold cursor-pointer">景點／餐廳介紹</summary><textarea id="input-itin-guide" maxlength="12000" class="w-full h-36 p-2 border rounded-lg text-xs" placeholder="分行填寫歷史、特色、必看／必玩、必點推薦；會儲存並同步至房間。"></textarea><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。分享需完整地點識別碼連結，搜尋網址與短網址請先在 Google Maps 開啟。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('itin')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button><button type="button" onclick="publishPlaceGuide('itin')" class="p-2 bg-amber-100 rounded text-xs">投稿至共用介紹庫</button></div><div id="itin-guide-results" class="space-y-2 whitespace-pre-line"></div></details><div><label class="text-[11px] font-bold text-amber-700 block mb-1"><i class="fa-regular fa-comment-dots mr-1"></i>團員補充註解：</label>
         <textarea id="input-itin-comment" placeholder="例如：記得帶推車、先預約座位、門票需攜帶護照..." class="w-full h-16 p-2.5 border border-amber-200 bg-amber-50/50 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none leading-relaxed"></textarea>
       </div>
       <div>
@@ -1802,7 +1803,7 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
       const badge = document.getElementById('member-header-badge');
       if (!badge) return;
       if (!currentMember) { badge.textContent = '尚未登入'; badge.classList.remove('hidden'); return; }
-      badge.textContent = currentMember.role === 'organizer' ? `${currentMember.nickname}・主辦` : currentMember.nickname;
+      badge.textContent = `${currentMember.nickname}・${currentMember.role === 'organizer' ? '主辦人' : '成員'}`;
       badge.classList.remove('hidden');
     }
 
@@ -1955,7 +1956,7 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
       closeModal();
       const current = document.getElementById('member-settings-current');
       const input = document.getElementById('input-member-new-nickname');
-      if (current) current.textContent = `目前身份：${currentMember.nickname}${currentMember.role === 'organizer' ? '（主辦人）' : ''}`;
+      if (current) current.textContent = `目前身份：${currentMember.nickname}${currentMember.role === 'organizer' ? '（主辦人）' : '（成員）'}`;
       if (input) input.value = currentMember.nickname || '';
       setMemberSettingsStatus('');
       document.getElementById('fc43-members-entry').classList.toggle('hidden',!isOrganizer());
@@ -2754,15 +2755,25 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
     let fc32Token=localStorage.getItem('fc32_platform_token')||'',fc32Username='';
     async function fc32Rpc(name,payload={}){if(!cloudClient)throw new Error('unauthorized');const {data,error}=await cloudClient.rpc(name,payload);if(error)throw error;if(data?.error)throw new Error(data.error);return data;}
     async function fc32Verify(){const token=fc32Token;if(!token)return false;const d=await fc32Rpc('fc32_auth',{p_action:'status',p_token:token});if(token!==fc32Token)return false;if(!d.admin){fc32ClearAdmin();return false;}fc31AdminIdentity=token;fc32Username=d.username;return true;}
-    function fc32ClearAdmin(){fc32Token='';fc32Username='';fc31AdminIdentity='';localStorage.removeItem('fc32_platform_token');fc31ImportRevision++;fc31ImportRows=[];fc31Queue=[];fc31Reports=[];fc31History=[];document.getElementById('fc31-admin-tools')?.classList.add('hidden');fc34ClearCustomers();for(const id of ['fc31-queue','fc31-reports','fc31-history-results','fc31-import-preview','fc31-merge-preview']){const e=document.getElementById(id);if(e)e.textContent='';}document.getElementById('fc31-import-file').value='';document.getElementById('fc31-import-commit').disabled=true;}
+    function fc32ClearAdmin(){fc32HideMenu();fc32Token='';fc32Username='';fc31AdminIdentity='';localStorage.removeItem('fc32_platform_token');fc31ImportRevision++;fc31ImportRows=[];fc31Queue=[];fc31Reports=[];fc31History=[];document.getElementById('fc31-admin-tools')?.classList.add('hidden');fc34ClearCustomers();for(const id of ['fc31-queue','fc31-reports','fc31-history-results','fc31-import-preview','fc31-merge-preview']){const e=document.getElementById(id);if(e)e.textContent='';}document.getElementById('fc31-import-file').value='';document.getElementById('fc31-import-commit').disabled=true;}
     async function openPlaceAdmin(){fc31ImportRows=[];fc31ImportRevision++;fc31OpenModal('modal-place-admin');document.getElementById('fc31-admin-tools').classList.add('hidden');document.getElementById('fc31-admin-setup').classList.add('hidden');document.getElementById('fc32-login').classList.add('hidden');document.getElementById('fc31-admin-status').textContent='驗證管理者登入…';try{if(await fc32Verify()){document.getElementById('fc31-admin-tools').classList.remove('hidden');document.getElementById('fc31-admin-status').textContent='平台管理者：'+fc32Username;fc34SwitchTab(fc34ActiveTab);}else{const d=await fc32Rpc('fc32_auth',{p_action:'configuration'});document.getElementById('fc32-login').classList.toggle('hidden',!d.configured);document.getElementById('fc31-admin-setup').classList.toggle('hidden',d.configured);document.getElementById('fc31-admin-status').textContent=d.configured?'請登入平台管理者帳號':'首次建立獨立平台管理者帳號';}}catch(e){document.getElementById('fc31-admin-status').textContent=fc31Message(e);}}
     async function fc32Login(){try{const d=await fc32Rpc('fc32_auth',{p_action:'login',p_username:document.getElementById('fc32-username').value.trim(),p_password:document.getElementById('fc32-password').value});fc32Token=d.token;localStorage.setItem('fc32_platform_token',fc32Token);document.getElementById('fc32-password').value='';await openPlaceAdmin();}catch(e){document.getElementById('fc31-admin-status').textContent=fc31Message(e);}}
     async function fc31ClaimAdmin(){if(!requireRoom())return;const p=document.getElementById('fc32-new-password').value;if(p!==document.getElementById('fc32-confirm-password').value)return showToast('兩次密碼不一致');if(p.length<12||new TextEncoder().encode(p).length>72)return showToast('密碼至少 12 字且不超過 72 位元組');try{const username=document.getElementById('fc32-new-username').value.trim();await fc31Rpc('fc32_bootstrap',{p_setup_code:document.getElementById('fc31-setup-code').value.trim(),p_username:username,p_password:p});for(const id of ['fc32-new-password','fc32-confirm-password','fc31-setup-code'])document.getElementById(id).value='';document.getElementById('fc32-username').value=username;document.getElementById('fc32-password').value=p;await fc32Login();}catch(e){document.getElementById('fc31-admin-status').textContent=fc31Message(e);}}
     async function fc32Logout(){const token=fc32Token;try{if(token)await fc32Rpc('fc32_auth',{p_action:'logout',p_token:token});fc32ClearAdmin();closeModal();showToast('已登出平台管理者');}catch(e){showToast('登出未完成，請稍後重試。');}}
     async function fc31AdminCall(action,payload={}){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');try{const d=await fc32Rpc('fc32_admin',{p_token:token,p_action:action,p_payload:payload});if(token!==fc32Token)throw new Error('platform_session_expired');return d;}catch(e){if(/platform_session_expired|platform_login_required/.test(e.message)&&token===fc32Token)fc32ClearAdmin();throw e;}}
     async function fc32AdminIndex(){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');let out=[],after='';for(let page=0;page<50;page++){const rows=await fc32Rpc('fc32_index',{p_token:token,p_after:after});if(token!==fc32Token)throw new Error('platform_session_expired');out.push(...rows);if(rows.length<200)return out;after=rows.at(-1).place_key;}throw new Error('index_limit');}
-    function fc32HideMenu(){document.getElementById('fc32-menu').classList.add('hidden');document.getElementById('fc32-menu-button').setAttribute('aria-expanded','false');}
-    async function fc32ToggleMenu(){const box=document.getElementById('fc32-menu');if(!box.classList.contains('hidden'))return fc32HideMenu();box.innerHTML='';const logged=!!(cloudConnected&&currentMember&&getMemberToken());const add=(label,fn)=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','menuitem');b.textContent=label;b.onclick=()=>{fc32HideMenu();fn();};box.append(b);};if(logged){add('搜尋共用景點介紹',openPlaceLibrary);add('我的投稿狀態',async()=>{openPlaceLibrary();await fc31MySubmissions();});if(isOrganizer())add('主辦人｜匯出景點介紹清單',openPlaceExport);}else add('登入房間',openSyncModal);add('平台管理後台／登入',openPlaceAdmin);box.classList.remove('hidden');document.getElementById('fc32-menu-button').setAttribute('aria-expanded','true');try{if(await fc32Verify()){if(box.classList.contains('hidden'))return;box.lastElementChild.textContent='平台管理後台';add('登出平台管理者',fc32Logout);}}catch(e){/* 開啟管理者視窗時顯示連線錯誤。 */}}
+    function fc32HideMenu(){fc47MenuRevision++;document.getElementById('fc32-menu').classList.add('hidden');document.getElementById('fc32-menu-button').setAttribute('aria-expanded','false');}
+    let fc47MenuRevision=0;
+    async function fc32ToggleMenu(){
+      const box=document.getElementById('fc32-menu');if(!box.classList.contains('hidden'))return fc32HideMenu();
+      const revision=++fc47MenuRevision;box.innerHTML='';
+      const logged=!!(cloudConnected&&currentMember&&getMemberToken());
+      const add=(label,fn)=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','menuitem');b.textContent=label;b.onclick=()=>{fc32HideMenu();fn();};box.append(b);};
+      if(logged){add('搜尋共用景點介紹',openPlaceLibrary);add('我的投稿狀態',async()=>{openPlaceLibrary();await fc31MySubmissions();});if(isOrganizer())add('主辦人｜匯出景點介紹清單',openPlaceExport);}
+      else add('登入房間',openSyncModal);
+      box.classList.remove('hidden');document.getElementById('fc32-menu-button').setAttribute('aria-expanded','true');
+      try{if(await fc32Verify()){if(revision!==fc47MenuRevision||box.classList.contains('hidden'))return;add('平台管理後台',openPlaceAdmin);add('登出平台管理者',fc32Logout);}}catch(e){/* 未驗證成功，不顯示管理入口。 */}
+    }
     document.addEventListener('click',e=>{if(!e.target.closest('.fc32-menu-wrap'))fc32HideMenu();});
     document.addEventListener('keydown',e=>{if(e.key==='Escape')fc32HideMenu();});
     async function fc31RefreshAdmin(){const box=document.getElementById('fc31-queue'),reports=document.getElementById('fc31-reports');box.textContent='載入待審投稿…';try{fc31Queue=await fc31AdminCall('queue');const index=await fc32AdminIndex();box.innerHTML='';fc31Queue.forEach((q,i)=>{const row=fc31RenderCandidate({...q.payload,version:'待審',updated_at:q.created_at},()=>{});row.querySelector('button').remove();const current=index.find(g=>g.place_key===q.place_key);const compare=document.createElement('details'),summary=document.createElement('summary'),text=document.createElement('p');summary.textContent='比較目前共用版本';text.textContent=current?'第 '+current.version+' 版：\n'+current.intro:'目前尚無已核准介紹';text.className='text-xs whitespace-pre-wrap';compare.append(summary,text);row.append(compare);for(const [label,decision] of [['核准','approve'],['退回','reject']]){const b=document.createElement('button');b.textContent=label;b.className='mr-2 p-2 rounded-lg bg-white text-xs border';b.onclick=()=>fc31Review(i,decision);row.append(b);}box.append(row);});if(!fc31Queue.length)box.textContent='目前沒有待審投稿。';if(fc31Queue.length===200){const note=document.createElement('p');note.textContent='目前顯示前 200 筆，處理後重新整理可載入後續投稿。';box.append(note);}fc31Reports=await fc31AdminCall('reports');reports.innerHTML='';fc31Reports.forEach((r,i)=>{const row=document.createElement('div');row.className='p-3 bg-rose-50 rounded-lg';const p=document.createElement('p');p.textContent=(r.title||r.place_key)+'\n'+r.message;p.className='text-sm whitespace-pre-wrap';const b=document.createElement('button');b.textContent='標記已處理';b.className='text-xs p-2 bg-white rounded border';b.onclick=()=>fc31ResolveReport(i);row.append(p,b);reports.append(row);});if(!fc31Reports.length)reports.textContent='目前沒有待處理回報。';}catch(e){box.textContent=fc31Message(e);}}
@@ -2917,14 +2928,29 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
     }
     function fc46TextTitle(value){return scenicPlainText(value).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').trim();}
     function travelBookIntroPages(){
-      const t=travelBookTheme();return scenicPdfDraft.map(e=>{
-        const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=2260;const ctx=canvas.getContext('2d'),x=110,w=1380;ctx.fillStyle=t.bg;ctx.fillRect(0,0,1600,2260);
-        const summary=fc36IntroSummary(e),title=fc46TextTitle(e.title),blocks=[{text:title,bold:true,title:true},{text:'簡介',bold:true,heading:true},{text:summary.brief},...(summary.points.length?[{text:'介紹重點',bold:true,heading:true},...summary.points.map(p=>({text:'• '+p}))]:[])];
-        let size=42;const height=sz=>blocks.reduce((h,b)=>h+travelBookWrap(ctx,b.text,b.title?sz*1.5:sz,w,b.bold).length*(b.title?sz*1.5:sz)*1.45+(b.title?60:b.heading?24:32),0);
-        while(size>12&&height(size)>2040)size-=1;
-        let y=100;for(const b of blocks){const z=b.title?size*1.5:size;y+=travelBookText(ctx,b.text,x,y,z,w,b.heading?t.accent:t.ink,!!b.bold)+(b.title?60:b.heading?24:32);}
-        return {canvas,label:title+'_介紹'};
-      });
+      const t=travelBookTheme(),pages=[],x=110,w=1380,top=100,bottom=2160,size=42;
+      let canvas,ctx,y,hasContent=false;
+      const newPage=()=>{canvas=document.createElement('canvas');canvas.width=1600;canvas.height=2260;ctx=canvas.getContext('2d');ctx.fillStyle=t.bg;ctx.fillRect(0,0,1600,2260);y=top;hasContent=false;pages.push({canvas,label:'景點介紹_第'+(pages.length+1)+'頁'});};
+      if(!scenicPdfDraft.length)return pages;newPage();
+      for(const e of scenicPdfDraft){
+        const summary=fc36IntroSummary(e),title=fc46TextTitle(e.title)||'未命名地點';
+        const blocks=[{text:title,bold:true,title:true},{text:'簡介',bold:true,heading:true},{text:summary.brief},...(summary.points.length?[{text:'介紹重點',bold:true,heading:true},...summary.points.map(p=>({text:'• '+p}))]:[])];
+        const layout=blocks.map(b=>{const z=b.title?size*1.35:size;return {...b,z,lines:travelBookWrap(ctx,b.text,z,w,b.bold),gap:b.title?28:b.heading?14:24};});
+        const height=layout.reduce((h,b)=>h+b.lines.length*b.z*1.45+b.gap,0);
+        // Keep a normal-sized place together; move it before drawing if it does not fit.
+        if(hasContent&&y+60+height>bottom)newPage();
+        if(hasContent){ctx.fillStyle=t.accent;ctx.fillRect(x,y+18,w,2);y+=60;}
+        for(const b of layout){
+          for(const line of b.lines){
+            const lineHeight=b.z*1.45;
+            // Very long introductions continue at the same readable font size.
+            if(y+lineHeight>bottom){newPage();if(!b.title){y+=travelBookText(ctx,title+'（續）',x,y,size*1.1,w,t.ink,true)+28;}}
+            ctx.font=`${b.bold?'bold ':''}${b.z}px "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif`;ctx.fillStyle=b.heading?t.accent:t.ink;ctx.textBaseline='top';ctx.fillText(line,x,y);y+=lineHeight;hasContent=true;
+          }
+          y+=b.gap;
+        }
+      }
+      return pages;
     }
     function buildTravelBookOutputs(image,includeIntros=true){return includeIntros?travelBookIntroPages(image):[];}
     async function generateTravelBook(){
