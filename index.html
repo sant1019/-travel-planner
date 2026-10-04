@@ -210,6 +210,88 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
 #fc37-local-pdf>div.bg-emerald-50{background:var(--fc45-tint)}
 #fc37-local-pdf label.text-emerald-800{color:var(--fc45-ink)}
 </style>
+<style id="design-polish-css">
+/* ---- Visual polish layer: spacing, shadow, type rhythm, interaction only. ---- */
+:root{
+  --polish-shadow-sm: 0 1px 2px rgba(15,41,64,.06), 0 1px 1px rgba(15,41,64,.04);
+  --polish-shadow-md: 0 6px 16px -4px rgba(15,41,64,.12), 0 2px 6px -2px rgba(15,41,64,.06);
+  --polish-shadow-lg: 0 14px 32px -8px rgba(15,41,64,.16), 0 4px 10px -4px rgba(15,41,64,.08);
+  --polish-ring: rgba(7,139,160,.16);
+}
+body{ letter-spacing:.005em; }
+main{ padding-bottom:28px; }
+main > *{ animation:polish-rise .32s ease both; }
+@keyframes polish-rise{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+/* header: slightly deeper, crisper edge */
+.trip-header{ box-shadow:0 1px 0 rgba(255,255,255,.08) inset, 0 8px 20px -10px rgba(7,20,45,.55); }
+.trip-title{ text-shadow:0 1px 0 rgba(0,0,0,.08); }
+.trip-edit-icon{ transition:opacity .15s; opacity:.55; }
+.trip-heading:hover .trip-edit-icon{ opacity:1; }
+
+/* tab bar: pill-style active indicator instead of flat underline */
+nav.border-b.border-slate-200{ position:relative; }
+.tab-btn{ position:relative; transition:color .15s, transform .12s; }
+.tab-btn:active{ transform:scale(.95); }
+.tab-btn.border-sky-600,
+.tab-btn[class*="border-b-2"][class*="text-"]:not(.border-transparent){
+  border-bottom-width:2.5px;
+}
+.tab-btn i{ transition:transform .15s; }
+.tab-btn:active i{ transform:scale(1.12); }
+
+/* sticky day selector chips */
+#trip-day-buttons button{ transition:transform .12s, box-shadow .12s; }
+#trip-day-buttons button:active{ transform:scale(.94); }
+
+/* card-like containers across pages: softer, more consistent elevation */
+.rounded-2xl.border,
+.rounded-2xl.shadow-sm,
+section.page-content > div.rounded-2xl{
+  box-shadow:var(--polish-shadow-sm);
+  transition:box-shadow .18s, transform .12s;
+}
+.rounded-2xl.border:active{ box-shadow:var(--polish-shadow-sm); }
+
+/* primary buttons: slightly more tactile */
+button.bg-sky-600, button.bg-emerald-600, button.bg-rose-600,
+button.bg-amber-500, button.bg-indigo-600, #travel-book-generate, #scenic-pdf-download{
+  box-shadow:var(--polish-shadow-sm);
+  transition:transform .12s, box-shadow .12s, filter .12s;
+}
+button.bg-sky-600:active, button.bg-emerald-600:active, button.bg-rose-600:active,
+button.bg-amber-500:active, button.bg-indigo-600:active{
+  transform:scale(.96); filter:brightness(.96);
+}
+
+/* modal cards: lift + smoother entrance */
+#modal-backdrop > div, [id^="modal-"] > div.bg-white{
+  box-shadow:var(--polish-shadow-lg) !important;
+  animation:polish-modal .2s ease both;
+}
+@keyframes polish-modal{ from{opacity:0; transform:translateY(10px) scale(.98);} to{opacity:1; transform:none;} }
+
+/* inputs: calmer focus ring, consistent radius */
+input:not([type=checkbox]):not([type=radio]):focus,
+textarea:focus, select:focus{
+  outline:none !important;
+  box-shadow:0 0 0 3px var(--polish-ring);
+  border-color:#078ba0 !important;
+}
+
+/* headings inside page sections: a touch more weight/air */
+section.page-content h2{ letter-spacing:.01em; }
+section.page-content h2 i{ margin-right:2px; }
+
+/* toast: softer landing */
+#toast{ box-shadow:var(--polish-shadow-lg); }
+
+/* checked/completed rows: calmer strike-through */
+.completed-item{ text-decoration-color:#94a3b8; text-decoration-thickness:1.5px; }
+
+/* scrollable chip rows: fade edges instead of hard clip */
+.no-scrollbar{ mask-image:linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%); }
+</style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
 <div id="fc46-owner-banner" role="status" class="hidden p-3 border rounded-xl bg-sky-50 m-3"></div>
