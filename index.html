@@ -220,7 +220,7 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
 }
 body{ letter-spacing:.005em; }
 main{ padding-bottom:28px; }
-main > *{ animation:polish-rise .32s ease both; }
+main > *:not(#toast){ animation:polish-rise .32s ease both; }
 @keyframes polish-rise{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
 
 /* header: slightly deeper, crisper edge */
