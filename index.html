@@ -6,6 +6,7 @@
   <title>越南峴港 & 會安 6天5夜行程助手</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     body {
@@ -195,14 +196,14 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
 #modal-member-guide h3{color:var(--fc45-ink)}
 </style>
 <style id="fc46-css">
-.fc46-time-rows{display:grid;gap:8px;width:max-content;max-width:100%;margin:6px auto}
-.fc46-time-row{display:grid;grid-template-columns:108px 76px;gap:8px;align-items:center;font-size:12px}
-.fc46-time-row>label{text-align:right;font-weight:700;display:flex;justify-content:flex-end;align-items:center;gap:4px}
-.fc46-time-row input[type=time]{box-sizing:border-box;width:76px;min-width:0;max-width:100%;height:38px;padding:4px 6px;background:#fff;border:1px solid #cbd5e1;border-radius:9px;color:#1e293b;text-align:center;font-size:14px;-webkit-appearance:none;appearance:none}
+.fc46-time-rows{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin:0}
+.fc46-time-row{display:flex;flex-direction:column;gap:3px;min-width:0;font-size:11px}
+.fc46-time-row>label{text-align:left;font-weight:500;font-size:11px;display:flex;justify-content:flex-start;align-items:center;gap:4px;min-height:16px}
+.fc46-time-row input[type=time]{box-sizing:border-box;width:100%;min-width:0;max-width:100%;height:32px;padding:0 6px;background:#fff;border:1px solid #cbd5e1;border-radius:8px;color:#1e293b;text-align:center;font-size:12px;-webkit-appearance:none;appearance:none}
 .fc46-time-row input[type=time]::-webkit-date-and-time-value{text-align:center;margin:0}
 .fc46-time-row input[type=time]:disabled{background:#fff;color:#94a3b8}
 .fc46-time-row input[type=checkbox]{accent-color:var(--fc45-accent)}
-.fc46-time-field{position:relative;display:inline-flex;align-items:center;justify-content:center;width:76px;height:38px;background:#fff;border:1px solid #cbd5e1;border-radius:9px;font-size:14px;box-sizing:border-box}
+.fc46-time-field{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:32px;background:#fff;border:1px solid #cbd5e1;border-radius:8px;font-size:12px;box-sizing:border-box}
 .fc46-time-field>span{pointer-events:none;text-align:center}
 .fc46-time-field>input[type=time]{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
 .fc46-time-field:focus-within{outline:2px solid var(--fc45-accent);outline-offset:2px}
@@ -296,6 +297,8 @@ section.page-content h2 i{ margin-right:2px; }
 /* ---- Unified modal form standard: consistent label/field sizing, tighter vertical rhythm. ---- */
 /* Labels: 11px / 500 weight everywhere, including checkbox labels. */
 [id^="modal-"] label{ font-size:11px; font-weight:500; }
+[id^="modal-"] summary{ font-size:12px; font-weight:700; }
+[id^="modal-"] input[type="checkbox"]{ width:14px; height:14px; flex-shrink:0; }
 /* Single-line fields: 12px text, fixed compact height. Time/date pickers keep their own tuned sizing (flight-datetime-row, fc46-time-row) so they're excluded here. */
 [id^="modal-"] input[type="text"],
 [id^="modal-"] input[type="number"],
@@ -323,7 +326,7 @@ section.page-content h2 i{ margin-right:2px; }
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-54</span>
+        <span id="test-version-badge" class="trip-version">FC-56</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -1001,12 +1004,12 @@ section.page-content h2 i{ margin-right:2px; }
       <div id="fc37-ai-result" class="hidden space-y-2"><label for="fc37-ai-text" id="fc37-ai-label" class="block text-sm font-bold">AI 指令</label><textarea id="fc37-ai-text" readonly spellcheck="false" class="w-full h-56 p-3 border rounded-xl bg-slate-50 text-sm select-text"></textarea><p class="text-xs text-slate-500">若未自動複製，可在文字框內長按、全選、複製。</p></div>
       </div>
       <div id="fc37-local-pdf" class="hidden border-t pt-3 space-y-3">
-      <p class="text-xs text-slate-600 mt-3">使用網站現有介紹製作 PDF，不包含旅程總圖。多個地點連續排版，依內容自動分頁，不列天數、時間及重要提醒。以下修改只供本次匯出，長期保存請到行程編輯畫面的介紹欄位儲存。</p>
+      <p class="text-xs text-slate-600 mt-3">依天數分組，每個地點一張卡片，含時間、簡介、介紹重點、實用資訊、重要提醒與地圖 QR code。下方欄位的修改只用於本次匯出；用 AI 補齊時，主辦人登入會一併存回行程。</p>
       <button id="travel-book-generate" onclick="generateTravelBook()" class="w-full bg-emerald-600 text-white py-2 rounded-lg text-sm font-bold">預覽介紹 PDF</button>
       <div id="travel-book-preview" class="space-y-3"></div>
       <button id="scenic-pdf-download" onclick="downloadScenicPdf()" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold">下載介紹 PDF</button>
       <label class="block text-sm font-bold text-slate-700">選擇填寫天數<select id="scenic-pdf-day" onchange="renderScenicPdfList()" class="w-full p-2 text-sm border rounded-lg bg-white mt-1"><option value="all">全部天數</option></select></label><p id="scenic-pdf-count" class="text-xs text-slate-500"></p>
-      <div id="scenic-pdf-list" class="space-y-4"></div>
+      <div class="space-y-2 p-3 rounded-xl bg-violet-50 border border-violet-200"><p class="text-xs font-bold text-violet-900">AI 一次補齊景點介紹</p><p class="text-[11px] text-violet-900 leading-relaxed">依上方選擇的天數產生指令。複製後貼到 ChatGPT／Claude／Gemini，再把整段回答貼回來套用；地點多時 AI 可能分段回答，可以分次貼上。</p><button type="button" onclick="fc50CopyBatchPrompt()" class="w-full py-2 rounded-lg bg-violet-600 text-white text-xs font-bold">複製景點介紹指令</button><textarea id="fc50-ai-paste-batch" rows="3" class="w-full p-2 border border-violet-200 rounded-lg text-sm bg-white" placeholder="把 AI 的整段回答貼在這裡"></textarea><button type="button" onclick="fc50ApplyBatchAnswer()" class="w-full py-2 rounded-lg bg-white border border-violet-300 text-violet-800 text-xs font-bold">套用 AI 回答</button><p id="fc50-ai-status-batch" role="status" class="text-[11px] text-violet-900"></p></div><div id="scenic-pdf-list" class="space-y-4"></div>
 
       <p class="text-[10px] text-slate-400">iPhone 若開啟 PDF 預覽，可按分享 → 儲存到「檔案」。</p>
       </div>
@@ -1057,16 +1060,16 @@ section.page-content h2 i{ margin-right:2px; }
         <div id="itin-map-preview" class="hidden"></div><div id="fc49-map-itin" class="fc49-map"></div>
       </div>
       <div>
-        <label class="text-[11px] font-bold text-slate-600 block mb-1">時間 / 備註標籤：</label>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">時間：</label>
         <div class="fc46-time-rows"><div class="fc46-time-row"><label for="input-itin-start">開始時間</label><span class="fc46-time-field"><input type="time" id="input-itin-start" step="60" oninput="fc46MirrorTime()"><span id="fc46-start-display" aria-hidden="true">--:--</span></span></div><div class="fc46-time-row"><label><input id="input-itin-has-end" type="checkbox" onchange="fc41ToggleEnd()">設定結束時間</label><span class="fc46-time-field"><input type="time" id="input-itin-end" step="60" oninput="fc46MirrorTime()" disabled><span id="fc46-end-display" aria-hidden="true">--:--</span></span></div></div>
-        <p class="text-[10px] text-slate-500 mt-1">點時間以選擇器設定；未勾選結束時間時，只按開始時間排序。</p>
+        <p class="text-[10px] text-slate-500 mt-1">未勾選結束時間時，只按開始時間排序。</p>
         <input type="hidden" id="input-itin-time"><p id="fc41-time-error" role="alert" class="hidden mt-2 p-2 bg-rose-50 text-rose-700 rounded-lg text-sm"></p>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">行程詳細說明：</label>
         <textarea id="input-itin-desc" placeholder="詳細活動內容..." class="w-full h-20 p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none leading-relaxed"></textarea>
       </div>
-      <details id="fc46-itin-guide" class="space-y-2 p-3 border border-amber-200 rounded-xl"><summary class="text-xs font-bold cursor-pointer">景點／餐廳介紹</summary><div class="fc49-guide-fields"><label class="block text-xs font-bold">搜尋現有介紹<input id="fc49-query-itin" autocomplete="off" placeholder="輸入一個字即可搜尋" class="w-full p-2 border rounded-lg mt-1" oninput="fc49ScheduleSearch('itin',event)" oncompositionend="fc49ScheduleSearch('itin',event)"></label><div id="itin-guide-results" class="space-y-2" aria-live="polite"></div><label class="block text-xs font-bold mt-2">簡介（建議 1–2 句）<textarea id="input-itin-guide" maxlength="12000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm"></textarea></label><label class="block text-xs font-bold mt-2">介紹重點（建議 3–5 項）<textarea id="fc49-highlights-itin" maxlength="12000" rows="4" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行填寫一項特色、必看重點或推薦菜色"></textarea></label></div><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。共享前請開啟地圖確認位置；可貼上 Google Maps 分享連結。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('itin')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button></div><label class="flex gap-2 items-center text-xs font-bold"><input type="checkbox" id="fc48-itin-shared">共享景點介紹</label><p class="text-[10px] text-slate-500">勾選後，其他使用者安排同一地點時，也能查看並採用你填寫的介紹，不用再自行搜尋資料。</p></details><div><label class="text-[11px] font-bold text-amber-700 block mb-1"><i class="fa-regular fa-comment-dots mr-1"></i>團員補充註解：</label>
+      <details id="fc46-itin-guide" class="space-y-2 p-2.5 border border-amber-200 rounded-xl"><summary class="text-xs font-bold cursor-pointer">景點／餐廳介紹</summary><div class="space-y-2 p-2.5 rounded-lg bg-violet-50 border border-violet-200 mt-2"><p class="text-[11px] text-violet-900 leading-relaxed"><b>AI 產生介紹</b>：① 複製指令 → ② 貼到 ChatGPT／Claude／Gemini → ③ 把整段回答貼回下方 → ④ 按套用</p><button type="button" onclick="fc50CopyPlacePrompt('itin')" class="w-full py-2 rounded-lg bg-violet-600 text-white text-xs font-bold">① 複製 AI 指令</button><textarea id="fc50-ai-paste-itin" rows="3" class="w-full p-2 border border-violet-200 rounded-lg text-sm bg-white" placeholder="③ 把 AI 的整段回答貼在這裡"></textarea><button type="button" onclick="fc50ApplyPlaceAnswer('itin')" class="w-full py-2 rounded-lg bg-white border border-violet-300 text-violet-800 text-xs font-bold">④ 套用 AI 回答</button><p id="fc50-ai-status-itin" role="status" class="text-[11px] text-violet-900"></p><input type="hidden" id="fc50-ai-flag-itin" value=""></div><div class="fc49-guide-fields"><label class="block text-xs font-bold">搜尋現有介紹<input id="fc49-query-itin" autocomplete="off" placeholder="輸入一個字即可搜尋" class="w-full p-2 border rounded-lg mt-1" oninput="fc49ScheduleSearch('itin',event)" oncompositionend="fc49ScheduleSearch('itin',event)"></label><div id="itin-guide-results" class="space-y-2" aria-live="polite"></div><label class="block text-xs font-bold mt-2">簡介（建議 1–2 句）<textarea id="input-itin-guide" maxlength="12000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm"></textarea></label><label class="block text-xs font-bold mt-2">介紹重點（建議 3–5 項）<textarea id="fc49-highlights-itin" maxlength="12000" rows="4" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行填寫一項特色、必看重點或推薦菜色"></textarea></label><label class="block text-xs font-bold mt-2">實用資訊（門票、營業時間、交通…）<textarea id="fc50-info-itin" maxlength="6000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行一項，例如：門票：成人 150,000 VND"></textarea></label></div><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。共享前請開啟地圖確認位置；可貼上 Google Maps 分享連結。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('itin')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button></div><label class="flex gap-2 items-center text-xs font-bold"><input type="checkbox" id="fc48-itin-shared">共享景點介紹</label><p class="text-[10px] text-slate-500">勾選後，其他使用者安排同一地點時，也能查看並採用你填寫的介紹，不用再自行搜尋資料。</p></details><div><label class="text-[11px] font-bold text-amber-700 block mb-1"><i class="fa-regular fa-comment-dots mr-1"></i>團員補充註解：</label>
         <textarea id="input-itin-comment" placeholder="例如：記得帶推車、先預約座位、門票需攜帶護照..." class="w-full h-16 p-2.5 border border-amber-200 bg-amber-50/50 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none leading-relaxed"></textarea>
       </div>
       <div>
@@ -2808,7 +2811,7 @@ section.page-content h2 i{ margin-right:2px; }
     function travelBookShortText(value){
       const text=scenicPlainText(value).replace(/\s+/g,' ').trim(),first=text.split(/[。！？\n]/)[0];return [...first].length>65?[...first].slice(0,65).join('')+'…':first;
     }
-    function scenicEntry(item,day,date){const fixed=(item.fixedActivityId||item.id)&&getFixedActivities().find(a=>a.id===(item.fixedActivityId||item.id)),source=fixed||item;let p=fc49Parts(source),sources=[];if(source.guideBrief===undefined&&!source.guideText){const guides=scenicGuideCatalog.filter(g=>g.match.test(item.title||item.name||''));p={brief:guides.map(g=>g.text).join('\n\n'),highlights:guides.map(g=>g.highlights||'').filter(Boolean).join('\n')};sources=[...new Set(guides.map(g=>g.source))];}return {day,date,title:scenicPlainText(item.title||item.name),time:item.time||'',duration:item.duration||'',text:p.brief,highlights:p.highlights,note:'',sources};}
+    function scenicEntry(item,day,date){const fixed=(item.fixedActivityId||item.id)&&getFixedActivities().find(a=>a.id===(item.fixedActivityId||item.id)),source=fixed||item;let p=fc49Parts(source),sources=[];if(source.guideBrief===undefined&&!source.guideText){const guides=scenicGuideCatalog.filter(g=>g.match.test(item.title||item.name||''));p={brief:guides.map(g=>g.text).join('\n\n'),highlights:guides.map(g=>g.highlights||'').filter(Boolean).join('\n')};sources=[...new Set(guides.map(g=>g.source))];}return {day,date,itemId:item.id,title:scenicPlainText(item.title||item.name),time:item.time||'',duration:item.duration||'',text:p.brief,highlights:p.highlights,info:String(source.guideInfo||item.guideInfo||''),alert:String(item.alert||''),map:(fixed&&fixed.map)||item.map||'',ai:!!(source.guideAi||item.guideAi),note:'',sources};}
     function scenicExportItem(item){
       if(item.autoTransfer)return false;
       const title=scenicPlainText(item.title||item.name||'').trim(),type=String(item.category||item.type||'').toLowerCase();
@@ -2820,7 +2823,7 @@ section.page-content h2 i{ margin-right:2px; }
     }
     function openScenicPdfModal(){
       if(!requireRoom())return;
-      closeModal();clearTravelBookPreview();document.getElementById('fc37-ai-result').classList.add('hidden');document.getElementById('fc37-ai-text').value='';document.getElementById('fc37-ai-status').textContent='';document.getElementById('fc37-local-pdf').classList.add('hidden');fc38RenderStyles();fc39View('home');const days=getTripDays(),data=getStoredData('itinerary',defaultItineraryData);scenicPdfDraft=[];
+      closeModal();clearTravelBookPreview();document.getElementById('fc37-ai-result').classList.add('hidden');document.getElementById('fc37-ai-text').value='';document.getElementById('fc37-ai-status').textContent='';document.getElementById('fc37-local-pdf').classList.add('hidden');fc38RenderStyles();fc39View('home');['fc50-ai-paste-batch','fc50-ai-status-batch'].forEach(id=>{const el=document.getElementById(id);if(el){if('value' in el)el.value='';el.textContent='';}});fc50BatchList=[];const days=getTripDays(),data=getStoredData('itinerary',defaultItineraryData);scenicPdfDraft=[];
       days.forEach((date,i)=>(data[i+1]?.items||[]).filter(scenicExportItem).forEach(item=>{
         const e=scenicEntry(item,'Day '+(i+1),date);e.note=[e.duration&&'停留時間：'+e.duration,e.note].filter(Boolean).join('\n');scenicPdfDraft.push(e);
       }));
@@ -2828,13 +2831,7 @@ section.page-content h2 i{ margin-right:2px; }
       document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-scenic-pdf').classList.remove('hidden');
     }
     function closeScenicPdfModal(){clearTravelBookPreview();closeModal();}
-    function updateScenicPdfEntry(index,key,value){if(!scenicPdfDraft[index]||!['text','highlights','note'].includes(key))return;scenicPdfDraft[index][key]=value;clearTravelBookPreview();}
-    function renderScenicPdfList(){
-      const selected=document.getElementById('scenic-pdf-day').value,colors=['#FFF9ED','#E9F1E7','#F3E4D2'];
-      const visible=scenicPdfDraft.map((e,i)=>({e,i})).filter(({e})=>selected==='all'||e.day===selected);
-      document.getElementById('scenic-pdf-list').innerHTML=visible.length?visible.map(({e,i},n)=>`<div data-scenic-index="${i}" class="rounded-2xl p-4 space-y-3 shadow-sm" style="background:${colors[n%colors.length]};color:#293B32;margin-bottom:18px"><h4 class="text-sm font-bold">${travelBookDay(e.day)} ${escapeHtml(e.date)}<br>${escapeHtml(e.title)}</h4><label class="block text-xs font-bold">簡介（建議 1–2 句）<textarea aria-label="景點餐廳簡介" class="w-full border rounded-lg p-2 text-sm h-28 bg-white mt-1" oninput="updateScenicPdfEntry(${i},'text',this.value)">${escapeHtml(e.text)}</textarea></label><label class="block text-xs font-bold">介紹重點（建議 3–5 項）<textarea aria-label="景點餐廳介紹重點" class="w-full border rounded-lg p-2 text-sm h-20 bg-white mt-1" oninput="updateScenicPdfEntry(${i},'highlights',this.value)">${escapeHtml(e.highlights)}</textarea></label></div>`).join(''):'<p class="text-sm text-slate-500 py-4">這一天沒有已安排的景點、餐廳或購物地點。</p>';
-      document.getElementById('scenic-pdf-count').textContent=`顯示 ${visible.length} 項／全部 ${scenicPdfDraft.length} 項；PDF 會包含全部天數。`;
-    }
+    function updateScenicPdfEntry(index,key,value){if(!scenicPdfDraft[index]||!['text','highlights','note','info','alert'].includes(key))return;scenicPdfDraft[index][key]=value;clearTravelBookPreview();}
     let placeGuideCandidates={fixed:[],itin:[],member:[]},placeGuideRequest={fixed:0,itin:0,member:0};
     function placeGuideFields(kind){if(kind==='member')return {title:'fc48-guide-title',map:'fc48-guide-map',intro:'fc48-guide-intro',box:'fc48-guide-results'};return kind==='fixed'?{title:'fixed-name',map:'fixed-guide-map',intro:'fixed-guide',box:'fixed-guide-results'}:{title:'input-itin-title',map:'input-itin-map',intro:'input-itin-guide',box:'itin-guide-results'};}
     function placeGuideReset(kind){const check=document.getElementById('fc48-'+kind+'-shared');if(check)check.checked=false;placeGuideRequest[kind]++;placeGuideCandidates[kind]=[];document.getElementById(placeGuideFields(kind).box).innerHTML='';}
@@ -3051,31 +3048,6 @@ section.page-content h2 i{ margin-right:2px; }
       return {brief,points};
     }
     function fc46TextTitle(value){return scenicPlainText(value).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').trim();}
-    function travelBookIntroPages(){
-      const t=travelBookTheme(),pages=[],x=110,w=1380,top=100,bottom=2160,size=42;
-      let canvas,ctx,y,hasContent=false;
-      const newPage=()=>{canvas=document.createElement('canvas');canvas.width=1600;canvas.height=2260;ctx=canvas.getContext('2d');ctx.fillStyle=t.bg;ctx.fillRect(0,0,1600,2260);y=top;hasContent=false;pages.push({canvas,label:'景點介紹_第'+(pages.length+1)+'頁'});};
-      if(!scenicPdfDraft.length)return pages;newPage();
-      for(const e of scenicPdfDraft){
-        const summary=fc36IntroSummary(e),title=fc46TextTitle(e.title)||'未命名地點';
-        const blocks=[{text:title,bold:true,title:true},{text:'簡介',bold:true,heading:true},{text:summary.brief},...(summary.points.length?[{text:'介紹重點',bold:true,heading:true},...summary.points.map(p=>({text:'• '+p}))]:[])];
-        const layout=blocks.map(b=>{const z=b.title?size*1.35:size;return {...b,z,lines:travelBookWrap(ctx,b.text,z,w,b.bold),gap:b.title?28:b.heading?14:24};});
-        const height=layout.reduce((h,b)=>h+b.lines.length*b.z*1.45+b.gap,0);
-        // Keep a normal-sized place together; move it before drawing if it does not fit.
-        if(hasContent&&y+60+height>bottom)newPage();
-        if(hasContent){ctx.fillStyle=t.accent;ctx.fillRect(x,y+18,w,2);y+=60;}
-        for(const b of layout){
-          for(const line of b.lines){
-            const lineHeight=b.z*1.45;
-            // Very long introductions continue at the same readable font size.
-            if(y+lineHeight>bottom){newPage();if(!b.title){y+=travelBookText(ctx,title+'（續）',x,y,size*1.1,w,t.ink,true)+28;}}
-            ctx.font=`${b.bold?'bold ':''}${b.z}px "Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif`;ctx.fillStyle=b.heading?t.accent:t.ink;ctx.textBaseline='top';ctx.fillText(line,x,y);y+=lineHeight;hasContent=true;
-          }
-          y+=b.gap;
-        }
-      }
-      return pages;
-    }
     function buildTravelBookOutputs(image,includeIntros=true){return includeIntros?travelBookIntroPages(image):[];}
     async function generateTravelBook(){
       if(!scenicPdfDraft.length)return showToast('目前沒有可匯出的景點');const button=document.getElementById('travel-book-generate'),revision=++travelBookPreviewRevision;button.disabled=true;button.textContent='預覽製作中…';
@@ -3615,7 +3587,7 @@ section.page-content h2 i{ margin-right:2px; }
           ${item.alert ? `
             <div class="bg-rose-50 border border-rose-200 p-2.5 rounded-xl text-[11px] text-rose-800 mt-1 flex items-start space-x-1.5">
               <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5 shrink-0"></i>
-              <div class="leading-relaxed"><strong>提醒：</strong>${item.alert}</div>
+              <div class="leading-relaxed"><strong>提醒：</strong>${escapeHtml(item.alert).replace(/\n/g,'<br>')}</div>
             </div>
           ` : ''}
           ${item.comment ? `
@@ -5429,9 +5401,9 @@ function fc49Read(kind){const f=placeGuideFields(kind);return {brief:document.ge
 
 function fc49Combined(parts){return parts.brief||parts.highlights?'【簡介】\n'+parts.brief+'\n\n【介紹重點】\n'+parts.highlights:'';}
 
-function fc49Load(kind,record={}){const p=fc49Parts(record),f=placeGuideFields(kind);document.getElementById(f.intro).value=p.brief;document.getElementById('fc49-highlights-'+kind).value=p.highlights;const q=document.getElementById('fc49-query-'+kind);if(q)q.value='';fc49Maps[kind]={url:document.getElementById(f.map).value.trim(),confirmed:record.guideMapConfirmed||'',revision:0};fc49RenderMap(kind);}
+function fc49Load(kind,record={}){const p=fc49Parts(record),f=placeGuideFields(kind);document.getElementById(f.intro).value=p.brief;document.getElementById('fc49-highlights-'+kind).value=p.highlights;const q=document.getElementById('fc49-query-'+kind);if(q)q.value='';const inf=document.getElementById('fc50-info-'+kind);if(inf)inf.value=String(record.guideInfo||'');const flg=document.getElementById('fc50-ai-flag-'+kind);if(flg)flg.value=record.guideAi?'1':'';const ap=document.getElementById('fc50-ai-paste-'+kind);if(ap)ap.value='';const ast=document.getElementById('fc50-ai-status-'+kind);if(ast)ast.textContent='';fc49Maps[kind]={url:document.getElementById(f.map).value.trim(),confirmed:record.guideMapConfirmed||'',revision:0};fc49RenderMap(kind);}
 
-function fc49GuideData(kind){const p=fc49Read(kind),url=document.getElementById(placeGuideFields(kind).map).value.trim();return {guideBrief:p.brief,guideHighlights:p.highlights,guideText:fc49Combined(p),guideMapConfirmed:fc49Maps[kind]?.confirmed===url?url:''};}
+function fc49GuideData(kind){const p=fc49Read(kind),url=document.getElementById(placeGuideFields(kind).map).value.trim();const inf=document.getElementById('fc50-info-'+kind),flg=document.getElementById('fc50-ai-flag-'+kind);return {guideBrief:p.brief,guideHighlights:p.highlights,guideText:fc49Combined(p),guideMapConfirmed:fc49Maps[kind]?.confirmed===url?url:'',...(inf?{guideInfo:inf.value.trim()}:{}),...(flg?{guideAi:flg.value==='1'}:{})};}
 
 function fc49ValidMap(raw){try{const u=new URL(raw);if(u.protocol!=='https:'||u.username||u.password||u.port)return false;return /^(?:(?:www|maps)\.)?google\.(?:com|com\.tw|co\.jp|com\.vn)$/.test(u.hostname)||u.hostname==='maps.app.goo.gl'||(u.hostname==='goo.gl'&&u.pathname.startsWith('/maps/'));}catch{return false;}}
 
@@ -5455,5 +5427,219 @@ function fc49ScheduleSearch(kind,event){if(event?.isComposing)return;clearTimeou
 
 function fc49MemberAt(index){const items=getItineraryWithTransfers(getStoredData('itinerary',defaultItineraryData))[currentDay]?.items||[];if(items[index]&&!items[index].autoTransfer)fc48OpenGuide(items[index].id);}
   </script>
+<script id="fc55-guides">
+// FC55: semi-automatic AI place guides and redesigned scenic PDF.
+let fc50BatchList=[];
+function fc50Header(){return getStoredData('headerInfo',defaultHeaderInfo)||{};}
+function fc50Companions(){const h=fc50Header(),parts=[];if(+h.adults)parts.push(h.adults+' 位大人');if(+h.children)parts.push(h.children+' 位國小兒童');if(+h.infants)parts.push(h.infants+' 位嬰兒');return parts.join('、')||scenicPlainText(h.headcount||'')||'未填寫';}
+function fc50Region(){return scenicPlainText(fc50Header().title||'').trim();}
+function fc50FormatRules(){return ['請先上網查詢最新資料，使用繁體中文（台灣用語），並嚴格依照下列格式回答；標題文字不要更改，不要加開場白、結語、表格或網址。','','【簡介】','（3～5 句，介紹這個地方的特色、歷史或值得去的原因）','','【介紹重點】','（4～6 項，每項一行，以「・」開頭，例如必看、必吃、拍照點、玩法）','','【實用資訊】','（每項一行，格式為「項目：內容」，包含：門票或價位、營業時間、建議停留時間、交通方式；查不到請寫「待確認」，不要猜測）','','【重要提醒】','（每項一行，以「・」開頭；包含年齡或身高限制、公休日、服裝規定、是否需預約、嬰幼兒與長輩注意事項；沒有就寫「無」）'];}
+function fc50PlacePrompt(title,dateText){return ['請幫我寫一份旅遊景點／餐廳介紹，要給家族旅遊團的成員看。','地點：'+title,'旅程：'+(fc50Region()||'未填寫'),...(dateText?['預計造訪日期：'+dateText]:[]),'同行成員：'+fc50Companions(),'',...fc50FormatRules()].join('\n');}
+async function fc50Copy(text,fallbackField){
+  try{if(!navigator.clipboard?.writeText)throw new Error('no clipboard');await navigator.clipboard.writeText(text);return true;}catch(e){
+    const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0;user-select:text;-webkit-user-select:text;';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,text.length);let ok=false;try{ok=Boolean(document.execCommand&&document.execCommand('copy'));}catch(_){}ta.remove();
+    if(!ok&&fallbackField){fallbackField.value=text;fallbackField.focus();fallbackField.select();}return ok;}
+}
+async function fc50CopyPlacePrompt(kind){
+  const f=placeGuideFields(kind),status=document.getElementById('fc50-ai-status-'+kind),title=fc46TextTitle(document.getElementById(f.title).value||'');
+  if(!title){status.textContent='請先填寫行程標題（地點名稱）。';return;}
+  const ok=await fc50Copy(fc50PlacePrompt(title,getTripDays()[currentDay-1]||''),document.getElementById('fc50-ai-paste-'+kind));
+  status.textContent=ok?'✓ 已複製指令！貼到 ChatGPT、Claude 或 Gemini，再把整段回答貼回下方。':'無法自動複製，指令已放進下方文字框：請長按全選複製，貼到 AI 後再清空、改貼 AI 的回答。';
+}
+function fc50ParseSections(text){
+  const out={};let cur=null;
+  for(const raw of String(text||'').replace(/\r/g,'').split('\n')){
+    const line=raw.replace(/\*\*|__/g,'').replace(/^\s*(?:#{1,6}|>)\s*/,'').trim();
+    const m=line.match(/^【\s*(簡介|介紹重點|實用資訊|重要提醒)\s*】\s*[:：]?\s*(.*)$/)||line.match(/^(簡介|介紹重點|實用資訊|重要提醒)\s*[:：]?\s*()$/);
+    if(m){cur=m[1];out[cur]=out[cur]||[];if(m[2])out[cur].push(m[2].trim());continue;}
+    if(cur&&line)out[cur].push(line);
+  }
+  return out;
+}
+function fc50StripBullet(v){return String(v).replace(/^\s*(?:[・•●▪◦\-–*]|\d+[.、)）])\s*/,'').trim();}
+function fc50Normalize(sections){
+  const none=v=>/^(無|沒有|none|n\/a)[。.]?$/i.test(v.trim());
+  const list=k=>(sections[k]||[]).map(fc50StripBullet).filter(v=>v&&!none(v)).join('\n');
+  return {brief:(sections['簡介']||[]).join('\n').trim(),highlights:list('介紹重點'),info:list('實用資訊'),alert:list('重要提醒'),found:Object.keys(sections).length>0};
+}
+function fc50MergeAlert(current,add){const cur=String(current||'').trim();if(!add)return cur;if(!cur)return add;return cur.includes(add)?cur:cur+'\n'+add;}
+function fc50ApplyPlaceAnswer(kind){
+  const status=document.getElementById('fc50-ai-status-'+kind),paste=document.getElementById('fc50-ai-paste-'+kind),r=fc50Normalize(fc50ParseSections(paste.value));
+  if(!r.found||!(r.brief||r.highlights||r.info)){status.textContent='看不出格式：請確認貼上的是 AI 的完整回答，而且有【簡介】【介紹重點】等標題。';return;}
+  const f=placeGuideFields(kind);
+  if(r.brief)document.getElementById(f.intro).value=r.brief;
+  if(r.highlights)document.getElementById('fc49-highlights-'+kind).value=r.highlights;
+  const info=document.getElementById('fc50-info-'+kind);if(info&&r.info)info.value=r.info;
+  if(kind==='itin'&&r.alert){const a=document.getElementById('input-itin-alert');a.value=fc50MergeAlert(a.value,r.alert);}
+  const flag=document.getElementById('fc50-ai-flag-'+kind);if(flag)flag.value='1';
+  paste.value='';
+  status.textContent='✓ 已套用到下方欄位'+(r.alert&&kind==='itin'?'與「重要提醒」':'')+'。AI 內容可能有誤，請核對價格與營業時間後按「儲存」。';
+}
+function fc50BatchTargets(){const sel=document.getElementById('scenic-pdf-day')?.value||'all';return scenicPdfDraft.map((e,i)=>({e,i})).filter(({e})=>sel==='all'||e.day===sel);}
+async function fc50CopyBatchPrompt(){
+  const status=document.getElementById('fc50-ai-status-batch'),list=fc50BatchTargets();
+  if(!list.length){status.textContent='目前選擇的天數沒有景點。';return;}
+  const text=['請幫我為以下每個旅遊地點各寫一份介紹，要給家族旅遊團的成員看。','旅程：'+(fc50Region()||'未填寫'),'同行成員：'+fc50Companions(),'','地點清單：',
+    ...list.map(({e},n)=>`${n+1}. ${fc46TextTitle(e.title)}（${travelBookDay(e.day)} ${e.date}${e.time&&e.time!=='收藏推薦'?'，'+scenicPlainText(e.time):''}）`),
+    '','每個地點請先寫一行「＝＝ 第N項：地點名稱 ＝＝」（N 是上面清單的編號），接著依下列格式回答，清單上的地點都要寫完：','',...fc50FormatRules()].join('\n');
+  fc50BatchList=list.map(x=>x.i);
+  const ok=await fc50Copy(text,document.getElementById('fc50-ai-paste-batch'));
+  status.textContent=ok?`✓ 已複製 ${list.length} 個地點的指令！貼到 AI 後，把整段回答貼回下方。`:'無法自動複製，指令已放進下方文字框：請長按全選複製，貼到 AI 後再清空、改貼 AI 的回答。';
+}
+function fc50PersistGuides(list){
+  try{
+    const data=getStoredData('itinerary',defaultItineraryData),fixedList=getFixedActivities();let changedItin=false,changedFixed=false;
+    for(const {e,r} of list){
+      const dayNum=parseInt(String(e.day).replace(/\D/g,''),10),item=(data[dayNum]?.items||[]).find(x=>x.id===e.itemId);if(!item)continue;
+      const guide={guideBrief:e.text,guideHighlights:e.highlights,guideText:fc49Combined({brief:e.text,highlights:e.highlights}),guideInfo:e.info||'',guideAi:true};
+      const fixed=item.fixedActivityId&&fixedList.find(a=>a.id===item.fixedActivityId);if(fixed){Object.assign(fixed,guide);changedFixed=true;}
+      Object.assign(item,guide);if(r.alert)item.alert=fc50MergeAlert(item.alert,r.alert);changedItin=true;
+    }
+    if(changedFixed)pushStateToCloud('fixedActivities',fixedList);
+    if(changedItin)pushStateToCloud('itinerary',data);
+    return changedItin;
+  }catch(err){console.error(err);return false;}
+}
+function fc50ApplyBatchAnswer(){
+  const status=document.getElementById('fc50-ai-status-batch'),paste=document.getElementById('fc50-ai-paste-batch');
+  const map=fc50BatchList.length?fc50BatchList:fc50BatchTargets().map(x=>x.i),blocks=[];let cur=null;
+  for(const raw of paste.value.replace(/\r/g,'').split('\n')){
+    const line=raw.replace(/\*\*|__/g,'').replace(/^\s*#{1,6}\s*/,'').trim();
+    const m=line.match(/^[=＝]{2,}\s*第\s*(\d+)\s*項\s*[:：]?\s*(.*?)\s*[=＝]*\s*$/);
+    if(m){cur={n:+m[1],lines:[]};blocks.push(cur);continue;}
+    if(cur)cur.lines.push(raw);
+  }
+  if(!blocks.length){status.textContent='找不到「＝＝ 第N項：地點 ＝＝」的分段，請確認貼上的是 AI 的完整回答。';return;}
+  let applied=0;const skipped=[],persist=[];
+  for(const b of blocks){
+    const e=scenicPdfDraft[map[b.n-1]],r=fc50Normalize(fc50ParseSections(b.lines.join('\n')));
+    if(!e||!(r.brief||r.highlights||r.info)){skipped.push(b.n);continue;}
+    if(r.brief)e.text=r.brief;if(r.highlights)e.highlights=r.highlights;if(r.info)e.info=r.info;e.alert=fc50MergeAlert(e.alert,r.alert);e.ai=true;applied++;persist.push({e,r});
+  }
+  clearTravelBookPreview();renderScenicPdfList();
+  const saved=persist.length&&cloudConnected&&isOrganizer()?fc50PersistGuides(persist):false;
+  paste.value='';
+  status.textContent=`✓ 已套用 ${applied} 個地點`+(skipped.length?`（第 ${skipped.join('、')} 項看不懂格式，已略過）`:'')+(saved?'，並已存回行程。':'；只用於本次 PDF（主辦人登入才會存回行程）。')+'AI 內容可能有誤，請核對價格與營業時間。';
+}
+function renderScenicPdfList(){
+  const selected=document.getElementById('scenic-pdf-day').value,colors=['#FFF9ED','#E9F1E7','#F3E4D2'];
+  const visible=scenicPdfDraft.map((e,i)=>({e,i})).filter(({e})=>selected==='all'||e.day===selected);
+  const area=(i,key,label,rows,value,extra='')=>`<label class="block text-xs font-bold">${label}<textarea class="w-full border rounded-lg p-2 text-sm bg-white mt-1 ${extra}" rows="${rows}" oninput="updateScenicPdfEntry(${i},'${key}',this.value)">${escapeHtml(value||'')}</textarea></label>`;
+  document.getElementById('scenic-pdf-list').innerHTML=visible.length?visible.map(({e,i},n)=>`<div data-scenic-index="${i}" class="rounded-2xl p-4 space-y-2 shadow-sm" style="background:${colors[n%colors.length]};color:#293B32;margin-bottom:14px"><h4 class="text-sm font-bold">${travelBookDay(e.day)} ${escapeHtml(e.date)}${e.time&&e.time!=='收藏推薦'?'｜'+escapeHtml(scenicPlainText(e.time)):''}<br>${escapeHtml(e.title)}${e.ai?' <span class="text-[10px] font-bold text-violet-700 bg-violet-100 px-1.5 py-0.5 rounded">AI</span>':''}</h4>${area(i,'text','簡介',3,e.text)}${area(i,'highlights','介紹重點（每行一項）',3,e.highlights)}${area(i,'info','實用資訊（每行一項）',2,e.info)}${area(i,'alert','重要提醒',2,e.alert,'border-rose-200')}</div>`).join(''):'<p class="text-sm text-slate-500 py-4">這一天沒有已安排的景點、餐廳或購物地點。</p>';
+  document.getElementById('scenic-pdf-count').textContent=`顯示 ${visible.length} 項／全部 ${scenicPdfDraft.length} 項；PDF 會包含全部天數。`;
+}
+function fc50DayLabel(e){const base=travelBookDay(e.day),d=new Date(String(e.date||'')+'T00:00:00');if(isNaN(d))return base+(e.date?'・'+e.date:'');return `${base}・${d.getMonth()+1}/${String(d.getDate()).padStart(2,'0')}（${'日一二三四五六'[d.getDay()]}）`;}
+function fc50QrReady(){return typeof qrcode==='function';}
+function fc50MapUrl(e){let u=String(e.map||'').trim();if(!/^https?:\/\//i.test(u))u=buildAutoMapLink(e.title||'');if(!u)return '';if(/[^\x00-\x7F]/.test(u))u=encodeURI(u);return u.length>900?'':u;}
+function fc50DrawQr(ctx,url,x,y,size){try{const q=qrcode(0,'M');q.addData(url);q.make();const n=q.getModuleCount(),cell=size/(n+2);ctx.fillStyle='#FFFFFF';ctx.fillRect(x,y,size,size);ctx.fillStyle='#1F2A26';for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(q.isDark(r,c))ctx.fillRect(Math.floor(x+(c+1)*cell),Math.floor(y+(r+1)*cell),Math.ceil(cell),Math.ceil(cell));ctx.strokeStyle='#D8CFBD';ctx.lineWidth=2;ctx.strokeRect(x,y,size,size);return true;}catch(err){return false;}}
+function fc50IntroParts(e){
+  const clean=v=>scenicPlainText(v).replace(/https?:\/\/\S+/g,'').trim();
+  const practical=/^【?\s*(門票|票價|費用|價位|價格|營業時間|開放時間|交通|交通方式|地址|電話|停留時間|建議停留|建議停留時間|預約)\s*】?\s*[:：]/;
+  const bullet=/^\s*(?:[・•●▪◦\-–*]|\d+[.、)）])\s*/;
+  const info=[],points=[],brief=[],alerts=[];
+  const addInfo=v=>{v=v.replace(/^【\s*([^】]+?)\s*】\s*[:：]?\s*/,'$1：').trim();if(v)info.push(v);};
+  let section='brief';
+  for(let line of clean(e.text).split(/\n+/).map(v=>v.trim()).filter(Boolean)){
+    const h=line.match(/^【\s*([^】]+?)\s*】\s*(.*)$/);
+    if(h&&!practical.test(line)){const name=h[1];section=/資料來源|備註/.test(name)?'skip':/重點|特色|必看|必吃|推薦|亮點/.test(name)?'points':/資訊|門票|營業|交通/.test(name)?'info':/提醒|注意/.test(name)?'alert':'brief';line=h[2].trim();if(!line)continue;}
+    if(section==='skip')continue;
+    if(practical.test(line)){addInfo(line);continue;}
+    if(section==='info'){addInfo(line.replace(bullet,''));continue;}
+    if(section==='alert'){const v=line.replace(bullet,'').trim();if(v)alerts.push(v);continue;}
+    if(section==='points'||bullet.test(line)){const v=line.replace(bullet,'').trim();if(v)points.push(v);continue;}
+    brief.push(line);
+  }
+  for(const raw of clean(e.highlights).split(/\n+/)){const v=raw.replace(bullet,'').trim();if(!v)continue;if(practical.test(v))addInfo(v);else points.push(v);}
+  for(const raw of clean(e.info).split(/\n+/)){const v=raw.replace(bullet,'').trim();if(v)addInfo(v);}
+  for(const raw of clean(e.note).split(/\n+/)){const v=raw.trim();if(v)addInfo(v);}
+  const fieldAlerts=clean(e.alert).split(/\n+/).map(v=>v.replace(bullet,'').trim()).filter(Boolean);alerts.splice(0,0,...fieldAlerts);
+  const dedupe=list=>{const seen=new Set();return list.filter(v=>{const k=v.replace(/[\s【】。！？!?，,:：・]/g,'');if(!k||seen.has(k))return false;seen.add(k);return true;});};
+  const out={brief:brief.join('\n'),points:dedupe(points),info:dedupe(info),alerts:dedupe(alerts)};
+  if(!out.brief&&!out.points.length&&!out.info.length)out.brief='尚未填寫介紹。';
+  return out;
+}
+function travelBookIntroPages(){
+  const t=travelBookTheme(),W=1600,H=2260,M=96,TOP=110,BOTTOM=H-160,CX=M,CW=W-M*2,PAD=46,IX=CX+PAD,IW=CW-PAD*2,QR=150,CARD_PV=40,CARD_GAP=36;
+  const FONT='"Noto Sans CJK TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
+  const C={card:'#FFFFFF',border:'#E3DAC8',pillBg:'#E2EEE5',pillInk:'#2F5D46',infoBg:'#F2EDE3',infoInk:'#3F4B45',alertBg:'#FBE9E7',alertInk:'#8A2A23'};
+  const font=(s,b)=>`${b?'bold ':''}${s}px ${FONT}`;
+  const pages=[];let canvas,ctx,y=TOP,hasContent=false,dayLabel='';
+  if(!scenicPdfDraft.length)return pages;
+  const wrap=(text,s,w,b)=>travelBookWrap(ctx,text,s,w,b);
+  const DAY_H=44*1.4+10+4+34;
+  const drawDay=label=>{ctx.textBaseline='top';ctx.textAlign='left';ctx.fillStyle=t.ink;ctx.font=font(44,true);ctx.fillText(label,CX,y);y+=44*1.4+10;ctx.fillStyle=t.accent;ctx.fillRect(CX,y,CW,4);y+=38;};
+  const drawCover=()=>{const h=fc50Header(),title=travelBookTripTitle()||'旅遊';ctx.textBaseline='top';ctx.fillStyle=t.ink;ctx.font=font(66,true);const lines=wrap(title,66,CW,true);ctx.font=font(66,true);lines.forEach((l,i)=>ctx.fillText(l,CX,y+i*86));y+=lines.length*86+8;ctx.fillStyle=t.accent;ctx.font=font(32,true);ctx.fillText(['景點介紹',scenicPlainText(h.dates||''),scenicPlainText(h.headcount||'')].filter(Boolean).join('　｜　'),CX,y);y+=32*1.5+44;};
+  const newPage=(cont=true)=>{canvas=document.createElement('canvas');canvas.width=W;canvas.height=H;ctx=canvas.getContext('2d');ctx.fillStyle=t.bg;ctx.fillRect(0,0,W,H);y=TOP;hasContent=false;pages.push({canvas,label:'景點介紹_第'+(pages.length+1)+'頁'});if(pages.length===1)drawCover();if(cont&&dayLabel)drawDay(dayLabel+'（續）');};
+  const gap=h=>({h,draw:()=>{}});
+  const textRows=(text,s,w,x,color,bold,lh)=>wrap(text,s,w,bold).map(line=>({h:s*lh,draw:yy=>{ctx.textBaseline='top';ctx.font=font(s,bold);ctx.fillStyle=color;ctx.fillText(line,x,yy);}}));
+  const headerRow=(e,cont)=>{
+    const title=(fc46TextTitle(e.title)||'未命名地點')+(cont?'（續）':''),qrUrl=!cont&&fc50QrReady()?fc50MapUrl(e):'',tw=qrUrl?IW-QR-30:IW;
+    const pill=!cont&&e.time&&e.time!=='收藏推薦'?scenicPlainText(e.time).trim():'',ts=cont?42:54,tl=wrap(title,ts,tw,true),pillH=pill?68:0,aiH=!cont&&e.ai?40:0;
+    const h=Math.max(pillH+tl.length*ts*1.35+aiH,qrUrl?QR+44:0)+14;
+    return {h,draw:yy=>{let ty=yy;ctx.textAlign='left';
+      if(pill){ctx.font=font(30,true);const pw=ctx.measureText(pill).width+36;ctx.fillStyle=C.pillBg;ctx.beginPath();ctx.roundRect(IX,ty,pw,52,12);ctx.fill();ctx.fillStyle=C.pillInk;ctx.textBaseline='middle';ctx.fillText(pill,IX+18,ty+27);ty+=pillH;}
+      ctx.textBaseline='top';ctx.fillStyle=t.ink;ctx.font=font(ts,true);tl.forEach((l,i)=>ctx.fillText(l,IX,ty+i*ts*1.35));ty+=tl.length*ts*1.35;
+      if(aiH){ctx.font=font(24,false);ctx.fillStyle=t.muted;ctx.fillText('含 AI 產生內容・出發前請核對',IX,ty+8);}
+      if(qrUrl&&fc50DrawQr(ctx,qrUrl,IX+IW-QR,yy,QR)){ctx.font=font(24,false);ctx.fillStyle=t.muted;ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('掃描導航',IX+IW-QR/2,yy+QR+10);ctx.textAlign='left';}
+    }};
+  };
+  const pointRows=(points,s)=>points.flatMap(p=>wrap(p,s,IW-46,false).map((line,i)=>({h:s*1.6,draw:yy=>{ctx.textBaseline='top';ctx.font=font(s,false);ctx.fillStyle=t.ink;if(!i){ctx.fillStyle=t.accent;ctx.fillText('・',IX,yy);ctx.fillStyle=t.ink;}ctx.fillText(line,IX+46,yy);}})));
+  const boxRows=(title,items,bg,ink,labeled)=>{
+    const s=32,lh=s*1.6,bp=26,bx=IX,bw=IW,inner=bw-bp*2,lines=[];
+    lines.push({kind:'title',text:title});
+    for(const item of items){
+      const m=labeled&&item.match(/^([^：:]{1,10})[：:]\s*(.+)$/);
+      if(m){ctx.font=font(s,true);const lw=ctx.measureText(m[1]+'　').width;wrap(m[2],s,inner-lw,false).forEach((v,i)=>lines.push({kind:'pair',label:i?'':m[1],lw,text:v}));}
+      else wrap(item,s,inner-40,false).forEach((v,i)=>lines.push({kind:'bullet',first:!i,text:v}));
+    }
+    return lines.map((l,i)=>{const first=i===0,last=i===lines.length-1,h=lh+(first?bp:0)+(last?bp:0);
+      return {h,draw:yy=>{ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(bx,yy,bw,h+0.5,[first?16:0,first?16:0,last?16:0,last?16:0]);ctx.fill();
+        const ty=yy+(first?bp:0);ctx.textBaseline='top';ctx.textAlign='left';
+        if(l.kind==='title'){ctx.font=font(28,true);ctx.fillStyle=ink;ctx.fillText(l.text,bx+bp,ty+4);}
+        else if(l.kind==='pair'){if(l.label){ctx.font=font(s,true);ctx.fillStyle=ink;ctx.fillText(l.label,bx+bp,ty);}ctx.font=font(s,false);ctx.fillStyle=ink;ctx.fillText(l.text,bx+bp+l.lw,ty);}
+        else{ctx.font=font(s,false);ctx.fillStyle=ink;if(l.first)ctx.fillText('・',bx+bp,ty);ctx.fillText(l.text,bx+bp+40,ty);}
+      }};});
+  };
+  const buildRows=(e,parts)=>{
+    const rows=[headerRow(e,false)];
+    if(parts.brief)rows.push(gap(6),...textRows(parts.brief,36,IW,IX,t.ink,false,1.62));
+    if(parts.points.length)rows.push(gap(22),...textRows('介紹重點',30,IW,IX,t.accent,true,1.5),gap(4),...pointRows(parts.points,34));
+    if(parts.info.length)rows.push(gap(28),...boxRows('實用資訊',parts.info,C.infoBg,C.infoInk,true));
+    if(parts.alerts.length)rows.push(gap(20),...boxRows('重要提醒',parts.alerts,C.alertBg,C.alertInk,false));
+    return rows;
+  };
+  const drawCard=(e,rows,afterHeader)=>{
+    const total=rows.reduce((s,r)=>s+r.h,0)+CARD_PV*2;
+    if(!afterHeader&&hasContent&&y+total>BOTTOM&&total<=BOTTOM-TOP-DAY_H)newPage();
+    let i=0,first=true;
+    while(i<rows.length){
+      const avail=BOTTOM-y-CARD_PV*2;let j=i,sum=0;
+      while(j<rows.length&&sum+rows[j].h<=avail){sum+=rows[j].h;j++;}
+      if(first&&!afterHeader&&hasContent&&j<rows.length&&j-i<=3){newPage();continue;}
+      if(j===i){if(hasContent){newPage();if(!first)rows.splice(i,0,headerRow(e,true));continue;}sum=rows[j].h;j++;}
+      const segH=sum+CARD_PV*2;
+      ctx.fillStyle=C.card;ctx.strokeStyle=C.border;ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(CX,y,CW,segH,22);ctx.fill();ctx.stroke();
+      let yy=y+CARD_PV;for(let k=i;k<j;k++){rows[k].draw(yy);yy+=rows[k].h;}
+      y+=segH+CARD_GAP;hasContent=true;i=j;first=false;
+      if(i<rows.length){newPage();rows.splice(i,0,headerRow(e,true));}
+    }
+  };
+  newPage(false);
+  for(const e of scenicPdfDraft){
+    const label=fc50DayLabel(e),rows=buildRows(e,fc50IntroParts(e));
+    let afterHeader=false;
+    if(label!==dayLabel){
+      const firstH=Math.min(rows.reduce((s,r)=>s+r.h,0)+CARD_PV*2,520);
+      if(hasContent&&y+DAY_H+firstH>BOTTOM){dayLabel='';newPage(false);}
+      else if(hasContent)y+=24;
+      dayLabel=label;drawDay(label);afterHeader=true;
+    }
+    drawCard(e,rows,afterHeader);
+  }
+  const tripTitle=travelBookTripTitle()||'旅遊';
+  pages.forEach((p,i)=>{const c=p.canvas.getContext('2d');c.textBaseline='top';c.textAlign='center';c.font=font(24,false);c.fillStyle=t.muted;c.fillText(`${tripTitle}・景點介紹　第 ${i+1} / ${pages.length} 頁`,W/2,H-104);c.font=font(20,false);c.fillText('內容僅供參考，門票、營業時間等資訊請以現場公告為準',W/2,H-68);c.textAlign='left';});
+  return pages;
+}
+</script>
 </body>
 </html>
