@@ -378,6 +378,7 @@ section.page-content h2 i{ margin-right:2px; }
     </section>
 
     <section id="page-itinerary" class="page-content hidden space-y-3">
+      <div id="today-banner" class="hidden"></div>
       <!-- Weather Forecast Header -->
       <div id="weather-banner" class="bg-gradient-to-r from-blue-500 to-sky-400 text-white p-3 rounded-2xl shadow-sm space-y-1"></div>
 
@@ -1045,6 +1046,10 @@ section.page-content h2 i{ margin-right:2px; }
       </div>
       <details id="fc46-itin-guide" class="space-y-2 p-3 border border-amber-200 rounded-xl"><summary class="text-xs font-bold cursor-pointer">景點／餐廳介紹</summary><div class="fc49-guide-fields"><label class="block text-xs font-bold">搜尋現有介紹<input id="fc49-query-itin" autocomplete="off" placeholder="輸入一個字即可搜尋" class="w-full p-2 border rounded-lg mt-1" oninput="fc49ScheduleSearch('itin',event)" oncompositionend="fc49ScheduleSearch('itin',event)"></label><div id="itin-guide-results" class="space-y-2" aria-live="polite"></div><label class="block text-xs font-bold mt-2">簡介（建議 1–2 句）<textarea id="input-itin-guide" maxlength="12000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm"></textarea></label><label class="block text-xs font-bold mt-2">介紹重點（建議 3–5 項）<textarea id="fc49-highlights-itin" maxlength="12000" rows="4" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行填寫一項特色、必看重點或推薦菜色"></textarea></label></div><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。共享前請開啟地圖確認位置；可貼上 Google Maps 分享連結。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('itin')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button></div><label class="flex gap-2 items-center text-xs font-bold"><input type="checkbox" id="fc48-itin-shared">共享景點介紹</label><p class="text-[10px] text-slate-500">勾選後，其他使用者安排同一地點時，也能查看並採用你填寫的介紹，不用再自行搜尋資料。</p></details><div><label class="text-[11px] font-bold text-amber-700 block mb-1"><i class="fa-regular fa-comment-dots mr-1"></i>團員補充註解：</label>
         <textarea id="input-itin-comment" placeholder="例如：記得帶推車、先預約座位、門票需攜帶護照..." class="w-full h-16 p-2.5 border border-amber-200 bg-amber-50/50 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none leading-relaxed"></textarea>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-rose-700 block mb-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>重要提醒（限制、公休、年齡限制等）：</label>
+        <textarea id="input-itin-alert" placeholder="例如：5歲以下不可入場、週一公休、需提前預約..." class="w-full h-14 p-2.5 border border-rose-200 bg-rose-50/50 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none leading-relaxed"></textarea>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">Google Map 導航連結：</label>
@@ -3207,11 +3212,12 @@ section.page-content h2 i{ margin-right:2px; }
       visibility: { translation:true, flight:true, hotel:true, shuttle:true, exchange:true, reminders:true },
       flight: { outboundNo:'JX703', outboundDate:'12/07', outboundTime:'15:20', outboundArrivalDate:'12/07', outboundArrivalTime:'17:15', returnNo:'JX704', returnDate:'12/12', returnTime:'18:25', returnArrivalDate:'12/12', returnArrivalTime:'' },
       hotel: { h1Dates:'12/07 - 12/09 (2晚)', h1Name:'Little Residence A Boutique Hotel & Spa', h2Dates:'12/09 - 12/12 (3晚)', h2Name:'Chi House Danang Hotel and Apartment' },
-      shuttle: { company:'得佳富租賃有限公司', driver:'阿得', phone1:'0972-922097', phone2:'04-25668678', line:'0972922097' }
+      shuttle: { company:'得佳富租賃有限公司', driver:'阿得', phone1:'0972-922097', phone2:'04-25668678', line:'0972922097' },
+      emergency: { embassy:'駐越南台北經濟文化辦事處　+84-24-38335501／急難救助 +84-913-219-986', insuranceHotline:'', hotelAddr1:'', hotelAddr2:'', note:'' }
     };
     function getInfoConfig(){
       const x=getStoredData('infoConfig',defaultInfoConfig)||{};
-      return {...x,visibility:{...defaultInfoConfig.visibility,...JSON.parse(localStorage.getItem(infoVisibilityKey()) || '{}')},flight:{...defaultInfoConfig.flight,...(x.flight||{})},hotel:{...defaultInfoConfig.hotel,...(x.hotel||{})},shuttle:{...defaultInfoConfig.shuttle,...(x.shuttle||{})}};
+      return {...x,visibility:{...defaultInfoConfig.visibility,...JSON.parse(localStorage.getItem(infoVisibilityKey()) || '{}')},flight:{...defaultInfoConfig.flight,...(x.flight||{})},hotel:{...defaultInfoConfig.hotel,...(x.hotel||{})},shuttle:{...defaultInfoConfig.shuttle,...(x.shuttle||{})},emergency:{...defaultInfoConfig.emergency,...(x.emergency||{})}};
     }
     function infoVisibilityKey(){ return `perfect_info_visibility_${roomId}_${currentMember?.id || currentMember?.nickname || 'member'}`; }
     function saveInfoVisibility(){
@@ -3232,6 +3238,16 @@ section.page-content h2 i{ margin-right:2px; }
         const label=e.closest('label');if(label){label.classList.toggle('info-choice-disabled',e.disabled);label.title=required[k] === false ? '主辦人未勾選本次旅程所需資訊' : '';}}});
       const box=document.getElementById('info-dynamic-sections'); if(!box)return;
       let h='';
+      {
+        const e=c.emergency||{};
+        const rows=[['🏛️ 使館 / 代表處',e.embassy],['🛡️ 保險理賠專線',e.insuranceHotline],['🏨 住宿一地址',e.hotelAddr1],['🏨 住宿二地址',e.hotelAddr2],['📝 備註',e.note]].filter(([,val])=>val);
+        h+=`<div class="bg-gradient-to-br from-rose-50 to-orange-50 border border-rose-200 p-4 rounded-2xl shadow-sm text-xs">
+          <div class="flex justify-between"><h3 class="font-bold text-rose-800"><i class="fa-solid fa-kit-medical mr-1"></i>緊急聯絡卡</h3>${infoEditButton('emergency')}</div>
+          <div class="mt-2 space-y-1.5 text-rose-900">
+            ${rows.length?rows.map(([label,val])=>`<p><b>${label}：</b>${escapeHtml(val)}</p>`).join(''):'<p class="text-rose-400">尚未填寫，點右上角編輯新增使館、保險、住宿地址等緊急資訊</p>'}
+          </div>
+        </div>`;
+      }
       if(v.flight){
         const headerInfo = getStoredData('headerInfo', defaultHeaderInfo);
         h+=`<div class="fc44-flight p-4 rounded-2xl shadow-sm text-xs">
@@ -3258,9 +3274,9 @@ section.page-content h2 i{ margin-right:2px; }
     function openInfoEdit(type){
       if(!requireRoom() || !canEditInfo(type))return showToast('只有主辦人可以編輯旅程資訊'); const c=getInfoConfig();
       if(type==='shuttle')return openAirportTransferModal();
-      const defs={hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']]};
+      const defs={hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']],emergency:[['embassy','駐外使館 / 代表處電話'],['insuranceHotline','保險公司 24 小時理賠專線'],['hotelAddr1','住宿一地址（可直接給司機看）'],['hotelAddr2','住宿二地址（可直接給司機看）'],['note','其他緊急備註']]};
       document.getElementById('info-edit-type').value=type;
-      document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊'}[type]||'編輯資訊';
+      document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊',emergency:'🆘 編輯緊急聯絡卡'}[type]||'編輯資訊';
 
       const fieldsBox = document.getElementById('info-edit-fields');
       if(type==='flight'){
@@ -3505,8 +3521,32 @@ section.page-content h2 i{ margin-right:2px; }
     }
 
     function handleItineraryTitleSearch(){fc49RenderMap('itin');}
+    function renderTodayBanner() {
+      const banner = document.getElementById('today-banner');
+      if (!banner) return;
+      const days = getTripDays();
+      const now = new Date();
+      const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      const todayIdx = days.findIndex(d => d === todayStr);
+      if (todayIdx === -1) { banner.classList.add('hidden'); banner.innerHTML = ''; return; }
+      const todayDay = todayIdx + 1;
+      const data = getStoredData('itinerary', defaultItineraryData);
+      const dayData = getItineraryWithTransfers(data)[todayDay] || { items: [] };
+      const count = dayData.items.length;
+      const isViewingToday = currentDay === todayDay;
+      banner.className = 'bg-gradient-to-r from-rose-500 to-orange-400 text-white p-3 rounded-2xl shadow-sm flex items-center justify-between gap-2';
+      banner.innerHTML = `
+        <div>
+          <div class="text-[10px] font-bold bg-white/20 inline-block px-2 py-0.5 rounded-full">🔥 今天</div>
+          <div class="text-sm font-bold mt-1">Day ${todayDay}・共 ${count} 個行程</div>
+        </div>
+        ${isViewingToday ? '' : `<button onclick="selectDay(${todayDay})" class="text-xs bg-white text-rose-600 font-bold px-3 py-1.5 rounded-xl shadow-sm active:scale-95 transition shrink-0">跳到今天</button>`}
+      `;
+    }
+
     function renderItinerary() {
       updateItineraryPermissions();
+      renderTodayBanner();
       const weather = weatherData[currentDay] || weatherData[1];
       document.getElementById('weather-banner').innerHTML = `
         <div class="flex justify-between items-start">
@@ -3553,6 +3593,12 @@ section.page-content h2 i{ margin-right:2px; }
           <h3 class="fc45-itin-title">${item.title}</h3>
           ${!isOrganizer()&&!item.autoTransfer?`<button type="button" class="fc49-button fc49-secondary" onclick="fc49MemberAt(${idx})">填寫介紹</button>`:''}
           ${itineraryDescriptionForDisplay(item) ? `<div class="text-xs text-slate-600 leading-relaxed">${itineraryDescriptionForDisplay(item)}</div>` : ''}
+          ${item.alert ? `
+            <div class="bg-rose-50 border border-rose-200 p-2.5 rounded-xl text-[11px] text-rose-800 mt-1 flex items-start space-x-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5 shrink-0"></i>
+              <div class="leading-relaxed"><strong>提醒：</strong>${item.alert}</div>
+            </div>
+          ` : ''}
           ${item.comment ? `
             <div class="bg-amber-50/90 border border-amber-200/70 p-2.5 rounded-xl text-[11px] text-amber-900 mt-1 flex items-start space-x-1.5">
               <i class="fa-regular fa-comment-dots text-amber-600 mt-0.5 shrink-0"></i>
@@ -3578,6 +3624,7 @@ section.page-content h2 i{ margin-right:2px; }
       document.getElementById('input-itin-desc').value = '';
       placeGuideReset('itin');
       document.getElementById('input-itin-comment').value = '';
+      document.getElementById('input-itin-alert').value = '';
       document.getElementById('input-itin-map').value = '';fc49Load('itin',{});
       document.getElementById('input-itin-ticket').value = '';
       const mapPreview = document.getElementById('itin-map-preview');
@@ -3604,6 +3651,7 @@ section.page-content h2 i{ margin-right:2px; }
       document.getElementById('input-itin-desc').value = item.desc || '';
       const linked=item.fixedActivityId&&getFixedActivities().find(a=>a.id===item.fixedActivityId);placeGuideReset('itin');
       document.getElementById('input-itin-comment').value = item.comment || '';
+      document.getElementById('input-itin-alert').value = item.alert || '';
       document.getElementById('input-itin-map').value = item.map || '';fc49Load('itin',linked||item);setTimeout(()=>fc49ResolveMap('itin'),0);
       document.getElementById('input-itin-ticket').value = item.ticketLink || '';
       handleItineraryTitleSearch();
@@ -3621,6 +3669,7 @@ section.page-content h2 i{ margin-right:2px; }
       const time=fc41ReadTime();if(time===null)return;
       const desc = document.getElementById('input-itin-desc').value.trim();
       const comment = document.getElementById('input-itin-comment').value.trim();
+      const alert = document.getElementById('input-itin-alert').value.trim();
       const guideData=fc49GuideData('itin'),guideText=guideData.guideText;
       const mapInput = document.getElementById('input-itin-map').value.trim();
       const map = mapInput || buildAutoMapLink(title);
@@ -3645,6 +3694,7 @@ section.page-content h2 i{ margin-right:2px; }
           Object.assign(item,guideData);
           if(item.fixedActivityId){const list=getFixedActivities(),fixed=list.find(a=>a.id===item.fixedActivityId);if(fixed){Object.assign(fixed,guideData);fixed.map=map;pushStateToCloud('fixedActivities',list);}}
           item.comment = comment;
+          item.alert = alert;
           item.map = map;
           item.ticketLink = ticketLink;
         }
@@ -3656,6 +3706,7 @@ section.page-content h2 i{ margin-right:2px; }
           desc,
           ...guideData,
           comment,
+          alert,
           map,
           ticketLink
         });
@@ -4826,7 +4877,7 @@ section.page-content h2 i{ margin-right:2px; }
       const blank={};for(const key of CLOUD_KEYS)blank[key]=[];
       blank.headerInfo={...header,title:'新旅程',startDate:today,endDate:today,adults:1,children:0,infants:0,headcount:'1大',duration:'1D',dates:today.replaceAll('-','/'),groupTag:'',requiredInfo:{}};
       blank.itinerary={1:{items:[]}};blank.notes='';
-      blank.infoConfig={visibility:{...defaultInfoConfig.visibility},flight:Object.fromEntries(Object.keys(defaultInfoConfig.flight).map(k=>[k,''])),hotel:Object.fromEntries(Object.keys(defaultInfoConfig.hotel).map(k=>[k,''])),shuttle:Object.fromEntries(Object.keys(defaultInfoConfig.shuttle).map(k=>[k,''])),reminders:[]};return blank;
+      blank.infoConfig={visibility:{...defaultInfoConfig.visibility},flight:Object.fromEntries(Object.keys(defaultInfoConfig.flight).map(k=>[k,''])),hotel:Object.fromEntries(Object.keys(defaultInfoConfig.hotel).map(k=>[k,''])),shuttle:Object.fromEntries(Object.keys(defaultInfoConfig.shuttle).map(k=>[k,''])),emergency:Object.fromEntries(Object.keys(defaultInfoConfig.emergency).map(k=>[k,''])),reminders:[]};return blank;
     }
     async function createCloudRoom(){
       if(tripLoginBusy)return;
