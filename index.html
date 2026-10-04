@@ -292,6 +292,28 @@ section.page-content h2 i{ margin-right:2px; }
 /* scrollable chip rows: fade edges instead of hard clip */
 .no-scrollbar{ mask-image:linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 14px), transparent 100%); }
 </style>
+<style id="modal-form-standard-css">
+/* ---- Unified modal form standard: consistent label/field sizing, tighter vertical rhythm. ---- */
+/* Labels: 11px / 500 weight everywhere, including checkbox labels. */
+[id^="modal-"] label{ font-size:11px; font-weight:500; }
+/* Single-line fields: 12px text, fixed compact height. Time/date pickers keep their own tuned sizing (flight-datetime-row, fc46-time-row) so they're excluded here. */
+[id^="modal-"] input[type="text"],
+[id^="modal-"] input[type="number"],
+[id^="modal-"] input[type="url"],
+[id^="modal-"] input[type="tel"],
+[id^="modal-"] input:not([type]),
+[id^="modal-"] select{
+  font-size:12px; height:34px; padding:0 10px; box-sizing:border-box;
+}
+/* Multi-line fields: match the 12px standard, keep each component's own row-count height. */
+[id^="modal-"] textarea{ font-size:12px; line-height:1.5; }
+/* Tighter gaps between stacked field groups so modals don't run long. */
+[id^="modal-"].space-y-3 > :not([hidden]) ~ :not([hidden]),
+[id^="modal-"] .space-y-3 > :not([hidden]) ~ :not([hidden]){ margin-top:0.5rem !important; }
+[id^="modal-"] .space-y-2 > :not([hidden]) ~ :not([hidden]),
+[id^="modal-"] .space-y-2\.5 > :not([hidden]) ~ :not([hidden]),
+[id^="modal-"] .space-y-1\.5 > :not([hidden]) ~ :not([hidden]){ margin-top:0.375rem !important; }
+</style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
 <div id="fc46-owner-banner" role="status" class="hidden p-3 border rounded-xl bg-sky-50 m-3"></div>
@@ -301,7 +323,7 @@ section.page-content h2 i{ margin-right:2px; }
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-50</span>
+        <span id="test-version-badge" class="trip-version">FC-53</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -3534,13 +3556,10 @@ section.page-content h2 i{ margin-right:2px; }
       const dayData = getItineraryWithTransfers(data)[todayDay] || { items: [] };
       const count = dayData.items.length;
       const isViewingToday = currentDay === todayDay;
-      banner.className = 'bg-gradient-to-r from-rose-500 to-orange-400 text-white p-3 rounded-2xl shadow-sm flex items-center justify-between gap-2';
+      banner.className = 'bg-gradient-to-r from-rose-500 to-orange-400 text-white px-3 py-1.5 rounded-xl shadow-sm flex items-center justify-between gap-2';
       banner.innerHTML = `
-        <div>
-          <div class="text-[10px] font-bold bg-white/20 inline-block px-2 py-0.5 rounded-full">🔥 今天</div>
-          <div class="text-sm font-bold mt-1">Day ${todayDay}・共 ${count} 個行程</div>
-        </div>
-        ${isViewingToday ? '' : `<button onclick="selectDay(${todayDay})" class="text-xs bg-white text-rose-600 font-bold px-3 py-1.5 rounded-xl shadow-sm active:scale-95 transition shrink-0">跳到今天</button>`}
+        <div class="text-xs font-bold truncate">🔥 今天・Day ${todayDay}・共 ${count} 個行程</div>
+        ${isViewingToday ? '' : `<button onclick="selectDay(${todayDay})" class="text-[11px] bg-white text-rose-600 font-bold px-2.5 py-1 rounded-lg shadow-sm active:scale-95 transition shrink-0">跳到今天</button>`}
       `;
     }
 
@@ -5422,9 +5441,9 @@ function fc49MapKey(raw){return placeGuideIdentity(raw)||(fc49SpecificMap(raw)?'
 
 function fc49MapLabel(raw){try{const u=new URL(raw),m=u.pathname.match(/\/place\/([^/]+)/);return m?decodeURIComponent(m[1].replace(/\+/g,' ')):'';}catch{return '';}}
 
-function fc49RenderMap(kind){const f=placeGuideFields(kind),box=document.getElementById('fc49-map-'+kind);if(!box)return;const url=document.getElementById(f.map).value.trim(),name=document.getElementById(f.title).value.trim(),state=fc49Maps[kind]||{};box.replaceChildren();const text=document.createElement('p');text.className='text-xs mb-2';text.textContent=state.confirmed===url&&url?'✓ 地點已確認':state.message|| (fc49SpecificMap(url)?'請開啟地圖核對名稱與位置，再確認。':'請先在地圖選定地點，貼上該地點的分享連結。');box.append(text);const actions=document.createElement('div');actions.className='flex flex-wrap gap-2';const a=document.createElement('a');a.className='fc49-button';a.textContent='開啟地圖';a.href=fc49ValidMap(url)?url:buildAutoMapLink(name)||'https://www.google.com/maps';a.target='_blank';a.rel='noopener noreferrer';actions.append(a);const b=document.createElement('button');b.type='button';b.className='fc49-button';b.textContent=state.confirmed===url&&url?'✓ 已確認':'確認是此地點';b.onclick=()=>fc49ConfirmMap(kind);actions.append(b);const change=document.createElement('button');change.type='button';change.className='fc49-button fc49-secondary';change.textContent='更換地點連結';change.onclick=()=>{const input=document.getElementById(f.map);input.scrollIntoView({block:'center'});input.focus();input.select();};actions.append(change);box.append(actions);const label=fc49MapLabel(url);if(label){const p=document.createElement('p');p.className='text-xs mt-2 break-words';p.textContent='連結中的地點名稱：'+label;box.append(p);}}
+function fc49RenderMap(kind){const f=placeGuideFields(kind),box=document.getElementById('fc49-map-'+kind);if(!box)return;const url=document.getElementById(f.map).value.trim(),name=document.getElementById(f.title).value.trim(),state=fc49Maps[kind]||{};box.replaceChildren();const isConfirmed=state.confirmed===url&&!!url;const isLoose=isConfirmed&&!fc49SpecificMap(url);const text=document.createElement('p');text.className='text-xs mb-2';text.textContent=isConfirmed?(isLoose?'✓ 地點已確認（搜尋連結）':'✓ 地點已確認'):state.message|| (fc49SpecificMap(url)?'請開啟地圖核對名稱與位置，再確認。':(state.opened?'已開啟地圖核對過了，可以直接按「確認是此地點」。':'請先按「開啟地圖」核對是正確地點，再確認。'));box.append(text);const actions=document.createElement('div');actions.className='flex flex-wrap gap-2';const a=document.createElement('a');a.className='fc49-button';a.textContent='開啟地圖';a.href=fc49ValidMap(url)?url:buildAutoMapLink(name)||'https://www.google.com/maps';a.target='_blank';a.rel='noopener noreferrer';a.addEventListener('click',()=>{const st=fc49Maps[kind]||(fc49Maps[kind]={url,revision:0});st.opened=true;fc49RenderMap(kind);});actions.append(a);const b=document.createElement('button');b.type='button';b.className='fc49-button';b.textContent=isConfirmed?'✓ 已確認':'確認是此地點';b.onclick=()=>fc49ConfirmMap(kind);actions.append(b);const change=document.createElement('button');change.type='button';change.className='fc49-button fc49-secondary';change.textContent='更換地點連結';change.onclick=()=>{const input=document.getElementById(f.map);input.scrollIntoView({block:'center'});input.focus();input.select();};actions.append(change);box.append(actions);if(isLoose){const warn=document.createElement('p');warn.className='text-[10px] text-amber-600 mt-1 leading-relaxed';warn.textContent='⚠️ 這是搜尋連結，不是鎖定單一地點的精確連結。之後若把這則介紹設為「共享」，其他房間比對地點時可能配對不到同一間店；建議有空時換成 Google 地圖的「分享」連結（更換地點連結）。';box.append(warn);}const label=fc49MapLabel(url);if(label){const p=document.createElement('p');p.className='text-xs mt-2 break-words';p.textContent='連結中的地點名稱：'+label;box.append(p);}}
 
-function fc49ConfirmMap(kind){const url=document.getElementById(placeGuideFields(kind).map).value.trim();if(!fc49SpecificMap(url))return showToast('請先選定地點，貼上 Google Maps「分享」連結，再確認。');fc49Maps[kind]={...(fc49Maps[kind]||{}),url,confirmed:url,message:''};fc49RenderMap(kind);}
+function fc49ConfirmMap(kind){const url=document.getElementById(placeGuideFields(kind).map).value.trim();const state=fc49Maps[kind]||{};if(!fc49ValidMap(url))return showToast('請先輸入或自動帶出一個有效的 Google 地圖連結。');if(!fc49SpecificMap(url)&&!state.opened)return showToast('請先按「開啟地圖」核對是正確地點，再按確認。');fc49Maps[kind]={...state,url,confirmed:url,message:''};fc49RenderMap(kind);}
 
 function fc49MapChanged(kind){const old=fc49Maps[kind]||{};fc49Maps[kind]={url:document.getElementById(placeGuideFields(kind).map).value.trim(),confirmed:'',revision:(old.revision||0)+1};fc49RenderMap(kind);clearTimeout(fc49Timers['map-'+kind]);fc49Timers['map-'+kind]=setTimeout(()=>fc49ResolveMap(kind),450);}
 
