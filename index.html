@@ -132,7 +132,7 @@
     #fc32-menu button{display:block;width:100%;text-align:left;font-size:13px;padding:11px 9px;border-radius:7px;}
     #fc32-menu button:hover{background:#ecfdf5;}
     @media(max-width:350px){.fc32-utility{padding:5px 6px;}.fc32-room-link{gap:4px;padding:0 5px;}.fc32-room-link .trip-sync-status{font-size:8px;}.fc32-menu-button{font-size:9px;padding:4px 6px;}}
-  .fc49-button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 11px;border-radius:9px;font-size:12px;background:var(--fc45-accent);color:white;gap:4px;cursor:pointer}.fc49-secondary{background:var(--fc45-tint);color:var(--fc45-ink);border:1px solid var(--fc45-border)}.fc49-map{background:var(--fc45-tint);border:1px solid var(--fc45-border);border-radius:12px;padding:10px;margin:8px 0}.fc49-guide-fields input,.fc49-guide-fields textarea{background:white;box-sizing:border-box}
+  .fc49-button{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 11px;border-radius:9px;font-size:12px;background:var(--fc45-accent);color:white;gap:4px;cursor:pointer}.fc49-secondary{background:var(--fc45-tint);color:var(--fc45-ink);border:1px solid var(--fc45-border)}.fc49-map{background:var(--fc45-tint);border:1px solid var(--fc45-border);border-radius:10px;padding:8px 10px;margin:4px 0}.fc49-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.fc49-actions .fc49-button{width:100%;min-height:30px;padding:4px 4px;font-size:12px;white-space:nowrap;border-radius:8px}.fc49-guide-fields input,.fc49-guide-fields textarea{background:white;box-sizing:border-box}
 </style>
 <style>
 .fc44-flight{background:linear-gradient(110deg,#4f46e5,#9333ea);color:#fff;border:0}
@@ -316,6 +316,30 @@ section.page-content h2 i{ margin-right:2px; }
 [id^="modal-"] .space-y-2 > :not([hidden]) ~ :not([hidden]),
 [id^="modal-"] .space-y-2\.5 > :not([hidden]) ~ :not([hidden]),
 [id^="modal-"] .space-y-1\.5 > :not([hidden]) ~ :not([hidden]){ margin-top:0.375rem !important; }
+<style id="fc51-css">
+.day-btn{position:relative}
+.fc51-day-dot{position:absolute;top:3px;right:5px;width:8px;height:8px;border-radius:50%;background:#e11d48}
+#fc51-tab-dot{position:absolute;top:6px;left:calc(50% + 10px);width:8px;height:8px;border-radius:50%;background:#e11d48}
+.fc51-banner{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#7c3aed;color:#fff;border-radius:12px;padding:6px 10px}
+.fc51-box{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.fc51-btn{background:#7c3aed;color:#fff;border-radius:8px;font-size:11px;font-weight:700;padding:5px 9px;min-height:28px;white-space:nowrap}
+.fc51-banner .fc51-btn{background:#fff;color:#6d28d9}
+.fc51-btn-alt{background:#fff;color:#6d28d9;border:1px solid #c4b5fd}
+.fc51-invite{background:#fff;border:1px solid #c4b5fd;border-radius:12px;padding:8px 10px}
+.fc51-plan{display:flex;align-items:flex-start;gap:8px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:8px 10px}
+.fc51-time{font-size:11px;font-weight:700;color:#5b21b6;background:#ede9fe;border-radius:6px;padding:2px 6px;white-space:nowrap}
+.fc51-icon{font-size:13px;color:#64748b;padding:2px 4px;text-decoration:none}
+.fc51-tag{display:inline-block;font-size:10px;font-weight:700;border-radius:6px;padding:1px 5px;vertical-align:middle}
+.fc51-tag-from{background:#ede9fe;color:#5b21b6}.fc51-tag-clash{background:#fee2e2;color:#991b1b}
+.fc51-tag-pending{background:#fef3c7;color:#92400e}.fc51-tag-accepted{background:#dcfce7;color:#166534}.fc51-tag-declined{background:#f1f5f9;color:#475569}
+.fc51-link{font-size:11px;font-weight:700;color:#6d28d9;text-decoration:underline;white-space:nowrap}
+.fc51-chip{font-size:11px;font-weight:700;border:1px solid #cbd5e1;border-radius:999px;padding:3px 10px;background:#fff;color:#334155}
+.fc51-chip-on{background:#7c3aed;border-color:#7c3aed;color:#fff}.fc51-chip-off{opacity:.4}
+.fc51-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 2px;border-bottom:1px solid #f1f5f9}
+.fc51-check{width:18px;height:18px;border:1.5px solid #7c3aed;border-radius:5px;flex-shrink:0;position:relative;background:#fff}
+.fc51-check.on{background:#7c3aed}.fc51-check.on::after{content:"✓";position:absolute;inset:0;color:#fff;font-size:12px;line-height:16px;text-align:center}
+.fc51-timegrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#modal-fc51-plan input[type=time]{width:100%;height:32px;box-sizing:border-box;padding:0 6px;font-size:12px;border:1px solid #cbd5e1;border-radius:8px;background:#fff}
 </style>
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
@@ -326,7 +350,7 @@ section.page-content h2 i{ margin-right:2px; }
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-56</span>
+        <span id="test-version-badge" class="trip-version">FC-57</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -355,7 +379,7 @@ section.page-content h2 i{ margin-right:2px; }
           <i class="fa-solid fa-list-check block text-sm mb-0.5"></i>必備
         </button>
         <button onclick="switchTab('itinerary')" id="tab-btn-itinerary" class="tab-btn py-2.5 px-1 text-center border-b-2 border-transparent transition hover:text-sky-600">
-          <i class="fa-solid fa-calendar-days block text-sm mb-0.5"></i>行程
+          <i class="fa-solid fa-calendar-days block text-sm mb-0.5"></i>行程<span id="fc51-tab-dot" class="hidden"></span>
         </button>
         <button onclick="switchTab('favorites')" id="tab-btn-favorites" class="tab-btn py-2.5 px-1 text-center border-b-2 border-transparent transition hover:text-rose-500">
           <i class="fa-solid fa-heart block text-sm mb-0.5 text-rose-500"></i>收藏
@@ -403,13 +427,16 @@ section.page-content h2 i{ margin-right:2px; }
     </section>
 
     <section id="page-itinerary" class="page-content hidden space-y-3">
+      <div id="fc51-invite-banner" class="hidden"></div>
       <div id="today-banner" class="hidden"></div>
       <!-- Weather Forecast Header -->
       <div id="weather-banner" class="bg-gradient-to-r from-blue-500 to-sky-400 text-white p-3 rounded-2xl shadow-sm space-y-1"></div>
 
       <button onclick="openTravelBook()" class="w-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 rounded-2xl text-xs">🎨 AI 行程製圖／景點介紹</button>
       <!-- Itinerary List -->
+      <p class="text-[11px] font-bold text-slate-500 px-1">團體行程（全員必去，由主辦人安排）</p>
       <div id="itinerary-items-container" class="space-y-3"></div>
+      <div id="fc51-personal" class="hidden"></div>
 
       <!-- Add New Itinerary Item Button -->
       <div id="organizer-add-itinerary-wrap" class="pt-1 hidden space-y-2">
@@ -1009,7 +1036,7 @@ section.page-content h2 i{ margin-right:2px; }
       <div id="travel-book-preview" class="space-y-3"></div>
       <button id="scenic-pdf-download" onclick="downloadScenicPdf()" class="w-full bg-emerald-600 text-white py-3 rounded-xl text-sm font-bold">下載介紹 PDF</button>
       <label class="block text-sm font-bold text-slate-700">選擇填寫天數<select id="scenic-pdf-day" onchange="renderScenicPdfList()" class="w-full p-2 text-sm border rounded-lg bg-white mt-1"><option value="all">全部天數</option></select></label><p id="scenic-pdf-count" class="text-xs text-slate-500"></p>
-      <div class="space-y-2 p-3 rounded-xl bg-violet-50 border border-violet-200"><p class="text-xs font-bold text-violet-900">AI 一次補齊景點介紹</p><p class="text-[11px] text-violet-900 leading-relaxed">依上方選擇的天數產生指令。複製後貼到 ChatGPT／Claude／Gemini，再把整段回答貼回來套用；地點多時 AI 可能分段回答，可以分次貼上。</p><button type="button" onclick="fc50CopyBatchPrompt()" class="w-full py-2 rounded-lg bg-violet-600 text-white text-xs font-bold">複製景點介紹指令</button><textarea id="fc50-ai-paste-batch" rows="3" class="w-full p-2 border border-violet-200 rounded-lg text-sm bg-white" placeholder="把 AI 的整段回答貼在這裡"></textarea><button type="button" onclick="fc50ApplyBatchAnswer()" class="w-full py-2 rounded-lg bg-white border border-violet-300 text-violet-800 text-xs font-bold">套用 AI 回答</button><p id="fc50-ai-status-batch" role="status" class="text-[11px] text-violet-900"></p></div><div id="scenic-pdf-list" class="space-y-4"></div>
+      <div class="space-y-2 p-3 rounded-xl bg-violet-50 border border-violet-200"><p class="text-xs font-bold text-violet-900">AI 一次補齊景點介紹</p><p class="text-[11px] text-violet-900 leading-relaxed">依上方選擇的天數產生指令。複製後貼到 ChatGPT／Claude／Gemini，再把整段回答貼回來套用；地點多時 AI 可能分段回答，可以分次貼上。</p><button type="button" onclick="fc50CopyBatchPrompt(this)" class="w-full py-2 rounded-lg bg-violet-600 text-white text-xs font-bold">複製景點介紹指令</button><textarea id="fc50-ai-paste-batch" rows="3" class="w-full p-2 border border-violet-200 rounded-lg text-sm bg-white" placeholder="把 AI 的整段回答貼在這裡"></textarea><button type="button" onclick="fc50ApplyBatchAnswer()" class="w-full py-2 rounded-lg bg-white border border-violet-300 text-violet-800 text-xs font-bold">套用 AI 回答</button><p id="fc50-ai-status-batch" role="status" class="text-[11px] text-violet-900"></p></div><div id="scenic-pdf-list" class="space-y-4"></div>
 
       <p class="text-[10px] text-slate-400">iPhone 若開啟 PDF 預覽，可按分享 → 儲存到「檔案」。</p>
       </div>
@@ -1060,8 +1087,7 @@ section.page-content h2 i{ margin-right:2px; }
         <div id="itin-map-preview" class="hidden"></div><div id="fc49-map-itin" class="fc49-map"></div>
       </div>
       <div>
-        <label class="text-[11px] font-bold text-slate-600 block mb-1">時間：</label>
-        <div class="fc46-time-rows"><div class="fc46-time-row"><label for="input-itin-start">開始時間</label><span class="fc46-time-field"><input type="time" id="input-itin-start" step="60" oninput="fc46MirrorTime()"><span id="fc46-start-display" aria-hidden="true">--:--</span></span></div><div class="fc46-time-row"><label><input id="input-itin-has-end" type="checkbox" onchange="fc41ToggleEnd()">設定結束時間</label><span class="fc46-time-field"><input type="time" id="input-itin-end" step="60" oninput="fc46MirrorTime()" disabled><span id="fc46-end-display" aria-hidden="true">--:--</span></span></div></div>
+        <div class="fc46-time-rows"><div class="fc46-time-row"><label for="input-itin-start">時間：</label><span class="fc46-time-field"><input type="time" id="input-itin-start" step="60" oninput="fc46MirrorTime()"><span id="fc46-start-display" aria-hidden="true">--:--</span></span></div><div class="fc46-time-row"><label><input id="input-itin-has-end" type="checkbox" onchange="fc41ToggleEnd()">設定結束時間</label><span class="fc46-time-field"><input type="time" id="input-itin-end" step="60" oninput="fc46MirrorTime()" disabled><span id="fc46-end-display" aria-hidden="true">--:--</span></span></div></div>
         <p class="text-[10px] text-slate-500 mt-1">未勾選結束時間時，只按開始時間排序。</p>
         <input type="hidden" id="input-itin-time"><p id="fc41-time-error" role="alert" class="hidden mt-2 p-2 bg-rose-50 text-rose-700 rounded-lg text-sm"></p>
       </div>
@@ -1069,7 +1095,7 @@ section.page-content h2 i{ margin-right:2px; }
         <label class="text-[11px] font-bold text-slate-600 block mb-1">行程詳細說明：</label>
         <textarea id="input-itin-desc" placeholder="詳細活動內容..." class="w-full h-20 p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none leading-relaxed"></textarea>
       </div>
-      <details id="fc46-itin-guide" class="space-y-2 p-2.5 border border-amber-200 rounded-xl"><summary class="text-xs font-bold cursor-pointer">景點／餐廳介紹</summary><div class="space-y-2 p-2.5 rounded-lg bg-violet-50 border border-violet-200 mt-2"><p class="text-[11px] text-violet-900 leading-relaxed"><b>AI 產生介紹</b>：① 複製指令 → ② 貼到 ChatGPT／Claude／Gemini → ③ 把整段回答貼回下方 → ④ 按套用</p><button type="button" onclick="fc50CopyPlacePrompt('itin')" class="w-full py-2 rounded-lg bg-violet-600 text-white text-xs font-bold">① 複製 AI 指令</button><textarea id="fc50-ai-paste-itin" rows="3" class="w-full p-2 border border-violet-200 rounded-lg text-sm bg-white" placeholder="③ 把 AI 的整段回答貼在這裡"></textarea><button type="button" onclick="fc50ApplyPlaceAnswer('itin')" class="w-full py-2 rounded-lg bg-white border border-violet-300 text-violet-800 text-xs font-bold">④ 套用 AI 回答</button><p id="fc50-ai-status-itin" role="status" class="text-[11px] text-violet-900"></p><input type="hidden" id="fc50-ai-flag-itin" value=""></div><div class="fc49-guide-fields"><label class="block text-xs font-bold">搜尋現有介紹<input id="fc49-query-itin" autocomplete="off" placeholder="輸入一個字即可搜尋" class="w-full p-2 border rounded-lg mt-1" oninput="fc49ScheduleSearch('itin',event)" oncompositionend="fc49ScheduleSearch('itin',event)"></label><div id="itin-guide-results" class="space-y-2" aria-live="polite"></div><label class="block text-xs font-bold mt-2">簡介（建議 1–2 句）<textarea id="input-itin-guide" maxlength="12000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm"></textarea></label><label class="block text-xs font-bold mt-2">介紹重點（建議 3–5 項）<textarea id="fc49-highlights-itin" maxlength="12000" rows="4" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行填寫一項特色、必看重點或推薦菜色"></textarea></label><label class="block text-xs font-bold mt-2">實用資訊（門票、營業時間、交通…）<textarea id="fc50-info-itin" maxlength="6000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行一項，例如：門票：成人 150,000 VND"></textarea></label></div><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。共享前請開啟地圖確認位置；可貼上 Google Maps 分享連結。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('itin')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button></div><label class="flex gap-2 items-center text-xs font-bold"><input type="checkbox" id="fc48-itin-shared">共享景點介紹</label><p class="text-[10px] text-slate-500">勾選後，其他使用者安排同一地點時，也能查看並採用你填寫的介紹，不用再自行搜尋資料。</p></details><div><label class="text-[11px] font-bold text-amber-700 block mb-1"><i class="fa-regular fa-comment-dots mr-1"></i>團員補充註解：</label>
+      <details id="fc46-itin-guide" class="space-y-2 p-2.5 border border-amber-200 rounded-xl"><summary class="text-xs font-bold cursor-pointer">景點／餐廳介紹</summary><div class="space-y-2 p-2.5 rounded-lg bg-violet-50 border border-violet-200 mt-2"><p class="text-[11px] text-violet-900 leading-relaxed"><b>AI 產生介紹</b>：① 複製指令 → ② 貼到 ChatGPT／Claude／Gemini → ③ 把整段回答貼回下方 → ④ 按套用</p><button type="button" onclick="fc50CopyPlacePrompt('itin',this)" class="w-full py-2 rounded-lg bg-violet-600 text-white text-xs font-bold">① 複製 AI 指令</button><textarea id="fc50-ai-paste-itin" rows="3" class="w-full p-2 border border-violet-200 rounded-lg text-sm bg-white" placeholder="③ 把 AI 的整段回答貼在這裡"></textarea><button type="button" onclick="fc50ApplyPlaceAnswer('itin')" class="w-full py-2 rounded-lg bg-white border border-violet-300 text-violet-800 text-xs font-bold">④ 套用 AI 回答</button><p id="fc50-ai-status-itin" role="status" class="text-[11px] text-violet-900"></p><input type="hidden" id="fc50-ai-flag-itin" value=""></div><div class="fc49-guide-fields"><label class="block text-xs font-bold">搜尋現有介紹<input id="fc49-query-itin" autocomplete="off" placeholder="輸入一個字即可搜尋" class="w-full p-2 border rounded-lg mt-1" oninput="fc49ScheduleSearch('itin',event)" oncompositionend="fc49ScheduleSearch('itin',event)"></label><div id="itin-guide-results" class="space-y-2" aria-live="polite"></div><label class="block text-xs font-bold mt-2">簡介（建議 1–2 句）<textarea id="input-itin-guide" maxlength="12000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm"></textarea></label><label class="block text-xs font-bold mt-2">介紹重點（建議 3–5 項）<textarea id="fc49-highlights-itin" maxlength="12000" rows="4" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行填寫一項特色、必看重點或推薦菜色"></textarea></label><label class="block text-xs font-bold mt-2">實用資訊（門票、營業時間、交通…）<textarea id="fc50-info-itin" maxlength="6000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行一項，例如：門票：成人 150,000 VND"></textarea></label></div><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。共享前請開啟地圖確認位置；可貼上 Google Maps 分享連結。</p><div class="flex gap-2"><button type="button" onclick="searchPlaceGuides('itin')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button></div><label class="flex gap-2 items-center text-xs font-bold"><input type="checkbox" id="fc48-itin-shared">共享景點介紹</label><p class="text-[10px] text-slate-500">勾選後，其他使用者安排同一地點時，也能查看並採用你填寫的介紹，不用再自行搜尋資料。</p></details><div><label class="text-[11px] font-bold text-amber-700 block mb-1"><i class="fa-regular fa-comment-dots mr-1"></i>團員補充註解：</label>
         <textarea id="input-itin-comment" placeholder="例如：記得帶推車、先預約座位、門票需攜帶護照..." class="w-full h-16 p-2.5 border border-amber-200 bg-amber-50/50 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none leading-relaxed"></textarea>
       </div>
       <div>
@@ -1229,6 +1255,40 @@ section.page-content h2 i{ margin-right:2px; }
     </div>
 
     <!-- Add Fav Category Modal -->
+    <div id="modal-fc51-plan" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-user-lock text-violet-500 mr-1.5"></i><span id="fc51-plan-title">新增私人行程</span></h3>
+      <input type="hidden" id="fc51-plan-id">
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">從收藏選擇地點：</label>
+        <select id="fc51-plan-fav" class="w-full border border-slate-200 rounded-xl bg-white"></select>
+        <p id="fc51-plan-empty" class="hidden text-[11px] text-amber-700 mt-1">收藏裡還沒有地點，請先到「收藏」分頁新增。</p>
+      </div>
+      <div class="fc51-timegrid">
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">開始時間：</label><input type="time" id="fc51-plan-start" step="60"></div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">結束時間（選填）：</label><input type="time" id="fc51-plan-end" step="60"></div>
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">備註：</label>
+        <input type="text" id="fc51-plan-note" maxlength="120" placeholder="例如：訂位 6 點、先買門票" class="w-full border border-slate-200 rounded-xl">
+      </div>
+      <div class="flex gap-2">
+        <button type="button" onclick="closeModal(true)" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
+        <button type="button" id="fc51-plan-save" onclick="fc51SavePlan()" class="flex-1 py-2.5 bg-violet-600 text-white rounded-xl text-xs font-bold disabled:opacity-40">儲存</button>
+      </div>
+    </div>
+    <div id="modal-fc51-share" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-user-group text-violet-500 mr-1.5"></i>分享給誰跟隨</h3>
+      <p class="text-[11px] text-slate-500 leading-relaxed">只有你勾選的人看得到。對方按「接受」之後，才會看到並跟隨你的安排。</p>
+      <div><label class="text-[11px] font-bold text-slate-600 block mb-1">分享哪幾天：</label><div id="fc51-share-days" class="flex flex-wrap gap-1.5"></div></div>
+      <input type="text" id="fc51-share-search" placeholder="搜尋團員" oninput="fc51RenderShare()" class="w-full border border-slate-200 rounded-xl">
+      <div class="flex gap-1.5 flex-wrap"><button type="button" class="fc51-chip" onclick="fc51ShareQuick('last')">上次分享的對象</button><button type="button" class="fc51-chip" onclick="fc51ShareQuick('all')">全選</button><button type="button" class="fc51-chip" onclick="fc51ShareQuick('none')">全部清除</button></div>
+      <div id="fc51-share-selected" class="flex flex-wrap gap-1.5"></div>
+      <div id="fc51-share-list" class="space-y-1 max-h-48 overflow-y-auto"></div>
+      <div class="flex gap-2">
+        <button type="button" onclick="closeModal(true)" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
+        <button type="button" onclick="fc51ApplyShare()" class="flex-1 py-2.5 bg-violet-600 text-white rounded-xl text-xs font-bold">套用</button>
+      </div>
+    </div>
     <div id="modal-fav-cat" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
       <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-folder-plus text-rose-500 mr-1.5"></i>新增口袋類別</h3>
       <input type="text" id="input-fcat-title" placeholder="例如：夜市打卡、伴手禮清單" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
@@ -3052,7 +3112,7 @@ section.page-content h2 i{ margin-right:2px; }
     async function generateTravelBook(){
       if(!scenicPdfDraft.length)return showToast('目前沒有可匯出的景點');const button=document.getElementById('travel-book-generate'),revision=++travelBookPreviewRevision;button.disabled=true;button.textContent='預覽製作中…';
       try{await document.fonts?.ready;const image=null;if(revision!==travelBookPreviewRevision)return;const outputs=buildTravelBookOutputs(image,true),box=document.getElementById('travel-book-preview');travelBookUrls.forEach(URL.revokeObjectURL);travelBookUrls=[];box.innerHTML='';
-        for(const out of outputs){const blob=await new Promise(resolve=>out.canvas.toBlob(resolve,'image/png'));out.canvas.width=1;out.canvas.height=1;if(revision!==travelBookPreviewRevision)return;if(!blob)throw new Error('預覽無法製作');const url=URL.createObjectURL(blob);travelBookUrls.push(url);const row=document.createElement('figure'),img=document.createElement('img'),caption=document.createElement('figcaption');img.src=url;img.alt=out.label;img.className='w-full rounded-lg border';caption.textContent=out.label.replaceAll('_',' ');caption.className='text-xs text-center text-slate-600 py-1';row.append(img,caption);box.appendChild(row);}
+        for(const out of outputs){const blob=await new Promise(resolve=>out.canvas.toBlob(resolve,'image/png'));out.canvas.width=1;out.canvas.height=1;if(revision!==travelBookPreviewRevision)return;if(!blob)throw new Error('預覽無法製作');const url=URL.createObjectURL(blob);travelBookUrls.push(url);const row=document.createElement('figure'),img=document.createElement('img');img.src=url;img.alt=out.label;img.className='w-full rounded-lg border';row.append(img);box.appendChild(row);}
         showToast('預覽共 '+outputs.length+' 頁；下載會合成一份 PDF');
       }catch(e){showToast(e.message||'預覽製作失敗');}finally{button.disabled=false;button.textContent='預覽介紹 PDF';}
     }
@@ -3526,7 +3586,7 @@ section.page-content h2 i{ margin-right:2px; }
       const todayDay = todayIdx + 1;
       const data = getStoredData('itinerary', defaultItineraryData);
       const dayData = getItineraryWithTransfers(data)[todayDay] || { items: [] };
-      const count = dayData.items.length;
+      const count = dayData.items.length + (typeof fc51VisibleCount==='function'?fc51VisibleCount(todayDay):0);
       const isViewingToday = currentDay === todayDay;
       banner.className = 'bg-gradient-to-r from-rose-500 to-orange-400 text-white px-3 py-1.5 rounded-xl shadow-sm flex items-center justify-between gap-2';
       banner.innerHTML = `
@@ -3538,6 +3598,7 @@ section.page-content h2 i{ margin-right:2px; }
     function renderItinerary() {
       updateItineraryPermissions();
       renderTodayBanner();
+      if(typeof fc51RenderPersonal==='function')fc51RenderPersonal();
       const weather = weatherData[currentDay] || weatherData[1];
       document.getElementById('weather-banner').innerHTML = `
         <div class="flex justify-between items-start">
@@ -4804,7 +4865,7 @@ section.page-content h2 i{ margin-right:2px; }
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
-        'modal-edit-fav-note', 'modal-vote-fav'
+        'modal-edit-fav-note', 'modal-vote-fav', 'modal-fc51-plan', 'modal-fc51-share'
       ];
       modalIds.forEach(id => {
         const el = document.getElementById(id);
@@ -5307,6 +5368,7 @@ section.page-content h2 i{ margin-right:2px; }
       calculateCurrencyConversion();
       renderInfoPage();
       updateRoomEditingLock();
+      if(typeof fc51Render==='function')fc51Render();
     }
 
     window.onload = async function() {
@@ -5413,7 +5475,7 @@ function fc49MapKey(raw){return placeGuideIdentity(raw)||(fc49SpecificMap(raw)?'
 
 function fc49MapLabel(raw){try{const u=new URL(raw),m=u.pathname.match(/\/place\/([^/]+)/);return m?decodeURIComponent(m[1].replace(/\+/g,' ')):'';}catch{return '';}}
 
-function fc49RenderMap(kind){const f=placeGuideFields(kind),box=document.getElementById('fc49-map-'+kind);if(!box)return;const url=document.getElementById(f.map).value.trim(),name=document.getElementById(f.title).value.trim(),state=fc49Maps[kind]||{};box.replaceChildren();const isConfirmed=state.confirmed===url&&!!url;const isLoose=isConfirmed&&!fc49SpecificMap(url);const text=document.createElement('p');text.className='text-xs mb-2';text.textContent=isConfirmed?(isLoose?'✓ 地點已確認（搜尋連結）':'✓ 地點已確認'):state.message|| (fc49SpecificMap(url)?'請開啟地圖核對名稱與位置，再確認。':(state.opened?'已開啟地圖核對過了，可以直接按「確認是此地點」。':'請先按「開啟地圖」核對是正確地點，再確認。'));box.append(text);const actions=document.createElement('div');actions.className='flex flex-wrap gap-2';const a=document.createElement('a');a.className='fc49-button';a.textContent='開啟地圖';a.href=fc49ValidMap(url)?url:buildAutoMapLink(name)||'https://www.google.com/maps';a.target='_blank';a.rel='noopener noreferrer';a.addEventListener('click',()=>{const st=fc49Maps[kind]||(fc49Maps[kind]={url,revision:0});st.opened=true;fc49RenderMap(kind);});actions.append(a);const b=document.createElement('button');b.type='button';b.className='fc49-button';b.textContent=isConfirmed?'✓ 已確認':'確認是此地點';b.onclick=()=>fc49ConfirmMap(kind);actions.append(b);const change=document.createElement('button');change.type='button';change.className='fc49-button fc49-secondary';change.textContent='更換地點連結';change.onclick=()=>{const input=document.getElementById(f.map);input.scrollIntoView({block:'center'});input.focus();input.select();};actions.append(change);box.append(actions);if(isLoose){const warn=document.createElement('p');warn.className='text-[10px] text-amber-600 mt-1 leading-relaxed';warn.textContent='⚠️ 這是搜尋連結，不是鎖定單一地點的精確連結。之後若把這則介紹設為「共享」，其他房間比對地點時可能配對不到同一間店；建議有空時換成 Google 地圖的「分享」連結（更換地點連結）。';box.append(warn);}const label=fc49MapLabel(url);if(label){const p=document.createElement('p');p.className='text-xs mt-2 break-words';p.textContent='連結中的地點名稱：'+label;box.append(p);}}
+function fc49RenderMap(kind){const f=placeGuideFields(kind),box=document.getElementById('fc49-map-'+kind);if(!box)return;const url=document.getElementById(f.map).value.trim(),name=document.getElementById(f.title).value.trim(),state=fc49Maps[kind]||{};box.replaceChildren();const isConfirmed=state.confirmed===url&&!!url;const isLoose=isConfirmed&&!fc49SpecificMap(url);const text=document.createElement('p');text.className='text-xs mb-1.5';text.textContent=isConfirmed?(isLoose?'✓ 地點已確認（搜尋連結）':'✓ 地點已確認'):state.message|| (fc49SpecificMap(url)?'請開啟地圖核對名稱與位置，再確認。':(state.opened?'已開啟地圖核對過了，可以直接按「確認是此地點」。':'請先按「開啟地圖」核對是正確地點，再確認。'));box.append(text);const actions=document.createElement('div');actions.className='fc49-actions';const a=document.createElement('a');a.className='fc49-button';a.textContent='開啟地圖';a.href=fc49ValidMap(url)?url:buildAutoMapLink(name)||'https://www.google.com/maps';a.target='_blank';a.rel='noopener noreferrer';a.addEventListener('click',()=>{const st=fc49Maps[kind]||(fc49Maps[kind]={url,revision:0});st.opened=true;fc49RenderMap(kind);});actions.append(a);const b=document.createElement('button');b.type='button';b.className='fc49-button';b.textContent=isConfirmed?'✓ 已確認':'確認是此地點';b.onclick=()=>fc49ConfirmMap(kind);actions.append(b);const change=document.createElement('button');change.type='button';change.className='fc49-button fc49-secondary';change.textContent='更換地點連結';change.onclick=()=>{const input=document.getElementById(f.map);input.scrollIntoView({block:'center'});input.focus();input.select();};actions.append(change);box.append(actions);if(isLoose){const warn=document.createElement('p');warn.className='text-[10px] text-amber-600 mt-1 leading-relaxed';warn.textContent='⚠️ 這是搜尋連結，不是鎖定單一地點的精確連結。之後若把這則介紹設為「共享」，其他房間比對地點時可能配對不到同一間店；建議有空時換成 Google 地圖的「分享」連結（更換地點連結）。';box.append(warn);}const label=fc49MapLabel(url);if(label){const p=document.createElement('p');p.className='text-xs mt-2 break-words';p.textContent='連結中的地點名稱：'+label;box.append(p);}}
 
 function fc49ConfirmMap(kind){const url=document.getElementById(placeGuideFields(kind).map).value.trim();const state=fc49Maps[kind]||{};if(!fc49ValidMap(url))return showToast('請先輸入或自動帶出一個有效的 Google 地圖連結。');if(!fc49SpecificMap(url)&&!state.opened)return showToast('請先按「開啟地圖」核對是正確地點，再按確認。');fc49Maps[kind]={...state,url,confirmed:url,message:''};fc49RenderMap(kind);}
 
@@ -5440,11 +5502,13 @@ async function fc50Copy(text,fallbackField){
     const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0;user-select:text;-webkit-user-select:text;';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,text.length);let ok=false;try{ok=Boolean(document.execCommand&&document.execCommand('copy'));}catch(_){}ta.remove();
     if(!ok&&fallbackField){fallbackField.value=text;fallbackField.focus();fallbackField.select();}return ok;}
 }
-async function fc50CopyPlacePrompt(kind){
+function fc50FlashCopied(btn){if(!btn)return;if(!btn.dataset.orig)btn.dataset.orig=btn.textContent;btn.textContent='✓ 已複製';clearTimeout(btn._t);btn._t=setTimeout(()=>{btn.textContent=btn.dataset.orig;},2000);}
+async function fc50CopyPlacePrompt(kind,btn){
   const f=placeGuideFields(kind),status=document.getElementById('fc50-ai-status-'+kind),title=fc46TextTitle(document.getElementById(f.title).value||'');
   if(!title){status.textContent='請先填寫行程標題（地點名稱）。';return;}
   const ok=await fc50Copy(fc50PlacePrompt(title,getTripDays()[currentDay-1]||''),document.getElementById('fc50-ai-paste-'+kind));
   status.textContent=ok?'✓ 已複製指令！貼到 ChatGPT、Claude 或 Gemini，再把整段回答貼回下方。':'無法自動複製，指令已放進下方文字框：請長按全選複製，貼到 AI 後再清空、改貼 AI 的回答。';
+  if(ok){showToast('已複製 AI 指令');fc50FlashCopied(btn);}else showToast('無法自動複製，請長按文字框手動複製');
 }
 function fc50ParseSections(text){
   const out={};let cur=null;
@@ -5476,7 +5540,7 @@ function fc50ApplyPlaceAnswer(kind){
   status.textContent='✓ 已套用到下方欄位'+(r.alert&&kind==='itin'?'與「重要提醒」':'')+'。AI 內容可能有誤，請核對價格與營業時間後按「儲存」。';
 }
 function fc50BatchTargets(){const sel=document.getElementById('scenic-pdf-day')?.value||'all';return scenicPdfDraft.map((e,i)=>({e,i})).filter(({e})=>sel==='all'||e.day===sel);}
-async function fc50CopyBatchPrompt(){
+async function fc50CopyBatchPrompt(btn){
   const status=document.getElementById('fc50-ai-status-batch'),list=fc50BatchTargets();
   if(!list.length){status.textContent='目前選擇的天數沒有景點。';return;}
   const text=['請幫我為以下每個旅遊地點各寫一份介紹，要給家族旅遊團的成員看。','旅程：'+(fc50Region()||'未填寫'),'同行成員：'+fc50Companions(),'','地點清單：',
@@ -5485,6 +5549,7 @@ async function fc50CopyBatchPrompt(){
   fc50BatchList=list.map(x=>x.i);
   const ok=await fc50Copy(text,document.getElementById('fc50-ai-paste-batch'));
   status.textContent=ok?`✓ 已複製 ${list.length} 個地點的指令！貼到 AI 後，把整段回答貼回下方。`:'無法自動複製，指令已放進下方文字框：請長按全選複製，貼到 AI 後再清空、改貼 AI 的回答。';
+  if(ok){showToast(`已複製 ${list.length} 個地點的指令`);fc50FlashCopied(btn);}else showToast('無法自動複製，請長按文字框手動複製');
 }
 function fc50PersistGuides(list){
   try{
@@ -5640,6 +5705,149 @@ function travelBookIntroPages(){
   pages.forEach((p,i)=>{const c=p.canvas.getContext('2d');c.textBaseline='top';c.textAlign='center';c.font=font(24,false);c.fillStyle=t.muted;c.fillText(`${tripTitle}・景點介紹　第 ${i+1} / ${pages.length} 頁`,W/2,H-104);c.font=font(20,false);c.fillText('內容僅供參考，門票、營業時間等資訊請以現場公告為準',W/2,H-68);c.textAlign='left';});
   return pages;
 }
+</script>
+<script id="fc57-personal">
+// FC57: private plans (picked from favorites) + invite-only live follow.
+// Storage: favorites[].items[].plans[] -> {id,ownerId,ownerName,day,start,end,note,shareTo:{[memberId]:{name,status}}}
+let fc51Members=[],fc51Sel=new Set(),fc51Reinvite=new Set(),fc51ShareDays=new Set(),fc51Toasted=false;
+function fc51Me(){return currentMember?{id:String(currentMember.id),name:String(currentMember.nickname||'')}:null;}
+function fc51Favs(){return getStoredData('favorites',defaultFavoritesData)||[];}
+function fc51Flat(){const out=[];for(const cat of fc51Favs())for(const item of (cat.items||[]))for(const plan of (item.plans||[]))out.push({plan,item,cat});return out;}
+function fc51Min(t){const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||''));return m?(+m[1])*60+(+m[2]):null;}
+function fc51Range(p){const a=fc51Min(p.start);if(a===null)return null;const b=fc51Min(p.end);return {start:a,end:(b!==null&&b>a)?b:a+60};}
+function fc51Overlap(a,b){return !!a&&!!b&&a.start<b.end&&b.start<a.end;}
+function fc51TimeText(p){return p.start?(p.end?p.start+' - '+p.end:p.start):'';}
+function fc51Key(k){const me=fc51Me();return `fc51_${k}_${roomId}_${me?me.id:'x'}`;}
+function fc51Load(k,def){try{const v=localStorage.getItem(fc51Key(k));return v?JSON.parse(v):def;}catch(e){return def;}}
+function fc51Store(k,v){try{localStorage.setItem(fc51Key(k),JSON.stringify(v));}catch(e){}}
+function fc51Sorted(list){return list.slice().sort((a,b)=>(fc51Min(a.plan.start)??9999)-(fc51Min(b.plan.start)??9999));}
+function fc51Shares(ownerId,day){const map={};for(const {plan} of fc51Flat()){if(String(plan.ownerId)!==String(ownerId)||Number(plan.day)!==Number(day))continue;for(const [id,v] of Object.entries(plan.shareTo||{}))if(!map[id])map[id]={...v};}return map;}
+function fc51Incoming(meId){const seen=new Map();for(const {plan} of fc51Flat()){if(String(plan.ownerId)===String(meId))continue;const s=(plan.shareTo||{})[meId];if(!s)continue;const k=plan.ownerId+'|'+plan.day;if(!seen.has(k))seen.set(k,{ownerId:String(plan.ownerId),ownerName:plan.ownerName||'',day:Number(plan.day),status:s.status});}return [...seen.values()];}
+function fc51Pending(meId){return fc51Incoming(meId).filter(x=>x.status==='pending');}
+function fc51Following(meId,day){return fc51Incoming(meId).find(x=>x.day===Number(day)&&x.status==='accepted')||null;}
+function fc51Mine(day){const me=fc51Me();return me?fc51Sorted(fc51Flat().filter(x=>String(x.plan.ownerId)===me.id&&Number(x.plan.day)===Number(day))):[];}
+function fc51Theirs(day){const me=fc51Me(),f=me&&fc51Following(me.id,day);return f?fc51Sorted(fc51Flat().filter(x=>String(x.plan.ownerId)===f.ownerId&&Number(x.plan.day)===Number(day))):[];}
+function fc51VisibleCount(day){return fc51Mine(day).length+fc51Theirs(day).length;}
+function fc51Save(data){pushStateToCloud('favorites',data);}
+function fc51Open(id){closeModal(true);document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById(id).classList.remove('hidden');}
+
+function fc51OpenPlan(planId){
+  const me=fc51Me();if(!requireRoom())return;if(!me)return showToast('請先登入暱稱');
+  const sel=document.getElementById('fc51-plan-fav');sel.replaceChildren();let count=0;
+  for(const cat of fc51Favs()){const g=document.createElement('optgroup');g.label=cat.title||'收藏';for(const it of (cat.items||[])){const o=document.createElement('option');o.value=cat.id+'|'+it.id;o.textContent=it.name;g.append(o);count++;}if(g.children.length)sel.append(g);}
+  document.getElementById('fc51-plan-empty').classList.toggle('hidden',count>0);document.getElementById('fc51-plan-save').disabled=count===0;
+  let plan=null;if(planId){const f=fc51Flat().find(x=>x.plan.id===planId&&String(x.plan.ownerId)===me.id);if(f){plan=f.plan;sel.value=f.cat.id+'|'+f.item.id;}}
+  document.getElementById('fc51-plan-id').value=plan?plan.id:'';
+  document.getElementById('fc51-plan-title').textContent=(plan?'編輯':'新增')+'私人行程・Day '+(plan?plan.day:currentDay);
+  document.getElementById('fc51-plan-start').value=plan?.start||'';document.getElementById('fc51-plan-end').value=plan?.end||'';document.getElementById('fc51-plan-note').value=plan?.note||'';
+  fc51Open('modal-fc51-plan');
+}
+function fc51SavePlan(){
+  const me=fc51Me();if(!requireRoom())return;if(!me)return showToast('請先登入暱稱');
+  const [catId,itemId]=String(document.getElementById('fc51-plan-fav').value||'').split('|'),start=document.getElementById('fc51-plan-start').value,end=document.getElementById('fc51-plan-end').value,note=document.getElementById('fc51-plan-note').value.trim(),planId=document.getElementById('fc51-plan-id').value;
+  if(!itemId)return showToast('請從收藏選一個地點');
+  if(!start)return showToast('請選擇開始時間');
+  if(end&&fc51Min(end)<=fc51Min(start))return showToast('結束時間須晚於開始時間');
+  const data=fc51Favs();let plan=null,day=currentDay;
+  if(planId){for(const c of data)for(const it of (c.items||[])){const i=(it.plans||[]).findIndex(p=>p.id===planId&&String(p.ownerId)===me.id);if(i>=0){plan=it.plans.splice(i,1)[0];}}}
+  const cat=data.find(c=>c.id===catId),item=cat&&(cat.items||[]).find(i=>i.id===itemId);if(!item)return showToast('找不到這個收藏地點');
+  if(plan)day=plan.day;
+  if(!plan){const sib=fc51Flat().find(x=>String(x.plan.ownerId)===me.id&&Number(x.plan.day)===day&&x.plan.shareTo&&Object.keys(x.plan.shareTo).length);plan={id:'plan-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ownerId:me.id,ownerName:me.name,day,shareTo:sib?JSON.parse(JSON.stringify(sib.plan.shareTo)):{}};}
+  Object.assign(plan,{ownerName:me.name,start,end:end||'',note});
+  (item.plans=item.plans||[]).push(plan);
+  closeModal(true);fc51Save(data);showToast(planId?'已更新私人行程':'已新增私人行程');
+}
+function fc51DeletePlan(planId){
+  const me=fc51Me();if(!requireRoom()||!me)return;if(!confirm('刪除這個私人行程？'))return;
+  const data=fc51Favs();for(const c of data)for(const it of (c.items||[]))if(it.plans)it.plans=it.plans.filter(p=>!(p.id===planId&&String(p.ownerId)===me.id));
+  fc51Save(data);showToast('已刪除');
+}
+function fc51Respond(ownerId,day,accept){
+  const me=fc51Me();if(!requireRoom()||!me)return;day=Number(day);
+  if(accept){
+    if(fc51Following(me.id,day))return showToast('這天你已經在跟隨別人，請先取消跟隨');
+    if(Object.keys(fc51Shares(me.id,day)).length)return showToast('你這天已分享給別人，請先取消分享，才能跟隨別人');
+  }
+  const data=fc51Favs();let n=0;
+  for(const c of data)for(const it of (c.items||[]))for(const p of (it.plans||[]))if(String(p.ownerId)===String(ownerId)&&Number(p.day)===day&&p.shareTo&&p.shareTo[me.id]){p.shareTo[me.id]={...p.shareTo[me.id],name:me.name,status:accept?'accepted':'declined'};n++;}
+  if(!n)return showToast('對方已取消分享');
+  fc51Save(data);showToast(accept?'已接受跟隨':'已取消跟隨／婉拒');
+}
+function fc51Goto(day){switchTab('itinerary');selectDay(Number(day));setTimeout(()=>document.getElementById('fc51-personal')?.scrollIntoView({behavior:'smooth',block:'center'}),80);}
+
+async function fc51OpenShare(){
+  const me=fc51Me();if(!requireRoom()||!me)return;
+  const days=[...new Set(fc51Flat().filter(x=>String(x.plan.ownerId)===me.id).map(x=>Number(x.plan.day)))].sort((a,b)=>a-b);
+  if(!days.length)return showToast('請先新增私人行程，才能分享');
+  let list;try{list=await fetchRoomMembers();}catch(e){return showToast('讀取團員名單失敗，請稍後再試');}
+  fc51Members=list.filter(m=>String(m.id)!==me.id).map(m=>({id:String(m.id),name:String(m.nickname||m.name||''),role:m.role}));
+  if(!fc51Members.length)return showToast('目前沒有其他團員');
+  const first=days.includes(currentDay)&&!fc51Following(me.id,currentDay)?currentDay:(days.find(d=>!fc51Following(me.id,d))||null);
+  if(first===null)return showToast('你每一天都在跟隨別人，不能分享');
+  fc51ShareDays=new Set([first]);fc51Sel=new Set(Object.keys(fc51Shares(me.id,first)));fc51Reinvite=new Set();
+  document.getElementById('fc51-share-search').value='';fc51RenderShare(days);fc51Open('modal-fc51-share');
+}
+function fc51ShareDayList(){const me=fc51Me();return [...new Set(fc51Flat().filter(x=>String(x.plan.ownerId)===me.id).map(x=>Number(x.plan.day)))].sort((a,b)=>a-b);}
+function fc51RenderShare(days){
+  const me=fc51Me();days=days||fc51ShareDayList();
+  const dbox=document.getElementById('fc51-share-days');dbox.replaceChildren();
+  for(const d of days){const b=document.createElement('button');b.type='button';const blocked=!!fc51Following(me.id,d),on=fc51ShareDays.has(d);b.textContent='Day '+d;b.disabled=blocked;b.title=blocked?'這天你正在跟隨別人，不能分享':'';b.className='fc51-chip'+(on?' fc51-chip-on':'')+(blocked?' fc51-chip-off':'');b.onclick=()=>{if(on&&fc51ShareDays.size===1)return;on?fc51ShareDays.delete(d):fc51ShareDays.add(d);fc51RenderShare(days);};dbox.append(b);}
+  const q=document.getElementById('fc51-share-search').value.trim().toLowerCase(),last=new Set(fc51Load('last',[])),firstDay=[...fc51ShareDays][0],status=fc51Shares(me.id,firstDay);
+  const selBox=document.getElementById('fc51-share-selected');selBox.replaceChildren();
+  for(const id of fc51Sel){const m=fc51Members.find(x=>x.id===id);if(!m)continue;const t=document.createElement('button');t.type='button';t.className='fc51-chip fc51-chip-on';t.textContent=m.name+' ✕';t.onclick=()=>{fc51Sel.delete(id);fc51RenderShare(days);};selBox.append(t);}
+  if(!fc51Sel.size){const s=document.createElement('span');s.className='text-[11px] text-slate-400';s.textContent='還沒有選任何人';selBox.append(s);}
+  const rows=fc51Members.filter(m=>!q||m.name.toLowerCase().includes(q)).sort((a,b)=>(fc51Sel.has(b.id)-fc51Sel.has(a.id))||(last.has(b.id)-last.has(a.id))||a.name.localeCompare(b.name,'zh-Hant'));
+  const list=document.getElementById('fc51-share-list');list.replaceChildren();
+  for(const m of rows){const row=document.createElement('div');row.className='fc51-row';const cb=document.createElement('button');cb.type='button';cb.className='fc51-check'+(fc51Sel.has(m.id)?' on':'');cb.onclick=()=>{fc51Sel.has(m.id)?fc51Sel.delete(m.id):fc51Sel.add(m.id);fc51RenderShare(days);};const nm=document.createElement('span');nm.className='flex-1 min-w-0 break-words';nm.textContent=m.name+(m.role==='organizer'?'（主辦人）':'');nm.onclick=cb.onclick;row.append(cb,nm);
+    const st=status[m.id]&&status[m.id].status;if(st&&fc51Sel.has(m.id)){const tag=document.createElement('span');tag.className='fc51-tag fc51-tag-'+st;tag.textContent={pending:'待回覆',accepted:'已跟隨',declined:'已婉拒'}[st]||st;row.append(tag);
+      if(st==='declined'){const r=document.createElement('button');r.type='button';r.className='fc51-link';r.textContent=fc51Reinvite.has(m.id)?'將重新邀請':'重新邀請';r.onclick=()=>{fc51Reinvite.add(m.id);fc51RenderShare(days);};row.append(r);}}
+    list.append(row);}
+  if(!rows.length){const e=document.createElement('p');e.className='text-[11px] text-slate-400 py-2 text-center';e.textContent='找不到符合的團員';list.append(e);}
+}
+function fc51ShareQuick(kind){const lastIds=new Set(fc51Load('last',[]));if(kind==='last')fc51Sel=new Set(fc51Members.filter(m=>lastIds.has(m.id)).map(m=>m.id));else if(kind==='all')fc51Sel=new Set(fc51Members.map(m=>m.id));else fc51Sel=new Set();fc51RenderShare();}
+function fc51ApplyShare(){
+  const me=fc51Me();if(!requireRoom()||!me)return;
+  const data=fc51Favs(),days=[...fc51ShareDays];
+  for(const d of days)if(fc51Following(me.id,d))return showToast('Day '+d+' 你正在跟隨別人，不能分享');
+  for(const d of days){const prev=fc51Shares(me.id,d),next={};for(const id of fc51Sel){const m=fc51Members.find(x=>x.id===id);if(!m)continue;const old=prev[id];next[id]={name:m.name,status:(!old||fc51Reinvite.has(id))?'pending':old.status};}
+    for(const c of data)for(const it of (c.items||[]))for(const p of (it.plans||[]))if(String(p.ownerId)===me.id&&Number(p.day)===d)p.shareTo=JSON.parse(JSON.stringify(next));}
+  fc51Store('last',[...fc51Sel]);closeModal(true);fc51Save(data);
+  showToast(fc51Sel.size?`已分享 ${days.map(d=>'Day '+d).join('、')} 給 ${fc51Sel.size} 人，等對方接受`:'已取消分享');
+}
+
+function fc51RenderPersonal(){
+  const box=document.getElementById('fc51-personal');if(!box)return;const me=fc51Me();
+  if(!me||!cloudConnected){box.classList.add('hidden');box.replaceChildren();return;}
+  box.classList.remove('hidden');const day=currentDay,esc=escapeHtml;
+  const itin=(getStoredData('itinerary',defaultItineraryData)[day]?.items)||[];
+  const groupRanges=itin.map(i=>{const t=fc41ParseTime(i.time);return t?{start:t.start,end:t.end!==null&&t.end>t.start?t.end:t.start+60}:null;}).filter(Boolean);
+  const invites=fc51Incoming(me.id).filter(x=>x.day===day&&x.status==='pending'),following=fc51Following(me.id,day),mine=fc51Mine(day),theirs=fc51Theirs(day),shares=fc51Shares(me.id,day);
+  const all=[...mine.map(x=>({...x,own:true})),...theirs.map(x=>({...x,own:false}))],ranges=all.map(x=>fc51Range(x.plan));
+  const clash=i=>{const r=ranges[i];if(!r)return false;if(groupRanges.some(g=>fc51Overlap(r,g)))return true;return ranges.some((o,j)=>j!==i&&fc51Overlap(r,o));};
+  const row=(x,idx)=>{const p=x.plan,mapUrl=x.item.map||buildAutoMapLink(x.item.name||'');
+    return `<div class="fc51-plan"><div class="fc51-time">${esc(fc51TimeText(p)||'--')}</div><div class="flex-1 min-w-0"><div class="text-xs font-bold text-slate-800 break-words">${esc(x.item.name||'')}${x.own?'':` <span class="fc51-tag fc51-tag-from">來自 ${esc(p.ownerName)}</span>`}${clash(idx)?' <span class="fc51-tag fc51-tag-clash">時間重疊</span>':''}</div>${p.note?`<div class="text-[11px] text-slate-600 break-words">${esc(p.note)}</div>`:''}</div>${mapUrl?`<a href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer" class="fc51-icon" title="地圖">📍</a>`:''}${x.own?`<button type="button" class="fc51-icon" onclick="fc51OpenPlan('${esc(p.id)}')" title="編輯">✎</button><button type="button" class="fc51-icon" onclick="fc51DeletePlan('${esc(p.id)}')" title="刪除">✕</button>`:''}</div>`;};
+  let h=`<div class="fc51-box"><div class="flex items-center justify-between gap-2"><h3 class="text-xs font-bold text-violet-900">我的私人行程・Day ${day}</h3><div class="flex gap-1.5"><button type="button" onclick="fc51OpenPlan()" class="fc51-btn">+ 從收藏新增</button>${mine.length&&!following?`<button type="button" onclick="fc51OpenShare()" class="fc51-btn fc51-btn-alt">分享這天</button>`:''}</div></div>`;
+  for(const inv of invites)h+=`<div class="fc51-invite"><div class="text-xs text-violet-900"><b>${esc(inv.ownerName)}</b> 邀請你跟隨 Day ${inv.day} 的自由活動</div><div class="flex gap-1.5 mt-1.5"><button type="button" class="fc51-btn" onclick="fc51Respond('${esc(inv.ownerId)}',${inv.day},true)">接受</button><button type="button" class="fc51-btn fc51-btn-alt" onclick="fc51Respond('${esc(inv.ownerId)}',${inv.day},false)">婉拒</button></div></div>`;
+  if(following)h+=`<div class="flex items-center justify-between gap-2 text-[11px] text-violet-900"><span>正在跟隨 <b>${esc(following.ownerName)}</b> 的 Day ${day}（唯讀，對方更新會自動同步）</span><button type="button" class="fc51-link" onclick="fc51Respond('${esc(following.ownerId)}',${day},false)">取消跟隨</button></div>`;
+  h+=all.length?all.map(row).join(''):`<p class="text-[11px] text-slate-500 py-1">${invites.length?'接受邀請後，這裡會顯示對方的安排。':'只有你自己看得到。地點只能從「收藏」挑選。'}</p>`;
+  const names=Object.values(shares);if(names.length)h+=`<p class="text-[11px] text-slate-600">已分享給：${names.map(v=>esc(v.name)+'（'+({pending:'待回覆',accepted:'已跟隨',declined:'已婉拒'}[v.status]||v.status)+'）').join('、')}</p>`;
+  box.innerHTML=h+'</div>';
+}
+function fc51RefreshIndicators(){
+  const me=fc51Me(),on=!!me&&cloudConnected,pend=on?fc51Pending(me.id):[];
+  document.getElementById('fc51-tab-dot')?.classList.toggle('hidden',!pend.length);
+  const banner=document.getElementById('fc51-invite-banner');
+  if(banner){if(pend.length){const p=pend[0];banner.classList.remove('hidden');banner.className='fc51-banner';banner.innerHTML=`<div class="min-w-0 text-xs font-bold truncate">🔔 ${escapeHtml(p.ownerName)} 邀請你跟隨 Day ${p.day}${pend.length>1?`（共 ${pend.length} 個待回覆）`:''}</div><button type="button" class="fc51-btn" onclick="fc51Goto(${p.day})">查看</button>`;}else{banner.className='hidden';banner.replaceChildren();}}
+  document.querySelectorAll('.fc51-day-dot').forEach(e=>e.remove());
+  for(const p of pend){const b=document.getElementById('day-btn-'+p.day);if(b){const d=document.createElement('i');d.className='fc51-day-dot';b.append(d);}}
+  if(!on)return;
+  const seen=new Set(fc51Load('seen',[])),fresh=pend.filter(p=>!seen.has(p.ownerId+'|'+p.day));
+  if(fresh.length){showToast(`${fresh[0].ownerName} 邀請你跟隨 Day ${fresh[0].day}`+(fresh.length>1?`（還有 ${fresh.length-1} 則）`:''));fc51Store('seen',[...new Set([...seen,...fresh.map(p=>p.ownerId+'|'+p.day)])]);}
+  const inc=fc51Incoming(me.id),nowAcc=inc.filter(x=>x.status==='accepted'),prev=fc51Load('following',null);
+  if(prev){for(const k of prev){const still=inc.some(x=>x.ownerId===k.ownerId&&x.day===k.day);if(!still)showToast(`${k.ownerName} 已取消分享 Day ${k.day}`);}}
+  fc51Store('following',nowAcc.map(x=>({ownerId:x.ownerId,ownerName:x.ownerName,day:x.day})));
+}
+function fc51Render(){try{fc51RenderPersonal();fc51RefreshIndicators();}catch(e){console.error('fc51',e);}}
 </script>
 </body>
 </html>
