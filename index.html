@@ -444,7 +444,7 @@ html{touch-action:manipulation}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70c</span>
+        <span id="test-version-badge" class="trip-version">FC-70d</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -3386,13 +3386,23 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       });
       const xref=length;put(`xref\n0 ${offsets.length}\n0000000000 65535 f \n`);offsets.slice(1).forEach(n=>put(String(n).padStart(10,'0')+' 00000 n \n'));put(`trailer\n<< /Size ${offsets.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);return new Blob(chunks,{type:'application/pdf'});
     }
+    let fc70PdfUrl='';
+    function fc70PdfDone(blob,url,name,pages){
+      fc70PdfClose(true);fc70PdfUrl=url;
+      let d=document.getElementById('fc70-pdf-done');if(!d){d=document.createElement('div');d.id='fc70-pdf-done';d.className='fixed inset-0 z-[120] flex items-center justify-center p-6';d.style.background='rgba(15,23,42,.55)';document.body.appendChild(d);}
+      let canShare=false,file=null;try{file=new File([blob],name,{type:'application/pdf'});canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));}catch(e){}
+      d.innerHTML=`<div class="bg-white rounded-2xl p-5 w-full max-w-xs shadow-xl"><h3 class="text-base font-bold text-slate-800">PDF 已產生</h3><p class="text-xs text-slate-500 mt-1">共 ${pages} 頁。要怎麼處理？</p><a href="${url}" target="_blank" rel="noopener" class="block w-full mt-4 py-3 rounded-xl text-center text-sm font-bold text-white" style="background:var(--fc45-accent,#0f766e)">開啟 PDF（新分頁）</a>${canShare?'<button type="button" id="fc70-pdf-share" class="block w-full mt-2 py-3 rounded-xl text-sm font-bold bg-white border-2" style="border-color:var(--fc45-accent,#0f766e);color:var(--fc45-ink,#0f766e)">分享／儲存</button>':''}<button type="button" onclick="fc70PdfClose()" class="block w-full mt-2 py-3 rounded-xl text-sm font-bold bg-slate-100 text-slate-600">關閉</button></div>`;
+      d.classList.remove('hidden');
+      const sb=document.getElementById('fc70-pdf-share');if(sb)sb.onclick=async()=>{try{await navigator.share({files:[file],title:name});}catch(e){}};
+    }
+    function fc70PdfClose(keepUrl){const d=document.getElementById('fc70-pdf-done');if(d)d.classList.add('hidden');if(!keepUrl&&fc70PdfUrl){const u=fc70PdfUrl;setTimeout(()=>URL.revokeObjectURL(u),120000);fc70PdfUrl='';}else if(keepUrl&&fc70PdfUrl){URL.revokeObjectURL(fc70PdfUrl);fc70PdfUrl='';}}
     async function downloadScenicPdf(){
       if(!scenicPdfDraft.length)return showToast('目前沒有可匯出的行程');
       const button=document.getElementById('scenic-pdf-download'),revision=travelBookPreviewRevision;button.disabled=true;button.textContent='產製中…';
       try{
         if(document.fonts?.ready)await document.fonts.ready;
         const image=null;if(revision!==travelBookPreviewRevision)return;const outputs=buildTravelBookOutputs(image,true);const blob=scenicPdfBlob(outputs.map(p=>p.canvas)),title=getStoredData('headerInfo',defaultHeaderInfo).title||'旅遊';outputs.forEach(p=>{p.canvas.width=1;p.canvas.height=1;});
-        const name='旅遊小秘書_'+title.replace(/[\\/:*?"<>|]/g,'_')+'_'+travelBookTheme().name+'_景點介紹.pdf',url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);showToast('PDF 已產生');
+        const name='旅遊小秘書_'+title.replace(/[\\/:*?"<>|]/g,'_')+'_'+travelBookTheme().name+'_景點介紹.pdf',url=URL.createObjectURL(blob);fc70PdfDone(blob,url,name,outputs.length);
       }catch(e){console.error(e);showToast(e.message||'PDF 產製失敗，請稍後重試');}finally{button.disabled=false;button.textContent='下載介紹 PDF';}
     }
 
