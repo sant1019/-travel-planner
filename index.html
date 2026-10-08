@@ -462,7 +462,7 @@ html{touch-action:manipulation}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70e</span>
+        <span id="test-version-badge" class="trip-version">FC-70f</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -701,7 +701,7 @@ html{touch-action:manipulation}
 <label><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">住宿</label></div>
         <div class="fc45-theme-section"><h3>主題色</h3><div class="fc45-theme-colors"><button type="button" data-fc45-theme="teal" aria-label="藍綠主題" aria-pressed="false" onclick="fc45ChooseTheme('teal')"><span class="fc45-swatch" style="background:#087E8B"></span><span>藍綠</span></button><button type="button" data-fc45-theme="purple" aria-label="紫色主題" aria-pressed="false" onclick="fc45ChooseTheme('purple')"><span class="fc45-swatch" style="background:#7752B8"></span><span>紫色</span></button><button type="button" data-fc45-theme="orange" aria-label="暖橘主題" aria-pressed="false" onclick="fc45ChooseTheme('orange')"><span class="fc45-swatch" style="background:#C87532"></span><span>暖橘</span></button><button type="button" data-fc45-theme="rose" aria-label="玫瑰粉主題" aria-pressed="false" onclick="fc45ChooseTheme('rose')"><span class="fc45-swatch" style="background:#B9577F"></span><span>玫瑰粉</span></button><button type="button" data-fc45-theme="coffee" aria-label="深咖啡主題" aria-pressed="false" onclick="fc45ChooseTheme('coffee')"><span class="fc45-swatch" style="background:#593922"></span><span>深咖啡</span></button></div></div></div>
       </details>
-      <details id="fc70-weather" class="fc45-settings"><summary><span>🌤️ 每日天氣</span><span class="flex items-center gap-3"><button type="button" onclick="event.preventDefault();event.stopPropagation();refreshLiveWeather()" class="text-[11px] font-bold" style="color:var(--fc45-ink,#0369a1)">即時氣象</button><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></span></summary><div id="fc70-weather-body" class="fc45-settings-body"></div></details>
+      <details id="fc70-weather" class="fc45-settings"><summary><span>🌤️ 每日天氣</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary><div id="fc70-weather-body" class="fc45-settings-body"></div></details>
       <div id="info-translation-section" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h2 class="text-sm font-bold text-slate-800">🌐 翻譯</h2>
         <div class="flex items-center gap-2"><select id="translate-from" class="flex-1 min-w-0 p-2 border rounded-xl text-sm"><option value="zh-TW">繁體中文</option><option value="vi">越南文</option><option value="en">英文</option><option value="ja">日文</option><option value="ko">韓文</option><option value="th">泰文</option></select><button onclick="fc41SwapTranslation()" aria-label="交換翻譯語言" class="p-2 text-sky-700">⇄</button><select id="translate-to" class="flex-1 min-w-0 p-2 border rounded-xl text-sm"><option value="vi">越南文</option><option value="zh-TW">繁體中文</option><option value="en">英文</option><option value="ja">日文</option><option value="ko">韓文</option><option value="th">泰文</option></select></div>
@@ -981,6 +981,13 @@ html{touch-action:manipulation}
         <p id="header-date-summary" class="text-[10px] text-sky-600 font-bold mt-1.5"></p>
       </div>
       <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">目的地（用來顯示天氣）：</label>
+        <div class="flex gap-2"><input type="text" id="input-header-dest" placeholder="例如：Da Nang、東京" oninput="fc71DestTyped()" class="min-w-0 flex-1 p-2.5 border border-slate-200 rounded-xl text-xs focus:outline-none"><button type="button" onclick="fc71DestSearch()" class="shrink-0 px-3 rounded-xl text-xs font-bold bg-sky-50 text-sky-700">搜尋</button></div>
+        <input type="hidden" id="input-header-dest-lat"><input type="hidden" id="input-header-dest-lon"><input type="hidden" id="input-header-dest-name">
+        <div id="fc71-dest-results" class="mt-1 space-y-1"></div>
+        <p id="fc71-dest-status" class="text-[10px] text-slate-500 mt-1">按「搜尋」選一個地點。不填就不顯示天氣。</p>
+      </div>
+      <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">團體標籤：</label>
         <input type="text" id="input-header-grouptag" placeholder="例如：必去景點" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
@@ -1067,9 +1074,9 @@ html{touch-action:manipulation}
         <label class="text-[11px] font-bold text-slate-600 block mb-1">更改我的暱稱</label>
         <input type="text" id="input-member-new-nickname" maxlength="30" placeholder="輸入新暱稱" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
+      <button id="fc43-members-entry" onclick="fc43OpenMembers()" class="fc70-mb hidden w-full bg-sky-50 text-sky-700 py-2 rounded-xl text-xs font-bold">團員管理</button>
       <button id="fc70-switch-btn" onclick="openMemberIdentityModal()" class="fc70-mb w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換團員／建立自己的身份</button>
       <button id="fc62-copy-entry" type="button" onclick="fc62OpenCopy(false)" class="fc70-mb hidden w-full bg-amber-50 text-amber-700 py-2 rounded-xl text-xs font-bold">從其他房間複製旅程</button>
-      <button id="fc43-members-entry" onclick="fc43OpenMembers()" class="fc70-mb hidden w-full bg-sky-50 text-sky-700 py-2 rounded-xl text-xs font-bold">團員管理</button>
       <button type="button" id="fc68-redeem-entry" onclick="fc59OpenRedeem()" class="fc70-mb hidden w-full bg-emerald-50 text-emerald-700 py-2 rounded-xl text-xs font-bold">輸入兌換碼</button>
       <button type="button" id="fc67-apply-btn" onclick="fc60OpenApply()" class="fc70-mb w-full text-xs font-bold">申辦正式會員／查詢進度</button>
       <p id="member-settings-status" class="text-[10px] text-slate-400"></p>
@@ -1662,6 +1669,7 @@ html{touch-action:manipulation}
 
     const defaultHeaderInfo = {
       title: '峴港會安',
+      destName: '峴港', destLat: 16.0678, destLon: 108.2208,
       adults: 14,
       children: 2,
       infants: 1,
@@ -1867,6 +1875,7 @@ html{touch-action:manipulation}
       document.getElementById('input-header-start-date').value = dates.startDate;
       document.getElementById('input-header-end-date').value = dates.endDate;
       document.getElementById('input-header-grouptag').value = info.groupTag || '';
+      fc71LoadDest(info);
 
       const baseDate = dates.startDate ? new Date(`${dates.startDate}T00:00:00`) : new Date();
       tripCalendarCursor = new Date(baseDate.getFullYear(), baseDate.getMonth(), 1);
@@ -1891,6 +1900,8 @@ html{touch-action:manipulation}
       const startDate = document.getElementById('input-header-start-date').value;
       const endDate = document.getElementById('input-header-end-date').value;
       const groupTag = document.getElementById('input-header-grouptag').value.trim();
+      const destTyped = document.getElementById('input-header-dest').value.trim(), destLat = document.getElementById('input-header-dest-lat').value, destLon = document.getElementById('input-header-dest-lon').value, destName = document.getElementById('input-header-dest-name').value;
+      if (destTyped && (!destLat || !destLon)) return showToast('請按目的地旁的「搜尋」，並選一個地點');
 
       if (!startDate || !endDate) return showToast('請選擇開始與結束日期');
       if (endDate < startDate) return showToast('結束日期不能早於開始日期');
@@ -1911,6 +1922,7 @@ html{touch-action:manipulation}
         dates,
         groupTag: groupTag || '必去景點'
       };
+      if (destTyped && destLat && destLon) { newInfo.destName = destName || destTyped; newInfo.destLat = Number(destLat); newInfo.destLon = Number(destLon); }
 
       newInfo.requiredInfo = Object.fromEntries(['flight','hotel','shuttle'].map(k=>[k,document.getElementById('header-edit-'+k).checked]));
       pushStateToCloud('headerInfo', newInfo);
@@ -1997,14 +2009,7 @@ html{touch-action:manipulation}
       }
     }
 
-    const weatherData = {
-      1: { temp: '22°C - 27°C', status: '會安古鎮 ☀️ 晴時多雲', tip: '體感微涼舒適，秋盆河夜遊建議帶薄外套' },
-      2: { temp: '21°C - 26°C', status: '美山勝地 ⛅ 多雲山區', tip: '遺跡古磚石階濕滑，建議穿防滑平底鞋' },
-      3: { temp: '22°C - 28°C', status: '迦南島 & 峴港 🌤️ 舒適微風', tip: '竹籃船體驗陽光充足，記得做好防曬與防潑水' },
-      4: { temp: '15°C - 21°C', status: '巴拿山 Sun World ☁️ 山頂較涼', tip: '⚠️ 山頂氣溫明顯偏低，全團務必準備防風外套' },
-      5: { temp: '22°C - 27°C', status: '山茶半島 & 峴港市區 ☀️ 晴朗', tip: '海風陣陣，龍橋噴火表演人潮較多請注意安全' },
-      6: { temp: '23°C - 28°C', status: '峴港市區 🌤️ 適合購物採買', tip: '氣溫舒適，準備行李與伴手禮準備返台' }
-    };
+
 
     const defaultFixedExpensesData = [
       { id: 'fe-1', name: '星宇來回機票', adult: 11949, kid: 9729, infant: 1048 },
@@ -2814,11 +2819,79 @@ html{touch-action:manipulation}
       renderItinerary();
     }
 
-    function refreshLiveWeather() {
-      showToast("正在連線更新即時氣象...");
-      setTimeout(() => {
-        window.open('https://www.accuweather.com/en/vn/da-nang/352954/weather-forecast/352954', '_blank');
-      }, 500);
+
+    // ===== FC-70f: 天氣跟旅程走（Open-Meteo；需要目的地） =====
+    const FC71_WMO={0:['☀️','晴朗'],1:['🌤️','大致晴朗'],2:['⛅','多雲'],3:['☁️','陰天'],45:['🌫️','有霧'],48:['🌫️','有霧'],51:['🌦️','毛毛雨'],53:['🌦️','毛毛雨'],55:['🌦️','毛毛雨'],56:['🌧️','凍雨'],57:['🌧️','凍雨'],61:['🌧️','小雨'],63:['🌧️','下雨'],65:['🌧️','大雨'],66:['🌧️','凍雨'],67:['🌧️','凍雨'],71:['🌨️','小雪'],73:['🌨️','下雪'],75:['❄️','大雪'],77:['🌨️','雪粒'],80:['🌦️','陣雨'],81:['🌧️','陣雨'],82:['⛈️','強陣雨'],85:['🌨️','陣雪'],86:['❄️','強陣雪'],95:['⛈️','雷雨'],96:['⛈️','雷雨冰雹'],99:['⛈️','雷雨冰雹']};
+    let fc71State={key:'',inflight:false,failAt:0,fetchedAt:0,days:{},msg:''};
+    function fc71Dest(){try{const i=getStoredData('headerInfo',defaultHeaderInfo);if(i&&Number.isFinite(i.destLat)&&Number.isFinite(i.destLon))return {name:i.destName||'',lat:i.destLat,lon:i.destLon};}catch(e){}return null;}
+    function fc71Key(d){const days=getTripDays();return d.lat.toFixed(2)+','+d.lon.toFixed(2)+'|'+(days[0]||'')+'|'+(days[days.length-1]||'');}
+    function fc71Load(key){try{const raw=JSON.parse(localStorage.getItem('fc71_wx:'+roomId)||'null');if(raw&&raw.key===key)return raw;}catch(e){}return null;}
+    function fc71Tip(w){
+      const tips=[];let warn=false;
+      if(w.tmax>=35){tips.push('極熱，避開正午戶外、多補水');warn=true;}else if(w.tmax>=31)tips.push('炎熱，注意防曬補水');else if(w.tmax>=27)tips.push('偏熱，穿輕便透氣衣物');
+      if(w.tmin<=5){tips.push('很冷，穿保暖外套');warn=true;}else if(w.tmin<=12)tips.push('寒冷，帶厚外套');else if(w.tmin<=17)tips.push('偏涼，帶薄外套');
+      if(w.code>=95){tips.push('可能有雷雨，戶外行程留意安全');warn=true;}else if((w.pop!=null&&w.pop>=60)||(w.rain!=null&&w.rain>=8)){tips.push('很可能下雨，帶雨具');warn=warn||(w.pop!=null&&w.pop>=80);}else if((w.pop!=null&&w.pop>=30)||(w.rain!=null&&w.rain>=2))tips.push('可能下雨，帶輕便雨具');
+      if(!tips.length)tips.push('天氣舒適');
+      return (warn?'⚠️ ':'')+tips.join('；');
+    }
+    function fc71Day(n){
+      const dest=fc71Dest();if(!dest)return null;const date=getTripDays()[n-1];const w=fc71State.days&&fc71State.days[date];if(!w)return null;
+      const m=FC71_WMO[w.code]||['🌤️','天氣'];
+      return {temp:Math.round(w.tmin)+'°C - '+Math.round(w.tmax)+'°C',status:(dest.name?dest.name+' ':'')+m[0]+' '+m[1],tip:fc71Tip(w),past:!!w.past};
+    }
+    async function fc71Fetch(url){const r=await fetch(url);if(!r.ok)throw new Error('http '+r.status);return r.json();}
+    function fc71Fmt(d){return d.toISOString().slice(0,10);}
+    async function fc71Ensure(force){
+      const dest=fc71Dest();
+      if(!dest){fc71State={key:'',inflight:false,failAt:0,fetchedAt:0,days:{},msg:''};return;}
+      const key=fc71Key(dest);
+      if(fc71State.key!==key){const c=fc71Load(key);fc71State={key,inflight:false,failAt:0,fetchedAt:c?c.fetchedAt:0,days:c?c.days:{},msg:''};}
+      if(fc71State.inflight)return;
+      const age=Date.now()-fc71State.fetchedAt;
+      if(!force&&fc71State.fetchedAt&&age<3*3600e3)return;
+      if(!force&&fc71State.failAt&&Date.now()-fc71State.failAt<5*60e3)return;
+      if(!navigator.onLine&&!force){return;}
+      fc71State.inflight=true;
+      try{
+        const days=getTripDays();if(!days.length)throw new Error('no days');
+        const today=new Date(),minF=fc71Fmt(new Date(today.getTime()-90*864e5)),maxF=fc71Fmt(new Date(today.getTime()+15*864e5));
+        const start=days[0],end=days[days.length-1],out={},base='latitude='+dest.lat+'&longitude='+dest.lon+'&timezone=auto';
+        const todayStr=fc71Fmt(today);
+        const take=(j,past)=>{const t=j?.daily?.time||[];t.forEach((d,i)=>{out[d]={code:j.daily.weather_code[i],tmax:j.daily.temperature_2m_max[i],tmin:j.daily.temperature_2m_min[i],pop:j.daily.precipitation_probability_max?j.daily.precipitation_probability_max[i]:null,rain:j.daily.precipitation_sum?j.daily.precipitation_sum[i]:null,past:past||d<todayStr};});};
+        const fs=start>minF?start:minF,fe=end<maxF?end:maxF;
+        if(fs<=fe)take(await fc71Fetch('https://api.open-meteo.com/v1/forecast?'+base+'&start_date='+fs+'&end_date='+fe+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum'),false);
+        if(start<minF){const ae=end<minF?end:minF;take(await fc71Fetch('https://archive-api.open-meteo.com/v1/archive?'+base+'&start_date='+start+'&end_date='+ae+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum'),true);}
+        fc71State.days=out;fc71State.fetchedAt=Date.now();fc71State.failAt=0;fc71State.msg='';
+        try{localStorage.setItem('fc71_wx:'+roomId,JSON.stringify({key,fetchedAt:fc71State.fetchedAt,days:out}));}catch(e){}
+        if(force)showToast('天氣已更新');
+      }catch(e){fc71State.failAt=Date.now();fc71State.msg=navigator.onLine?'目前查不到天氣，稍後再試':'目前沒有網路';if(force)showToast(fc71State.msg);}
+      finally{fc71State.inflight=false;try{fc71Repaint();}catch(e){}}
+    }
+    function fc71Repaint(){try{if(typeof renderItinerary==='function'&&!document.getElementById('page-itinerary').classList.contains('hidden'))renderItinerary();}catch(e){}try{if(!document.getElementById('page-info').classList.contains('hidden'))renderInfoPage();}catch(e){}}
+    function refreshLiveWeather(){fc71Ensure(true);}
+    function fc71InfoHtml(){
+      const dest=fc71Dest(),box=document.getElementById('fc70-weather');
+      if(!dest){if(box)box.classList.toggle('hidden',!isOrganizer());return isOrganizer()?'<p class="text-xs text-slate-500">尚未設定目的地。到頁首標題旁的編輯，填寫「目的地」後就會顯示每天的天氣。</p>':'';}
+      if(box)box.classList.remove('hidden');
+      const wd=getTripDays(),esc=escapeHtml;
+      const upd=fc71State.fetchedAt?'更新於 '+new Date(fc71State.fetchedAt).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}):(fc71State.msg||'查詢中…');
+      let h=`<div class="flex justify-between items-center text-[11px] text-slate-500 pb-2"><span>${esc(dest.name||'目的地')}・${esc(upd)}${fc71State.msg&&fc71State.fetchedAt?'（'+esc(fc71State.msg)+'）':''}</span><button type="button" onclick="refreshLiveWeather()" class="font-bold" style="color:var(--fc45-ink,#0369a1)">重新查詢</button></div><div class="space-y-2 text-xs">`;
+      h+=wd.map((d,i)=>{const w=fc71Day(i+1);return `<div class="border-b border-slate-100 pb-2 last:border-0 last:pb-0"><div class="flex justify-between gap-2"><span class="font-bold">Day ${i+1}・${esc(String(d).slice(5).replace('-','/'))}${w&&w.past?'（實際）':''}</span><b class="text-sky-700">${w?esc(w.temp):'—'}</b></div>${w?`<p class="text-slate-600 mt-0.5">${esc(w.status)}</p><p class="text-slate-500">穿搭建議：${esc(w.tip)}</p>`:'<p class="text-slate-400 mt-0.5">尚無預報（約出發前 16 天才有）</p>'}</div>`;}).join('');
+      return h+'</div>';
+    }
+    let fc71GeoTimer=0;
+    function fc71LoadDest(info){document.getElementById('input-header-dest').value=info.destName||'';document.getElementById('input-header-dest-lat').value=Number.isFinite(info.destLat)?info.destLat:'';document.getElementById('input-header-dest-lon').value=Number.isFinite(info.destLon)?info.destLon:'';document.getElementById('input-header-dest-name').value=info.destName||'';document.getElementById('fc71-dest-results').innerHTML='';document.getElementById('fc71-dest-status').textContent=Number.isFinite(info.destLat)?'已選：'+(info.destName||'')+'。要換地點請重新輸入並搜尋。':'按「搜尋」選一個地點。不填就不顯示天氣。';}
+    function fc71DestTyped(){document.getElementById('input-header-dest-lat').value='';document.getElementById('input-header-dest-lon').value='';document.getElementById('input-header-dest-name').value='';const st=document.getElementById('fc71-dest-status');st.textContent=document.getElementById('input-header-dest').value.trim()?'按「搜尋」選一個地點。':'不填就不顯示天氣。';}
+    async function fc71DestSearch(){
+      const q=document.getElementById('input-header-dest').value.trim(),box=document.getElementById('fc71-dest-results'),st=document.getElementById('fc71-dest-status');
+      if(!q){st.textContent='請先輸入地名。';return;}
+      st.textContent='搜尋中…';box.innerHTML='';
+      try{
+        const j=await fc71Fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=6&language=zh&format=json'),rs=j.results||[];
+        if(!rs.length){st.textContent='找不到這個地名，試試英文或附上國家。';return;}
+        st.textContent='請選一個：';
+        rs.forEach(r=>{const b=document.createElement('button');b.type='button';b.className='block w-full text-left p-2 rounded-lg border text-xs bg-white';b.textContent=[r.name,r.admin1,r.country].filter(Boolean).join('，');b.onclick=()=>{document.getElementById('input-header-dest').value=r.name;document.getElementById('input-header-dest-name').value=r.name;document.getElementById('input-header-dest-lat').value=r.latitude;document.getElementById('input-header-dest-lon').value=r.longitude;box.innerHTML='';st.textContent='已選：'+b.textContent;};box.append(b);});
+      }catch(e){st.textContent='目前無法搜尋（沒有網路？），稍後再試。';}
     }
 
     function isOrganizer() {
@@ -3609,7 +3682,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       if(v.hotel)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🏨 住宿飯店資訊</h3>${infoEditButton('hotel')}</div><div class="mt-2 space-y-2"><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h1Dates)}</b><br>${escapeHtml(c.hotel.h1Name)}</div><div class="bg-slate-50 p-2 rounded-xl"><b>${escapeHtml(c.hotel.h2Dates)}</b><br>${escapeHtml(c.hotel.h2Name)}</div></div></div>`;
       try{
         const wd=getTripDays();
-        {const wb=document.getElementById('fc70-weather-body');if(wb)wb.innerHTML=`<div class="space-y-2 text-xs">${wd.map((d,i)=>{const w=weatherData[i+1]||weatherData[1];return `<div class="border-b border-slate-100 pb-2 last:border-0 last:pb-0"><div class="flex justify-between gap-2"><span class="font-bold">Day ${i+1}・${escapeHtml(String(d).slice(5).replace('-','/'))}</span><b class="text-sky-700">${escapeHtml(w.temp)}</b></div><p class="text-slate-600 mt-0.5">${escapeHtml(w.status)}</p><p class="text-slate-500">穿搭建議：${escapeHtml(w.tip)}</p></div>`;}).join('')}</div>`;}
+        {const wb=document.getElementById('fc70-weather-body');if(wb)wb.innerHTML=fc71InfoHtml();fc71Ensure();}
       }catch(e){}
       box.innerHTML=h;
       renderInfoReminders();
@@ -3891,8 +3964,9 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       updateItineraryPermissions();
       renderTodayBanner();
       if(typeof fc51RenderPersonal==='function')fc51RenderPersonal();
-      const weather = weatherData[currentDay] || weatherData[1];
-      {const wb=document.getElementById('weather-banner'),st=String(weather.status||''),em=(st.match(/\p{Extended_Pictographic}\uFE0F?/u)||['🌤️'])[0],txt=st.replace(/\p{Extended_Pictographic}\uFE0F?/gu,'').replace(/\s+/g,' ').trim(),tip=String(weather.tip||''),warn=/⚠/.test(tip);wb.classList.remove('hidden');wb.innerHTML=`<div class="fc70-wx-top"><span class="fc70-wx-ic">${em}</span><span class="fc70-wx-t">${escapeHtml(weather.temp)}</span><span class="fc70-wx-s">${escapeHtml(txt)}</span></div>${warn?`<div class="fc70-wx-warn">⚠️ ${escapeHtml(tip.replace(/⚠️?\s*/g,''))}</div>`:''}`;}
+      fc71Ensure();
+      const weather = fc71Day(currentDay);
+      {const wb=document.getElementById('weather-banner');if(!weather){wb.classList.add('hidden');wb.innerHTML='';}else{const st=String(weather.status||''),em=(st.match(/\p{Extended_Pictographic}\uFE0F?/u)||['🌤️'])[0],txt=st.replace(/\p{Extended_Pictographic}\uFE0F?/gu,'').replace(/\s+/g,' ').trim(),tip=String(weather.tip||''),warn=/⚠/.test(tip);wb.classList.remove('hidden');wb.innerHTML=`<div class="fc70-wx-top"><span class="fc70-wx-ic">${em}</span><span class="fc70-wx-t">${escapeHtml(weather.temp)}</span><span class="fc70-wx-s">${escapeHtml(txt)}</span></div>${warn?`<div class="fc70-wx-warn">⚠️ ${escapeHtml(tip.replace(/⚠️?\s*/g,''))}</div>`:''}`;}}
 
       const addBtnLabel = document.getElementById('add-itin-btn-label');
       if (addBtnLabel) addBtnLabel.textContent = `新增 Day ${currentDay} 行程地點`;
@@ -6306,7 +6380,7 @@ function fc59Render(){
   const btn='class="p-2 rounded-lg border text-xs font-bold"';
   box.innerHTML=rows.length?rows.map(r=>{
     const s=r.status||{},days=s.state==='trial'?s.days_left:7;
-    return `<article class="p-4 border rounded-xl space-y-2" data-room="${esc(r.room_id)}"><div class="flex justify-between gap-2 items-start"><h4 class="font-bold break-all">${esc(r.room_id)}</h4>${fc59Badge(r)}</div><p class="text-xs text-slate-600">建立 ${fc59Fmt(r.created_at)}・團員 ${r.members} 人${r.customer_name?'・客戶：'+esc(r.customer_name):''}${r.license_id?(s.expires_at?'・授權到期 '+fc59Fmt(s.expires_at):'・永久授權'):(r.trial_ends_at&&!r.license_exempt?'・試用到期 '+fc59Fmt(r.trial_ends_at):'')}</p>${r.license_id?'':`<div class="flex flex-wrap gap-2 items-center"><input type="number" min="0" max="3650" step="1" value="${days}" class="fc59-days border rounded-lg p-2 w-20 text-sm" aria-label="試用天數"><button type="button" data-fc59="trial" ${btn}>從現在起試用這麼多天</button><button type="button" data-fc59="exempt" ${btn}>設為不限期</button></div>`}${r.license_id?`<button type="button" data-fc59="unlink" ${btn}>解除授權連結</button>`:`<div class="flex gap-2"><select class="fc59-lic border rounded-lg p-2 text-sm flex-1 min-w-0">${fc59LicOptions()}</select><button type="button" data-fc59="link" ${btn}>連結授權</button></div>`}<div class="pt-1 border-t"><button type="button" data-fc59="delete" class="p-2 rounded-lg border border-rose-300 text-rose-700 text-xs font-bold">刪除房間</button></div></article>`;}).join(''):'<p class="text-sm">沒有符合的房間。</p>';
+    return `<article class="p-4 border rounded-xl space-y-2" data-room="${esc(r.room_id)}"><div class="flex justify-between gap-2 items-start"><h4 class="font-bold break-all">${esc(r.room_id)}</h4>${fc59Badge(r)}</div><p class="text-xs text-slate-600">建立 ${fc59Fmt(r.created_at)}・團員 ${r.members} 人${r.customer_name?'・客戶：'+esc(r.customer_name):''}${r.license_id?(s.expires_at?'・授權到期 '+fc59Fmt(s.expires_at):'・永久授權'):(r.trial_ends_at&&!r.license_exempt?'・試用到期 '+fc59Fmt(r.trial_ends_at):'')}</p>${r.license_id?'':`<div class="flex gap-2 items-center"><input type="number" min="0" max="3650" step="1" value="${days}" class="fc59-days border rounded-lg p-2 w-16 text-sm" aria-label="試用天數"><span class="text-xs">天</span><button type="button" data-fc59="trial" ${btn} style="white-space:nowrap">開始試用</button><button type="button" data-fc59="exempt" ${btn} style="white-space:nowrap">不限期</button></div>`}${r.license_id?`<button type="button" data-fc59="unlink" ${btn}>解除授權連結</button>`:`<div class="flex gap-2"><select class="fc59-lic border rounded-lg p-2 text-sm flex-1 min-w-0">${fc59LicOptions()}</select><button type="button" data-fc59="link" ${btn}>連結授權</button></div>`}<div class="pt-1 border-t"><button type="button" data-fc59="delete" class="p-2 rounded-lg border border-rose-300 text-rose-700 text-xs font-bold">刪除房間</button></div></article>`;}).join(''):'<p class="text-sm">沒有符合的房間。</p>';
 }
 async function fc70Delete(kind,id){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');const d=await fc32Rpc('fc70_admin_delete',{p_token:token,p_kind:kind,p_id:id});if(token!==fc32Token)throw new Error('platform_session_expired');return d;}
 function fc70DelErr(e){const m=String(e?.message||e);if(/PGRST202|Could not find|does not exist/.test(m))return '資料庫尚未安裝刪除功能，請先在 Supabase 執行 FC70_admin_delete.sql。';if(/customer_has_licenses/.test(m))return '這位客戶還有授權，請先處理授權再刪除。';if(/customer_has_orders/.test(m))return '這位客戶還有訂單紀錄，無法刪除。';if(/room_not_found/.test(m))return '房間不存在，請重新整理。';if(/customer_not_found/.test(m))return '客戶不存在，請重新整理。';return null;}
