@@ -348,6 +348,9 @@ section.page-content h2 i{ margin-right:2px; }
 .fc70-sel{border-color:var(--fc45-accent,#0f766e)!important;background:var(--fc45-tint,#ecfdf5)}
 .fc52-card{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:10px 12px;box-shadow:0 1px 2px rgba(15,41,64,.05)}
 .fc52-body{flex:1;min-width:0}.fc52-head{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:3px}
+.fc70-lk{flex:none;font-size:11px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap}.fc70-lk-on{background:#dcfce7;color:#166534}.fc70-lk-off{background:#f97316;color:#fff}.fc70-lk-wait{background:#fef3c7;color:#92400e}
+.fc70-fx-unl{border-left:5px solid #f97316!important;background:#fff7ed!important}
+.fc70-lkbtn{width:100%;padding:8px;border-radius:10px;font-size:12px;font-weight:800}.fc70-lkbtn-on{background:#16a34a!important;color:#fff!important}.fc70-lkbtn-off{background:#f97316!important;color:#fff!important}
 .fc52-time{font-size:11px;color:#475569}.fc52-title{font-size:14px;font-weight:700;color:#0f172a;word-break:break-word}
 .fc52-sub{font-size:11px;color:#64748b;margin-top:2px;word-break:break-word}.fc52-chev{color:#94a3b8;font-size:18px}.fc52-acts{display:flex;align-items:center}
 .fc52-tag{display:inline-block;font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px}
@@ -384,14 +387,14 @@ section.page-content h2 i{ margin-right:2px; }
 #fc69-ai-menu button{display:block;width:100%;text-align:left;padding:11px 14px;font-size:13px;font-weight:700;color:#334155;background:#fff}
 #fc69-ai-menu button+button{border-top:1px solid #eef2f6}
 #fc69-bar .fc52-seg button{padding:10px 0}
-.fc70-wx{border-radius:14px;overflow:hidden;border:1px solid var(--fc45-border,#cbd5e1)}
-.fc70-wx-top{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--fc45-tint,#f1f5f9);color:var(--fc45-ink,#334155)}
-.fc70-wx-ic{font-size:26px;line-height:1}
-.fc70-wx-t{font-size:20px;font-weight:800;white-space:nowrap}
-.fc70-wx-s{font-size:12px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.fc70-wx{border-radius:12px;overflow:hidden;border:0}
+.fc70-wx-top{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--fc45-tint,#f1f5f9);color:var(--fc45-ink,#334155)}
+.fc70-wx-ic{font-size:16px;line-height:16px}
+.fc70-wx-t{font-size:12px;line-height:16px;font-weight:800;white-space:nowrap}
+.fc70-wx-s{font-size:12px;line-height:16px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fc70-wx-warn{background:#fff7ed;color:#c2410c;border-top:1px solid #fed7aa;padding:5px 12px;font-size:11px;font-weight:700}
 .fc51-timegrid>div{min-width:0}
-.fc51-timegrid input{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+.fc51-timegrid input[type=time]{box-sizing:border-box}.fc51-timegrid .fc46-time-field{height:40px;font-size:14px}.fc52-time-private{font-size:12px;font-weight:700;color:#6d28d9}
 @media (max-width:340px){.fc51-timegrid{grid-template-columns:1fr}}
 .fc49-actions{display:flex!important;flex-wrap:wrap!important;gap:8px!important}
 .fc49-actions>*{flex:1 1 auto;min-width:0;white-space:normal;text-align:center}
@@ -462,7 +465,7 @@ html{touch-action:manipulation}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70h</span>
+        <span id="test-version-badge" class="trip-version">FC-70i</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -849,7 +852,7 @@ html{touch-action:manipulation}
       </form>
 
       <div id="fc31-admin-tools" class="hidden space-y-5">
-        <div class="grid grid-cols-3 gap-2"><button id="fc34-tab-customers" type="button" onclick="fc34SwitchTab('customers')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">客戶／授權管理</button><button id="fc34-tab-requests" type="button" onclick="fc34SwitchTab('requests')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">申請</button><button id="fc34-tab-rooms" type="button" onclick="fc34SwitchTab('rooms')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">房間／試用期</button></div>
+        <div class="grid grid-cols-3 gap-2"><button id="fc34-tab-customers" type="button" onclick="fc34SwitchTab('customers')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">客戶／授權</button><button id="fc34-tab-requests" type="button" onclick="fc34SwitchTab('requests')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">申請</button><button id="fc34-tab-rooms" type="button" onclick="fc34SwitchTab('rooms')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">房間／試用</button></div>
         <div id="fc34-customers-panel" class="hidden space-y-4">
           <p id="fc34-customer-status" role="status" class="text-sm text-slate-600"></p>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="fc34-stats"></div>
@@ -1208,14 +1211,17 @@ html{touch-action:manipulation}
 
     <div id="fc38-reference-preview" class="hidden fixed inset-0 z-[100] bg-black/90 p-4 overflow-y-auto"><div class="flex justify-between items-center text-white mb-4"><b id="fc38-reference-title"></b><button type="button" onclick="document.getElementById('fc38-reference-preview').classList.add('hidden')" class="p-3" aria-label="關閉範例預覽">✕ 關閉</button></div><img id="fc38-reference-image" alt="風格放大預覽" draggable="false" style="-webkit-touch-callout:default;user-select:auto;-webkit-user-select:auto;touch-action:auto" class="w-full rounded-lg"><p class="text-white text-sm leading-relaxed bg-white/10 rounded-xl p-3 mt-4">長按圖片，儲存或下載圖片（iPhone 選「儲存到照片」，Android 選「下載圖片」）。也可以直接截圖，再把圖片和指令一起上傳到 AI。</p></div>
     <!-- Fixed Itinerary Smart Planner Modal -->
-    <div id="modal-fixed-planner" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
-      <h3 class="text-sm font-extrabold text-slate-800"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>固定行程設定與智慧排程</h3>
-      <p class="text-[10px] text-slate-500">儲存時自動依日期、營業時間、場次及空檔安排；無法安排者由主辦人指定日期。</p>
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[10px] text-amber-800"><b>安排規則：</b>優先安排日期／場次受限的活動，避開已排行程。未填營業時間採 09:00–21:00；未填停留時間暫以 1 小時安排。不含交通時間，請主辦人確認。</div>
-      <button onclick="saveAndArrangeFixedActivities()" class="w-full bg-sky-600 text-white py-2.5 rounded-xl text-xs font-bold">重新規劃全部景點</button>
+    <div id="modal-fixed-planner" class="bg-white rounded-2xl w-full max-w-xs shadow-xl hidden overflow-hidden">
+      <div class="flex flex-col" style="max-height:90vh;max-height:90dvh">
+      <div class="shrink-0 px-5 pt-4 pb-3 space-y-2 border-b border-slate-200">
+        <div class="flex items-center justify-between gap-2"><h3 class="text-sm font-extrabold text-slate-800"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-1.5"></i>固定行程設定與智慧排程</h3><button type="button" onclick="closeModal()" aria-label="關閉" class="w-9 h-9 rounded-full bg-slate-100 text-slate-700 text-2xl leading-none shrink-0 flex items-center justify-center">×</button></div>
+        <p class="text-[10px] text-slate-500">儲存時自動依日期、營業時間、場次及空檔安排；無法安排者由主辦人指定日期。</p>
+      <details class="fc70-sec"><summary>安排規則</summary><div class="pt-1 text-[10px] text-amber-800 leading-relaxed">優先安排日期／場次受限的活動，避開已排行程。未填營業時間採 09:00–21:00；未填停留時間暫以 1 小時安排。不含交通時間，請主辦人確認。</div></details>
+        <button onclick="saveAndArrangeFixedActivities()" class="w-full bg-sky-600 text-white py-2.5 rounded-xl text-xs font-bold">重新規劃全部景點</button>
+      </div>
+      <div id="fc70-fixed-scroll" class="flex-1 min-h-0 overflow-y-auto px-5 py-3 space-y-3" style="-webkit-overflow-scrolling:touch">
+      <div id="fc70-itin-places" class="space-y-2"></div>
       <div id="fixed-planner-list" class="space-y-2"></div>
-      <button onclick="openFixedActivityEditor()" class="w-full border border-sky-200 bg-sky-50 text-sky-700 font-bold py-2.5 rounded-xl text-xs">＋ 新增固定活動</button>
-
       <div id="fixed-editor-home"><div id="fixed-activity-editor" class="hidden bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2.5">
         <input type="hidden" id="fixed-edit-id">
         <div><label class="text-[11px] font-bold text-slate-600 block mb-1">活動／店家名稱</label>
@@ -1238,7 +1244,9 @@ html{touch-action:manipulation}
       </div>
 
       </div>
-      <button onclick="closeModal()" class="w-full bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs">關閉</button>
+      </div>
+      <div class="shrink-0 px-5 py-3 border-t border-slate-200 grid grid-cols-2 gap-2"><button onclick="openFixedActivityEditor()" class="border border-sky-200 bg-sky-50 text-sky-700 font-bold py-2.5 rounded-xl text-xs">＋ 新增固定活動</button><button onclick="closeModal()" class="bg-slate-100 text-slate-600 font-bold py-2.5 rounded-xl text-xs">關閉</button></div>
+      </div>
     </div>
 
     <!-- Edit/Add Itinerary Item Modal -->
@@ -1428,8 +1436,8 @@ html{touch-action:manipulation}
         <p id="fc51-plan-empty" class="hidden text-[11px] text-amber-700 mt-1">收藏裡還沒有地點，請先到「收藏」分頁新增。</p>
       </div>
       <div class="fc51-timegrid">
-        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">開始時間：</label><input type="time" id="fc51-plan-start" step="60"></div>
-        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">結束時間（選填）：</label><input type="time" id="fc51-plan-end" step="60"></div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">開始時間：</label><span class="fc46-time-field"><input type="time" id="fc51-plan-start" step="60" oninput="fc70MirrorPlanTime()"><span id="fc70-plan-start-display" aria-hidden="true">--:--</span></span></div>
+        <div><label class="text-[11px] font-bold text-slate-600 block mb-1">結束時間（選填）：</label><span class="fc46-time-field"><input type="time" id="fc51-plan-end" step="60" oninput="fc70MirrorPlanTime()"><span id="fc70-plan-end-display" aria-hidden="true">--:--</span></span></div>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">備註：</label>
@@ -2865,7 +2873,7 @@ html{touch-action:manipulation}
         const j=await fc71Fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(q)+'&count=6&language=zh&format=json'),rs=j.results||[];
         if(!rs.length){st.textContent='找不到這個地名，試試英文或附上國家。';return;}
         st.textContent='請選一個：';
-        rs.forEach(r=>{const b=document.createElement('button');b.type='button';b.className='block w-full text-left p-2 rounded-lg border text-xs bg-white';b.textContent=[r.name,r.admin1,r.country].filter(Boolean).join('，');b.onclick=()=>{document.getElementById('input-header-dest').value=r.name;document.getElementById('input-header-dest-name').value=r.name;document.getElementById('input-header-dest-lat').value=r.latitude;document.getElementById('input-header-dest-lon').value=r.longitude;box.innerHTML='';st.textContent='已選：'+b.textContent;};box.append(b);});
+        rs.forEach(r=>{const b=document.createElement('button');b.type='button';b.className='block w-full text-left p-2 rounded-lg border text-xs bg-white';b.textContent=[r.country,r.admin1,r.name].filter(Boolean).join('・');const full=[r.name,r.country].filter(Boolean).join('，');b.onclick=()=>{document.getElementById('input-header-dest').value=full;document.getElementById('input-header-dest-name').value=full;document.getElementById('input-header-dest-lat').value=r.latitude;document.getElementById('input-header-dest-lon').value=r.longitude;box.innerHTML='';st.textContent='已選：'+b.textContent;};box.append(b);});
       }catch(e){st.textContent='目前無法搜尋（沒有網路？），稍後再試。';}
     }
 
@@ -2923,13 +2931,17 @@ html{touch-action:manipulation}
     function fixedAssignments(id, data=getStoredData('itinerary',defaultItineraryData)) {
       return Object.entries(data).filter(([day,d])=>d.items?.some(x=>x.fixedActivityId===id)).map(([day])=>day);
     }
+    let fc70OpenFixed='';
+    function fc70ToggleFixedCard(id){fc70OpenFixed=(fc70OpenFixed===id)?'':id;renderFixedPlannerList();}
     function renderFixedPlannerList() {
       const box=document.getElementById('fixed-planner-list'); if(!box)return;
       const list=getFixedActivities(),editor=document.getElementById('fixed-activity-editor'),home=document.getElementById('fixed-editor-home'),editing=document.getElementById('fixed-edit-id')?.value;
       if(editor&&home)home.appendChild(editor);
       box.innerHTML=list.length?list.map(x=>{
-        const days=fixedAssignments(x.id),status=days.length?'已安排至 '+days.map(d=>'Day '+d).join('、'):'待安排';
-        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl p-3 space-y-2"><div class="font-bold text-xs">${escapeHtml(x.name)}</div><div class="text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${x.forced&&days.length?'（已鎖定）':''}</div><div class="text-[10px] text-slate-500 leading-relaxed">${fixedActivityDescription(x)}</div>${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}<div class="flex gap-3 text-[11px]"><button onclick="fc70ToggleLock('${x.id}')" class="${x.forced?'text-emerald-700':'text-slate-500'} font-bold">${x.forced?'🔒 已鎖定':'🔓 未鎖定'}</button><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div>`;
+        const days=fixedAssignments(x.id),status=days.length?'已安排至 '+days.map(d=>'Day '+d).join('、'):'待安排',open=(fc70OpenFixed===x.id)||(editing&&String(editing)===String(x.id)),unl=days.length&&!x.forced;
+        const chip=!days.length?'<span class="fc70-lk fc70-lk-wait">待安排</span>':x.forced?'<span class="fc70-lk fc70-lk-on">🔒 已鎖定</span>':'<span class="fc70-lk fc70-lk-off">🔓 未鎖定</span>';
+        const lockBtn=days.length?`<button type="button" onclick="fc70ToggleLock('${x.id}')" class="fc70-lkbtn ${x.forced?'fc70-lkbtn-on':'fc70-lkbtn-off'}">${x.forced?'🔒 已鎖定（點此解除）':'🔓 未鎖定（點此鎖定）'}</button>`:'';
+        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl ${unl?'fc70-fx-unl':''}"><button type="button" onclick="fc70ToggleFixedCard('${x.id}')" class="w-full flex items-center gap-2 p-3 text-left" aria-expanded="${open}"><span class="min-w-0 flex-1"><span class="block font-bold text-xs truncate">${escapeHtml(x.name)}</span><span class="block text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${unl?'・重新規劃會移動':''}</span></span>${chip}<span class="text-slate-400 text-sm shrink-0">${open?'▾':'▸'}</span></button><div class="fc70-fx-body ${open?'':'hidden'} px-3 pb-3 space-y-2"><div class="text-[10px] text-slate-500 leading-relaxed">${fixedActivityDescription(x)}</div>${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}${lockBtn}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div></div>`;
       }).join(''):'<div class="text-xs text-slate-400 text-center py-4">尚未建立固定活動</div>';
       if(editor&&!editor.classList.contains('hidden')&&editing){const card=[...box.querySelectorAll('[data-fixed-id]')].find(el=>el.dataset.fixedId===editing);if(card)card.querySelector('.fixed-editor-slot').appendChild(editor);}
       fc70RenderItinPlaces();
@@ -2940,10 +2952,9 @@ html{touch-action:manipulation}
       return out;
     }
     function fc70RenderItinPlaces(){
-      let box=document.getElementById('fc70-itin-places');
-      if(!box){const list=document.getElementById('fixed-planner-list');if(!list)return;box=document.createElement('div');box.id='fc70-itin-places';box.className='space-y-2';list.insertAdjacentElement('afterend',box);}
+      const box=document.getElementById('fc70-itin-places');if(!box)return;
       const c=fc70PlaceCandidates();
-      box.innerHTML=c.length?`<div class="border-t pt-2"><div class="text-xs font-bold text-slate-700">行程中的其他景點（${c.length}）</div><p class="text-[10px] text-slate-500">加入設定後會鎖定在目前的日期與時間，不會被重新規劃移動；可在卡片上解除鎖定。</p><button type="button" onclick="fc70AddAllPlaces()" class="w-full mt-1 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-800 text-xs font-bold">全部加入設定</button></div>`+c.map(x=>`<div class="bg-white border border-slate-200 rounded-xl p-2.5 flex items-center gap-2"><div class="min-w-0 flex-1"><div class="text-[10px] text-slate-500">Day ${x.day}${x.item.time?'｜'+escapeHtml(scenicPlainText(x.item.time)):''}</div><div class="text-xs font-bold truncate">${escapeHtml(scenicPlainText(x.item.title))}</div></div><button type="button" onclick="fc70AddPlace('${escapeHtml(x.item.id)}')" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-sky-50 text-sky-700 text-[11px] font-bold">加入設定</button></div>`).join(''):'';
+      box.innerHTML=c.length?`<div class="border-t pt-2"><div class="text-xs font-bold text-slate-700">行程中的其他景點（${c.length}）</div><p class="text-[10px] text-slate-500">加入設定後會鎖定在目前的日期與時間，不會被重新規劃移動；可在卡片上解除鎖定。</p><button type="button" onclick="fc70AddAllPlaces()" class="w-full mt-1 py-2 rounded-xl border border-emerald-300 bg-emerald-50 text-emerald-800 text-xs font-bold">全部加入設定</button></div>`+c.map(x=>`<div class="bg-white border border-slate-200 rounded-xl p-2.5 flex items-center gap-2"><div class="min-w-0 flex-1"><div class="text-[10px] text-slate-500">Day ${x.day}${x.item.time?'｜'+escapeHtml(scenicPlainText(x.item.time)):''}</div><div class="text-xs font-bold truncate">${escapeHtml(scenicPlainText(x.item.title))}</div></div><button type="button" onclick="fc70AddPlace('${escapeHtml(x.item.id)}')" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-sky-50 text-sky-700 text-[11px] font-bold">加入設定</button></div>`).join(''):'<p class="text-[11px] text-slate-500 text-center py-1">行程中的景點都已加入設定</p>';
     }
     function fc70MakeFixed(day,date,item){
       const t=plannerTimes(item.time);let time='',duration=item.duration||'';
@@ -2988,7 +2999,7 @@ html{touch-action:manipulation}
     function openFixedActivityEditor(id='',trigger=null) {
       id=String(id);
       const editor=document.getElementById('fixed-activity-editor'),card=trigger?.closest('[data-fixed-id]')||[...document.querySelectorAll('#fixed-planner-list [data-fixed-id]')].find(el=>el.dataset.fixedId===id);
-      (card?.querySelector('.fixed-editor-slot')||document.getElementById('fixed-editor-home')).appendChild(editor);editor.classList.remove('hidden');
+      (card?.querySelector('.fixed-editor-slot')||document.getElementById('fixed-editor-home')).appendChild(editor);editor.classList.remove('hidden');if(card){fc70OpenFixed=id;card.querySelector('.fc70-fx-body')?.classList.remove('hidden');}
       const x=getFixedActivities().find(v=>String(v.id)===id);
       document.getElementById('fixed-edit-id').value=id;
       document.getElementById('fixed-name').value=x?.name||'';
@@ -3296,7 +3307,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     async function fc34Call(action,payload={}){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');try{const d=await fc32Rpc('fc34_customer_admin',{p_token:token,p_action:action,p_payload:payload});if(token!==fc32Token)throw new Error('platform_session_expired');return d;}catch(e){if(/platform_session_expired|platform_login_required/.test(e.message)&&token===fc32Token)fc32ClearAdmin();throw e;}}
     function fc34Error(e){const m=String(e?.message||e);{const d=typeof fc70DelErr==='function'&&fc70DelErr(e);if(d)return d;}if(/PGRST202|Could not find|does not exist/.test(m))return '請先在 Supabase 執行 FC34_unified_admin.sql，再重新整理。';const pairs=[[/room_already_linked/,'此 Room ID 已綁定授權；本次沒有建立新授權，原資料保留。'],[/customer_license_denied/,'此客戶已被設為拒絕授權，無法建立。'],[/customer_not_found/,'客戶不存在，請重新整理。'],[/invalid_license_dates/,'到期日期必須晚於開始日期。'],[/invalid_license|invalid_customer|invalid_payload|invalid_room_id|invalid input|out of range/,'請檢查欄位內容、日期與人數，不能填寫負數或小數。']];return pairs.find(([re])=>re.test(m))?.[1]||fc31Message(e);}
     function fc34Status(text){document.getElementById('fc34-customer-status').textContent=text;}
-    function fc34SwitchTab(tab){fc34ActiveTab=['customers','requests','rooms'].includes(tab)?tab:'customers';for(const key of ['customers','requests','rooms']){document.getElementById('fc34-'+key+'-panel').classList.toggle('hidden',key!==fc34ActiveTab);const button=document.getElementById('fc34-tab-'+key);const label=key==='requests'?button.textContent:null;button.className='w-full p-3 rounded-lg text-sm font-bold '+(key===fc34ActiveTab?'bg-emerald-600 text-white':'bg-slate-100');button.setAttribute('aria-pressed',String(key===fc34ActiveTab));}if(fc34ActiveTab==='customers')fc34LoadCustomers();else if(fc34ActiveTab==='requests')fc60Load();else fc59Load();}
+    function fc34SwitchTab(tab){fc34ActiveTab=['customers','requests','rooms'].includes(tab)?tab:'customers';for(const key of ['customers','requests','rooms']){document.getElementById('fc34-'+key+'-panel').classList.toggle('hidden',key!==fc34ActiveTab);const button=document.getElementById('fc34-tab-'+key);const label=key==='requests'?button.textContent:null;button.className='w-full p-3 rounded-lg text-sm font-bold whitespace-nowrap '+(key===fc34ActiveTab?'bg-emerald-600 text-white':'bg-slate-100');button.setAttribute('aria-pressed',String(key===fc34ActiveTab));}if(fc34ActiveTab==='customers')fc34LoadCustomers();else if(fc34ActiveTab==='requests')fc60Load();else fc59Load();}
     async function fc34LoadCustomers(){const rev=++fc34CustomerRevision;fc34Status('載入客戶與授權…');try{const load=async kind=>{let rows=[],after='';for(let i=0;i<50;i++){const batch=await fc34Call('list',{kind,after});if(rev!==fc34CustomerRevision)return null;if(!Array.isArray(batch))throw new Error('invalid_payload');rows.push(...batch);if(batch.length<200)return rows;after=batch.at(-1).id;}throw new Error('資料超過目前可載入範圍，請聯絡管理者。');};const [customers,licenses]=await Promise.all([load('customers'),load('licenses')]);if(rev!==fc34CustomerRevision||!customers||!licenses)return;fc34Customers=customers;fc34Licenses=licenses;fc34RenderCustomers();fc34Status('已載入 '+customers.length+' 位客戶、'+licenses.length+' 筆授權。');}catch(e){if(rev===fc34CustomerRevision){fc34Customers=[];fc34Licenses=[];document.getElementById('fc34-customer-list').textContent='';document.getElementById('fc34-stats').textContent='';fc34Status(fc34Error(e));}}}
     function fc34LicenseState(l){if(l.status==='active'&&l.expires_at&&new Date(l.expires_at)<=new Date())return 'expired';return l.status;}
     function fc34StatusLabel(status){return ({active:'使用中',pending:'尚未啟用',paused:'暫停',expired:'已到期',revoked:'已撤銷',permanent:'永久授權'})[status]||status;}
@@ -3702,8 +3713,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           <div class="flight-datetime-row grid grid-cols-2 gap-2">
             <div>
               <label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達日期</label>
-              <button type="button" id="info-flight-out-arrival-date-btn" onclick="openFlightArrivalCalendar('out')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-center">${outArrivalDate ? formatDateZh(outArrivalDate) : '選擇日期'}</button>
-              <input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="hidden" value="${outArrivalDate}">
+              <input id="info-flight-out-arrival-date" data-info-key="outboundArrivalDate" type="date" value="${outArrivalDate}" min="${outDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"><p class="text-[10px] text-slate-400 mt-1">不能早於起飛日期</p>
             </div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">去程抵達時間</label><input id="info-flight-out-arrival-time" data-info-key="outboundArrivalTime" type="time" value="${escapeHtml(f.outboundArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
@@ -3716,23 +3726,11 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           <div class="flight-datetime-row grid grid-cols-2 gap-2">
             <div>
               <label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達日期</label>
-              <button type="button" id="info-flight-return-arrival-date-btn" onclick="openFlightArrivalCalendar('return')" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-center">${retArrivalDate ? formatDateZh(retArrivalDate) : '選擇日期'}</button>
-              <input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="hidden" value="${retArrivalDate}">
+              <input id="info-flight-return-arrival-date" data-info-key="returnArrivalDate" type="date" value="${retArrivalDate}" min="${retDate}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"><p class="text-[10px] text-slate-400 mt-1">不能早於起飛日期</p>
             </div>
             <div><label class="text-[11px] font-bold text-slate-600 block mb-1">回程抵達時間</label><input id="info-flight-return-arrival-time" data-info-key="returnArrivalTime" type="time" value="${escapeHtml(f.returnArrivalTime||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white"></div>
           </div>
-          <div id="flight-arrival-calendar" class="hidden mt-2 border border-slate-200 rounded-2xl p-3 bg-slate-50">
-            <div class="flex items-center justify-between mb-2">
-              <button type="button" onclick="changeFlightArrivalCalendarMonth(-1)" class="w-8 h-8 rounded-lg bg-white border border-slate-200">‹</button>
-              <div id="flight-arrival-calendar-month" class="text-xs font-extrabold text-slate-700"></div>
-              <button type="button" onclick="changeFlightArrivalCalendarMonth(1)" class="w-8 h-8 rounded-lg bg-white border border-slate-200">›</button>
-            </div>
-            <div class="grid grid-cols-7 text-center text-[9px] font-bold text-slate-400 mb-1">
-              <span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span>
-            </div>
-            <div id="flight-arrival-calendar-days" class="grid grid-cols-7 gap-1"></div>
-            <p id="flight-arrival-calendar-tip" class="text-[10px] text-sky-600 font-bold mt-2"></p>
-          </div>`;
+          `;
         setupInfoFlightDateHelpers();
       } else {
         fieldsBox.innerHTML=(defs[type]||[]).map(([k,l])=>`<div><label class="text-[11px] font-bold text-slate-600 block mb-1">${l}</label><input data-info-key="${k}" value="${escapeHtml(c[type][k]||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs"></div>`).join('');
@@ -3755,14 +3753,13 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       pairs.forEach(([departureId,arrivalId,buttonId])=>{
         const departure=document.getElementById(departureId);
         const arrival=document.getElementById(arrivalId);
-        const button=document.getElementById(buttonId);
-        if(!departure||!arrival||!button) return;
+        if(!departure||!arrival) return;
 
         const syncIfInvalid=()=>{
           if(!departure.value) return;
+          arrival.min=departure.value;
           if(!arrival.value || arrival.value < departure.value){
             arrival.value=departure.value;
-            button.textContent=formatDateZh(departure.value);
           }
         };
 
@@ -4001,7 +3998,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       document.getElementById('itin-modal-title').innerHTML = `<i class="fa-solid fa-plus text-sky-600 mr-1.5"></i>新增 Day ${currentDay} 行程地點`;
       document.getElementById('input-itin-title').value = '';
       document.getElementById('input-itin-time').value = '';fc41LoadTime('');
-      document.getElementById('input-itin-desc').value = '';
+      document.getElementById('input-itin-desc').value = '';window.fc70DescLoaded='';
       placeGuideReset('itin');
       document.getElementById('input-itin-comment').value = '';
       document.getElementById('input-itin-alert').value = '';
@@ -4028,7 +4025,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       document.getElementById('itin-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-sky-600 mr-1.5"></i>編輯行程資訊與註解`;
       document.getElementById('input-itin-title').value = item.title || '';
       document.getElementById('input-itin-time').value = item.time==='收藏推薦'?'':item.time||'';fc41LoadTime(item.time||'');
-      document.getElementById('input-itin-desc').value = item.desc || '';
+      window.fc70DescLoaded=String(item.desc||'').replace(/<br\s*\/?>/gi,'\n');document.getElementById('input-itin-desc').value = window.fc70DescLoaded;
       const linked=item.fixedActivityId&&getFixedActivities().find(a=>a.id===item.fixedActivityId);placeGuideReset('itin');
       document.getElementById('input-itin-comment').value = item.comment || '';
       document.getElementById('input-itin-alert').value = item.alert || '';
@@ -4070,7 +4067,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         if (item) {
           item.title = title;
           item.time = time;
-          item.desc = desc;
+          if(desc!==window.fc70DescLoaded)item.desc = desc;
           Object.assign(item,guideData);
           if(item.fixedActivityId){const list=getFixedActivities(),fixed=list.find(a=>a.id===item.fixedActivityId);if(fixed){Object.assign(fixed,guideData);fixed.map=map;pushStateToCloud('fixedActivities',list);}}
           item.comment = comment;
@@ -5818,7 +5815,8 @@ function fc49MapLabel(raw){try{const u=new URL(raw),m=u.pathname.match(/\/place\
 
 function fc49RenderMap(kind){const f=placeGuideFields(kind),box=document.getElementById('fc49-map-'+kind);if(!box)return;const url=document.getElementById(f.map).value.trim(),name=document.getElementById(f.title).value.trim(),state=fc49Maps[kind]||{};box.replaceChildren();const isConfirmed=state.confirmed===url&&!!url;const isLoose=isConfirmed&&!fc49SpecificMap(url);const text=document.createElement('p');text.className='text-xs mb-1.5';text.textContent=isConfirmed?(isLoose?'✓ 地點已確認（搜尋連結）':'✓ 地點已確認'):state.message|| (fc49SpecificMap(url)?'請開啟地圖核對名稱與位置，再確認。':(state.opened?'已開啟地圖核對過了，可以直接按「確認是此地點」。':'請先按「開啟地圖」核對是正確地點，再確認。'));box.append(text);const actions=document.createElement('div');actions.className='fc49-actions';const a=document.createElement('a');a.className='fc49-button';a.textContent='開啟地圖';a.href=fc49ValidMap(url)?url:buildAutoMapLink(name)||'https://www.google.com/maps';a.target='_blank';a.rel='noopener noreferrer';a.addEventListener('click',()=>{const st=fc49Maps[kind]||(fc49Maps[kind]={url,revision:0});st.opened=true;fc49RenderMap(kind);});actions.append(a);const b=document.createElement('button');b.type='button';b.className='fc49-button';b.textContent=isConfirmed?'✓ 已確認':'確認是此地點';b.onclick=()=>fc49ConfirmMap(kind);actions.append(b);const change=document.createElement('button');change.type='button';change.className='fc49-button fc49-secondary';change.textContent='更換地點連結';change.onclick=()=>{const input=document.getElementById(f.map);input.scrollIntoView({block:'center'});input.focus();input.select();};actions.append(change);box.append(actions);if(isLoose){const warn=document.createElement('p');warn.className='text-[10px] text-amber-600 mt-1 leading-relaxed';warn.textContent='⚠️ 這是搜尋連結，不是鎖定單一地點的精確連結。之後若把這則介紹設為「共享」，其他房間比對地點時可能配對不到同一間店；建議有空時換成 Google 地圖的「分享」連結（更換地點連結）。';box.append(warn);}const label=fc49MapLabel(url);if(label){const p=document.createElement('p');p.className='text-xs mt-2 break-words';p.textContent='連結中的地點名稱：'+label;box.append(p);}}
 
-function fc49ConfirmMap(kind){const url=document.getElementById(placeGuideFields(kind).map).value.trim();const state=fc49Maps[kind]||{};if(!fc49ValidMap(url))return showToast('請先輸入或自動帶出一個有效的 Google 地圖連結。');if(!fc49SpecificMap(url)&&!state.opened)return showToast('請先按「開啟地圖」核對是正確地點，再按確認。');fc49Maps[kind]={...state,url,confirmed:url,message:''};fc49RenderMap(kind);}
+function fc49ConfirmMap(kind){const f0=placeGuideFields(kind),inp=document.getElementById(f0.map);let url=inp.value.trim();const state=fc49Maps[kind]||{};if(!url){const nm=document.getElementById(f0.title).value.trim();if(!nm)return fc70MapMsg(kind,'請先輸入名稱，再確認地圖。');if(!state.opened)return fc70MapMsg(kind,'請先按「開啟地圖」核對是正確地點，再按確認。');url=buildAutoMapLink(nm);inp.value=url;}if(!fc49ValidMap(url))return fc70MapMsg(kind,'請先輸入或自動帶出一個有效的 Google 地圖連結。');if(!fc49SpecificMap(url)&&!state.opened)return fc70MapMsg(kind,'請先按「開啟地圖」核對是正確地點，再按確認。');fc49Maps[kind]={...state,url,confirmed:url,message:''};fc49RenderMap(kind);}
+function fc70MapMsg(kind,text){const st=fc49Maps[kind]||(fc49Maps[kind]={url:'',revision:0});st.message=text;fc49RenderMap(kind);showToast(text);}
 
 function fc49MapChanged(kind){const old=fc49Maps[kind]||{};fc49Maps[kind]={url:document.getElementById(placeGuideFields(kind).map).value.trim(),confirmed:'',revision:(old.revision||0)+1};fc49RenderMap(kind);clearTimeout(fc49Timers['map-'+kind]);fc49Timers['map-'+kind]=setTimeout(()=>fc49ResolveMap(kind),450);}
 
@@ -6107,6 +6105,7 @@ function fc51Flat(){const out=[];for(const cat of fc51Favs())for(const item of (
 function fc51Min(t){const m=/^(\d{1,2}):(\d{2})$/.exec(String(t||''));return m?(+m[1])*60+(+m[2]):null;}
 function fc51Range(p){const a=fc51Min(p.start);if(a===null)return null;const b=fc51Min(p.end);return {start:a,end:(b!==null&&b>a)?b:a+60};}
 function fc51Overlap(a,b){return !!a&&!!b&&a.start<b.end&&b.start<a.end;}
+function fc70MirrorPlanTime(){for(const k of ['start','end']){const i=document.getElementById('fc51-plan-'+k),d=document.getElementById('fc70-plan-'+k+'-display');if(i&&d)d.textContent=i.value||'--:--';}}
 function fc51TimeText(p){return p.start?(p.end?p.start+' - '+p.end:p.start):'';}
 function fc51Key(k){const me=fc51Me();return `fc51_${k}_${roomId}_${me?me.id:'x'}`;}
 function fc51Load(k,def){try{const v=localStorage.getItem(fc51Key(k));return v?JSON.parse(v):def;}catch(e){return def;}}
@@ -6133,7 +6132,7 @@ function fc51OpenPlan(planId){
   let plan=null;if(planId){const f=fc51Flat().find(x=>x.plan.id===planId&&String(x.plan.ownerId)===me.id);if(f){plan=f.plan;sel.value=f.cat.id+'|'+f.item.id;}}
   document.getElementById('fc51-plan-id').value=plan?plan.id:'';
   document.getElementById('fc51-plan-title').textContent=(plan?'編輯':'新增')+'私人行程・Day '+(plan?plan.day:currentDay);
-  document.getElementById('fc51-plan-start').value=plan?.start||'';document.getElementById('fc51-plan-end').value=plan?.end||'';document.getElementById('fc51-plan-note').value=plan?.note||'';
+  document.getElementById('fc51-plan-start').value=plan?.start||'';document.getElementById('fc51-plan-end').value=plan?.end||'';fc70MirrorPlanTime();document.getElementById('fc51-plan-note').value=plan?.note||'';
   fc51Open('modal-fc51-plan');
 }
 function fc51SavePlan(){
@@ -6273,7 +6272,7 @@ function fc51RenderPersonal(){
     if(e.kind==='group'){const g=e.g;return `<div class="fc52-card" onclick="fc52SetView('group')"><div class="fc52-body"><div class="fc52-head"><span class="fc52-tag fc52-tag-group">團體行程</span>${g.time?`<span class="fc52-time">${esc(scenicPlainText(g.time))}</span>`:''}${c}</div><div class="fc52-title">${esc(scenicPlainText(g.title||''))}</div></div><span class="fc52-chev">›</span></div>`;}
     const p=e.x.plan,item=e.x.item,mapUrl=item.map||buildAutoMapLink(item.name||'');
     const tag=e.kind==='theirs'?`<span class="fc52-tag fc52-tag-follow">跟隨 ${esc(p.ownerName)}</span>`:(fc51IsShared(p)?`<span class="fc52-tag fc52-tag-shared">私人・已分享給 ${Object.keys(p.shareTo||{}).length} 人</span>`:'<span class="fc52-tag fc52-tag-private">私人・僅自己可見</span>');
-    return `<div class="fc52-card"><div class="fc52-body"><div class="fc52-head">${tag}<span class="fc52-time">${esc(fc51TimeText(p)||'--')}</span>${c}</div><div class="fc52-title">${esc(item.name||'')}</div>${p.note?`<div class="fc52-sub">${esc(p.note)}</div>`:''}${e.kind==='theirs'?`<div class="fc52-sub">${esc(p.ownerName)} 安排・更新會同步</div>`:''}</div><div class="fc52-acts">${mapUrl?`<a href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer" class="fc51-icon" title="地圖">📍</a>`:''}${e.kind==='mine'?`<button type="button" class="fc51-icon" onclick="fc51OpenPlan('${esc(p.id)}')" title="編輯">✎</button><button type="button" class="fc51-icon" onclick="fc51DeletePlan('${esc(p.id)}')" title="刪除">✕</button>`:''}</div></div>`;
+    return `<div class="fc52-card"><div class="fc52-body"><div class="fc52-head">${tag}<span class="${e.kind==='theirs'?'fc52-time':'fc52-time fc52-time-private'}">${esc(fc51TimeText(p)||'--')}</span>${c}</div><div class="fc52-title">${esc(item.name||'')}</div>${p.note?`<div class="fc52-sub">${esc(p.note)}</div>`:''}${e.kind==='theirs'?`<div class="fc52-sub">${esc(p.ownerName)} 安排・更新會同步</div>`:''}</div><div class="fc52-acts">${mapUrl?`<a href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer" class="fc51-icon" title="地圖">📍</a>`:''}${e.kind==='mine'?`<button type="button" class="fc51-icon" onclick="fc51OpenPlan('${esc(p.id)}')" title="編輯">✎</button><button type="button" class="fc51-icon" onclick="fc51DeletePlan('${esc(p.id)}')" title="刪除">✕</button>`:''}</div></div>`;
   }).join('');
   let h='';
   for(const inv of invites)h+=`<div class="fc51-invite"><div class="text-xs text-violet-900"><b>${esc(inv.ownerName)}</b> 邀請你跟隨 Day ${inv.day} 的自由活動</div><div class="flex gap-1.5 mt-1.5"><button type="button" class="fc51-btn" onclick="fc51Respond('${esc(inv.ownerId)}',${inv.day},true)">接受</button><button type="button" class="fc51-btn fc51-btn-alt" onclick="fc51Respond('${esc(inv.ownerId)}',${inv.day},false)">婉拒</button></div></div>`;
@@ -6374,7 +6373,7 @@ function fc59Fmt(ts){return ts?fc34TaipeiDay(new Date(ts)):'';}
 function fc59LicLabel(l){const c=fc34Customers.find(x=>x.id===l.customer_id),zh={pending:'待兌換',active:'使用中',permanent:'永久',paused:'已暫停'}[l.status]||l.status;
   const term=l.status==='permanent'?'無到期日':(l.expires_at?'到期 '+fc59Fmt(l.expires_at):(l.term_days?'兌換後起算 '+l.term_days+' 天':'到期 無'));
   return `${c?.display_name||'?'}｜${zh}｜${term}｜#${String(l.id||'').replace(/-/g,'').slice(-4)}`;}
-function fc59LicOptions(){return fc34Licenses.map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(fc59LicLabel(l))}</option>`).join('')||'<option value="">（尚無授權）</option>';}
+function fc59LicOptions(){return '<option value="">請選擇授權…</option>'+fc34Licenses.map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(fc59LicLabel(l))}</option>`).join('');}
 async function fc59Load(){
   fc59Msg('載入房間…');
   try{
@@ -6398,7 +6397,7 @@ function fc59Render(){
   const btn='class="p-2 rounded-lg border text-xs font-bold"';
   box.innerHTML=rows.length?rows.map(r=>{
     const s=r.status||{},days=s.state==='trial'?s.days_left:7;
-    return `<article class="p-4 border rounded-xl space-y-2" data-room="${esc(r.room_id)}"><div class="flex justify-between gap-2 items-start"><h4 class="font-bold break-all">${esc(r.room_id)}</h4>${fc59Badge(r)}</div><p class="text-xs text-slate-600">建立 ${fc59Fmt(r.created_at)}・團員 ${r.members} 人${r.customer_name?'・客戶：'+esc(r.customer_name):''}${r.license_id?(s.expires_at?'・授權到期 '+fc59Fmt(s.expires_at):'・永久授權'):(r.trial_ends_at&&!r.license_exempt?'・試用到期 '+fc59Fmt(r.trial_ends_at):'')}</p>${r.license_id?'':`<div class="flex gap-2 items-center"><input type="number" min="0" max="3650" step="1" value="${days}" class="fc59-days border rounded-lg p-2 w-16 text-sm" aria-label="試用天數"><span class="text-xs">天</span><button type="button" data-fc59="trial" ${btn} style="white-space:nowrap">開始試用</button><button type="button" data-fc59="exempt" ${btn} style="white-space:nowrap">不限期</button></div>`}${r.license_id?`<button type="button" data-fc59="unlink" ${btn}>解除授權連結</button>`:`<div class="flex gap-2"><select class="fc59-lic border rounded-lg p-2 text-sm flex-1 min-w-0">${fc59LicOptions()}</select><button type="button" data-fc59="link" ${btn}>連結授權</button></div>`}<div class="pt-1 border-t"><button type="button" data-fc59="delete" class="p-2 rounded-lg border border-rose-300 text-rose-700 text-xs font-bold">刪除房間</button></div></article>`;}).join(''):'<p class="text-sm">沒有符合的房間。</p>';
+    return `<article class="p-4 border rounded-xl space-y-2" data-room="${esc(r.room_id)}"><div class="flex justify-between gap-2 items-start"><h4 class="font-bold break-all">${esc(r.room_id)}</h4>${fc59Badge(r)}</div><p class="text-xs text-slate-600">建立 ${fc59Fmt(r.created_at)}・團員 ${r.members} 人${r.customer_name?'・客戶：'+esc(r.customer_name):''}${r.license_id?(s.expires_at?'・授權到期 '+fc59Fmt(s.expires_at):'・永久授權'):(r.trial_ends_at&&!r.license_exempt?'・試用到期 '+fc59Fmt(r.trial_ends_at):'')}</p>${r.license_id?'':`<div class="space-y-2"><div class="flex gap-2 items-center"><input type="number" min="0" max="3650" step="1" value="${days}" class="fc59-days border rounded-lg p-2 w-24 text-sm" aria-label="試用天數"><span class="text-xs">天</span></div><div class="grid grid-cols-2 gap-2"><button type="button" data-fc59="trial" ${btn}>開始試用</button><button type="button" data-fc59="exempt" ${btn}>不限期</button></div></div>`}${r.license_id?`<button type="button" data-fc59="unlink" ${btn}>解除授權連結</button>`:`<div class="space-y-2"><select class="fc59-lic border rounded-lg p-2 text-sm w-full min-w-0" onchange="this.closest('[data-room]').querySelector('[data-fc59=link]').disabled=!this.value">${fc59LicOptions()}</select><button type="button" data-fc59="link" ${btn} style="width:100%" disabled>連結授權</button></div>`}<div class="pt-1 border-t"><button type="button" data-fc59="delete" class="p-2 rounded-lg border border-rose-300 text-rose-700 text-xs font-bold">刪除房間</button></div></article>`;}).join(''):'<p class="text-sm">沒有符合的房間。</p>';
 }
 async function fc70Delete(kind,id){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');const d=await fc32Rpc('fc70_admin_delete',{p_token:token,p_kind:kind,p_id:id});if(token!==fc32Token)throw new Error('platform_session_expired');return d;}
 function fc70DelErr(e){const m=String(e?.message||e);if(/PGRST202|Could not find|does not exist/.test(m))return '資料庫尚未安裝刪除功能，請先在 Supabase 執行 FC70_admin_delete.sql。';if(/customer_has_licenses/.test(m))return '這位客戶還有授權，請先處理授權再刪除。';if(/customer_has_orders/.test(m))return '這位客戶還有訂單紀錄，無法刪除。';if(/room_not_found/.test(m))return '房間不存在，請重新整理。';if(/customer_not_found/.test(m))return '客戶不存在，請重新整理。';return null;}
