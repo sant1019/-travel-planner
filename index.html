@@ -434,7 +434,7 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70</span>
+        <span id="test-version-badge" class="trip-version">FC-70b</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -2274,10 +2274,16 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
       if(!cloudConnected)return;
       const token=getMemberToken();
       if(token){
-        try{
-          const {data,error}=await cloudClient.rpc('get_trip_member_session',{p_room_id:roomId,p_member_token:token});
-          if(!error&&data?.id){saveMemberIdentity(data);refreshUI();setTimeout(()=>fc46CheckTransfer().catch(()=>{}),0);return;}
-        }catch(e){}
+        let invalid=false,failed=false;
+        for(let attempt=0;attempt<3;attempt++){
+          try{
+            const {data,error}=await cloudClient.rpc('get_trip_member_session',{p_room_id:roomId,p_member_token:token});
+            if(!error&&data?.id){saveMemberIdentity(data);refreshUI();setTimeout(()=>fc46CheckTransfer().catch(()=>{}),0);return;}
+            if(error&&!/member_login_required/.test(String(error.message||error.code||error))){failed=true;}else{invalid=true;failed=false;break;}
+          }catch(e){failed=true;}
+          await new Promise(r=>setTimeout(r,1200));
+        }
+        if(failed&&!invalid){showToast('網路不穩，暫時無法確認登入狀態，請稍後重新整理');return;}
         clearMemberToken();
       }
       currentMember=null;renderMemberIdentity();refreshUI();
