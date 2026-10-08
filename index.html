@@ -375,6 +375,15 @@ section.page-content h2 i{ margin-right:2px; }
 .fc60-chip{border:1px solid #cbd5e1;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;background:#fff;color:#334155}
 .fc60-chip.on{background:#059669;border-color:#059669;color:#fff}
 </style>
+<style id="fc68-style">
+.fc68-ph{font-size:.62em!important;opacity:.85;font-weight:600}
+.fc68-ph-sm{opacity:.75}
+#fc59-code-exp{-webkit-appearance:none;appearance:none;display:block;width:100%;min-height:38px;background:#fff;text-align:left;font-size:14px;line-height:1.4}
+#fc59-code-exp::-webkit-date-and-time-value{text-align:left;min-height:1.4em}
+[id^="modal-"] button.bg-emerald-600,[id^="modal-"] button.bg-indigo-600,[id^="modal-"] button.bg-indigo-700,[id^="modal-"] button.bg-teal-700,[id^="modal-"] button.bg-teal-600,[id^="modal-"] button.bg-violet-600,[id^="modal-"] button.bg-sky-700,[id^="modal-"] button.fc60-btn{background-color:var(--fc45-accent)!important;color:#fff!important}
+[id^="modal-"] button.bg-emerald-50,[id^="modal-"] button.bg-indigo-50,[id^="modal-"] button.bg-sky-50,[id^="modal-"] button.bg-emerald-100{background-color:var(--fc45-tint)!important;color:var(--fc45-ink)!important}
+[id^="modal-"] button.text-emerald-700:not([class*="bg-"]){color:var(--fc45-ink)!important}
+</style>
 <style id="fc62-style">
 .trip-login-card{padding:18px 20px}
 .trip-login-fields{gap:10px}
@@ -403,7 +412,7 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-67</span>
+        <span id="test-version-badge" class="trip-version">FC-68</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -931,7 +940,7 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
       <div class="trip-login-heading"><i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i><h3 id="trip-login-title">登入旅程</h3><p id="trip-login-sub">enjoy your trip</p></div>
       <form id="trip-login-form" onsubmit="event.preventDefault();fc62Submit()" class="trip-login-fields">
         <div><label for="input-room-id">房間名稱</label><input id="input-room-id" name="room" autocomplete="off" autocapitalize="none" spellcheck="false" oninput="fc45RoomInput()" onfocus="fc45SearchRooms()" onkeydown="fc45RoomKey(event)" aria-autocomplete="list" aria-controls="fc45-room-options" aria-expanded="false" placeholder="例如：danang2026" required><div id="fc45-room-options" class="fc45-room-options hidden" role="listbox" aria-label="相符的現有房間"></div><p id="fc45-room-status" role="status" aria-live="polite"></p><p id="fc62-room-hint" class="fc62-hint" role="status" aria-live="polite"></p></div>
-        <div><label for="input-room-password">房間密碼</label><div class="trip-password-wrap"><input id="input-room-password" name="room-password" type="password" autocomplete="off" placeholder="輸入房間密碼"><button type="button" onclick="toggleTripPassword('input-room-password',this)" aria-label="顯示房間密碼" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div><p id="fc62-pw-hint" class="fc62-hint hidden">全家人進房間都用這組，至少 6 個字。</p></div>
+        <div><label for="input-room-password">房間密碼</label><div class="trip-password-wrap"><input id="input-room-password" name="room-password" type="password" autocomplete="off" placeholder="輸入房間密碼"><button type="button" onclick="toggleTripPassword('input-room-password',this)" aria-label="顯示房間密碼" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div><p id="fc62-pw-hint" class="fc62-hint hidden">全團人員進房間都用這組，至少 6 個字。</p></div>
         <div><label for="trip-login-nickname">個人暱稱</label><input id="trip-login-nickname" name="username" autocomplete="username" autocapitalize="none" maxlength="30" placeholder="輸入暱稱" required></div>
         <div><label for="trip-login-password">個人密碼</label><div class="trip-password-wrap"><input id="trip-login-password" name="password" type="password" autocomplete="current-password" placeholder="輸入個人密碼" required><button type="button" onclick="toggleTripPassword('trip-login-password',this)" aria-label="顯示個人密碼" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div><p id="fc62-pp-hint" class="fc62-hint hidden">只有你自己用，至少 6 個字，跟房間密碼不同。</p></div>
         <div id="trip-confirm-field" class="hidden"><label for="trip-login-confirm">確認個人密碼</label><input id="trip-login-confirm" type="password" autocomplete="new-password" placeholder="再次輸入個人密碼" oninput="fc62Hints()"><p id="fc62-confirm-hint" class="fc62-hint"></p></div>
@@ -1005,6 +1014,7 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
       <button onclick="openMemberIdentityModal()" class="w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換團員／建立自己的身份</button>
       <button id="fc62-copy-entry" type="button" onclick="fc62OpenCopy(false)" class="hidden w-full bg-amber-50 text-amber-700 py-2 rounded-xl text-xs font-bold">從其他房間複製旅程</button>
       <button id="fc43-members-entry" onclick="fc43OpenMembers()" class="hidden w-full bg-sky-50 text-sky-700 py-2 rounded-xl text-xs font-bold">團員管理</button>
+      <button type="button" id="fc68-redeem-entry" onclick="fc59OpenRedeem()" class="hidden w-full bg-emerald-50 text-emerald-700 py-2 rounded-xl text-xs font-bold">輸入兌換碼</button>
       <button type="button" id="fc67-apply-btn" onclick="fc60OpenApply()" class="w-full text-emerald-700 py-1 text-xs font-bold">申辦正式會員／查詢進度</button>
       <button type="button" onclick="openPlaceAdmin()" class="w-full text-slate-500 py-1 text-xs">平台管理者登入</button>
       <p id="member-settings-status" class="text-[10px] text-slate-400"></p>
@@ -1602,10 +1612,12 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
       const datesEl = document.getElementById('header-display-dates');
       const groupTagEl = document.getElementById('header-display-grouptag');
 
-      if (titleEl) titleEl.textContent = info.title || '峴港會安';
+      const blank = new Set(info.blankFields || []);
+      const noTitle = blank.has('title') || !String(info.title || '').trim();
+      if (titleEl) { titleEl.textContent = noTitle ? '請為本次旅程訂定標題' : info.title; titleEl.classList.toggle('fc68-ph', noTitle); }
       if (durationEl) durationEl.textContent = info.duration || '6D5N';
-      if (headcountEl) headcountEl.textContent = info.headcount || '14大2小1嬰';
-      if (datesEl) datesEl.textContent = info.dates || '2026/12/07 - 12/12';
+      if (headcountEl) { const e = blank.has('headcount') || !info.headcount; headcountEl.textContent = e ? '人數未設定' : info.headcount; headcountEl.classList.toggle('fc68-ph-sm', e); }
+      if (datesEl) { const e = blank.has('dates') || !info.dates; datesEl.textContent = e ? '日期未設定' : info.dates; datesEl.classList.toggle('fc68-ph-sm', e); }
       if (groupTagEl) groupTagEl.textContent = info.groupTag || '必去景點';
     }
 
@@ -1819,7 +1831,7 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
       const dates = formatHeaderDateRange(startDate, endDate);
 
       const newInfo = {
-        title: title || '峴港會安',
+        title: title,
         adults,
         children,
         infants,
@@ -3142,7 +3154,7 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
     function fc34RenderCustomers(){const q=document.getElementById('fc34-search').value.trim().toLowerCase(),now=Date.now();const live=fc34Licenses.filter(l=>['active','permanent'].includes(fc34LicenseState(l))&&(!l.starts_at||new Date(l.starts_at)<=now)&&!fc34Customers.some(c=>c.id===l.customer_id&&c.is_blocked&&c.block_mode==='deny_license'));document.getElementById('fc34-stats').innerHTML=[['客戶',fc34Customers.length],['有效授權',live.length],['7 天內到期',live.filter(l=>l.expires_at&&new Date(l.expires_at)<=now+7*864e5).length],['拒絕／停用',fc34Customers.filter(c=>c.is_blocked).length+fc34Licenses.filter(l=>['paused','revoked'].includes(l.status)).length]].map(([label,n])=>`<div class="p-3 bg-slate-50 rounded-lg"><strong class="text-xl">${n}</strong><p class="text-xs">${label}</p></div>`).join('');const list=fc34Customers.filter(c=>[c.display_name,c.phone,c.email,c.source,...fc34Licenses.filter(l=>l.customer_id===c.id).flatMap(l=>l.rooms||[])].some(v=>String(v||'').toLowerCase().includes(q))).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));const esc=escapeHtml;document.getElementById('fc34-customer-list').innerHTML=list.length?list.map(c=>{const ls=fc34Licenses.filter(l=>l.customer_id===c.id).sort((a,b)=>String(b.created_at).localeCompare(String(a.created_at)));return `<article class="p-4 border rounded-xl space-y-2"><div class="flex justify-between gap-2"><h4 class="font-bold">${esc(c.display_name)}${c.is_blocked?'（已標記）':''}</h4><button type="button" data-fc34-customer="${esc(c.id)}" class="p-2 bg-emerald-50 text-emerald-800 rounded-lg text-sm">＋授權</button></div><p class="text-sm text-slate-600">${esc([c.phone,c.email,c.source&&'來源：'+c.source].filter(Boolean).join('｜'))}</p>${c.internal_note?`<p class="text-sm whitespace-pre-wrap">備註：${esc(c.internal_note)}</p>`:''}${ls.length?ls.map(l=>`<div class="p-3 bg-slate-50 rounded-lg space-y-1"><p class="text-sm font-bold">${esc(fc34StatusLabel(fc34LicenseState(l)))}｜${l.member_limit} 人｜${l.trip_limit} 旅程</p><p class="text-xs">${l.status==='pending'&&l.term_days&&!l.starts_at?`尚未起算｜綁定或兌換後 ${l.term_days} 天`:`開始：${esc(fc34Date(l.starts_at))}｜到期：${l.status==='permanent'?'永久':esc(fc34Date(l.expires_at))}`}</p><p class="text-xs break-all">Room ID：${esc((l.rooms||[]).join('、')||'未綁定')}</p>${l.admin_note?`<p class="text-xs whitespace-pre-wrap">管理備註：${esc(l.admin_note)}</p>`:''}</div>`).join(''):'<p class="text-sm text-slate-500">尚未建立授權</p>'}</article>`;}).join(''):'<p class="p-4 text-sm">目前沒有符合的客戶。</p>';document.querySelectorAll('[data-fc34-customer]').forEach(button=>button.onclick=()=>fc34OpenLicense(button.dataset.fc34Customer));}
     async function fc34SaveCustomer(){if(fc34CustomerBusy)return;const field=id=>document.getElementById('fc34-c-'+id).value.trim();const payload={display_name:field('name'),phone:field('phone'),email:field('email'),source:field('source'),internal_note:field('note')};if(!payload.display_name)return fc34Status('請輸入客戶名稱。');const button=document.getElementById('fc34-save-customer');fc34CustomerBusy=true;button.disabled=true;try{await fc34Call('create_customer',payload);for(const id of ['name','phone','email','source','note'])document.getElementById('fc34-c-'+id).value='';document.getElementById('fc34-customer-form').open=false;await fc34LoadCustomers();showToast('客戶已建立');}catch(e){fc34Status(fc34Error(e));}finally{fc34CustomerBusy=false;button.disabled=false;}}
     function fc34TaipeiDay(date){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);}
-    function fc34LicenseStatusChanged(){const mode=document.getElementById('fc34-l-mode').value,show=(id,on)=>document.getElementById(id).classList.toggle('hidden',!on);show('fc34-l-term-wrap',mode==='term');show('fc34-l-start-wrap',mode==='dates');show('fc34-l-end-wrap',mode==='dates');document.getElementById('fc34-l-term').required=mode==='term';document.getElementById('fc34-l-mode-hint').textContent=mode==='term'?'客戶兌換兌換碼，或你把房間綁上來的那天才開始計算。若下方填了 Room ID，會立刻綁定並從今天開始算。':(mode==='dates'?'依照指定的開始與到期日期生效。':'沒有到期日。');}
+    function fc34LicenseStatusChanged(){const mode=document.getElementById('fc34-l-mode').value,show=(id,on)=>document.getElementById(id).classList.toggle('hidden',!on);show('fc34-l-term-wrap',mode==='term');show('fc34-l-start-wrap',mode==='dates');show('fc34-l-end-wrap',mode==='dates');document.getElementById('fc34-l-term').required=mode==='term';document.getElementById('fc34-l-mode-hint').textContent=mode==='term'?'客戶輸入兌換碼（或你把房間綁上來）的那天才開始計算。若下方填了 Room ID，會立刻綁定並從今天開始算。':(mode==='dates'?'依照指定的開始與到期日期生效。':'沒有到期日。');}
     function fc34OpenLicense(id){const customer=fc34Customers.find(c=>c.id===id);if(!customer)return;fc34ActiveCustomer=id;document.getElementById('fc34-license-for').textContent='授權客戶：'+customer.display_name;document.getElementById('fc34-l-start').value=fc34TaipeiDay(new Date());document.getElementById('fc34-l-end').value=fc34TaipeiDay(new Date(Date.now()+30*864e5));document.getElementById('fc34-l-term').value=30;document.getElementById('fc34-l-members').value=10;document.getElementById('fc34-l-trips').value=1;document.getElementById('fc34-l-mode').value='term';for(const key of ['room','note'])document.getElementById('fc34-l-'+key).value='';fc34LicenseStatusChanged();const form=document.getElementById('fc34-license-form');form.classList.remove('hidden');form.scrollIntoView({block:'nearest',behavior:'smooth'});}
     async function fc34SaveLicense(){if(fc34LicenseBusy||!fc34ActiveCustomer)return;const field=id=>document.getElementById('fc34-l-'+id).value;const members=Number(field('members')),trips=Number(field('trips'));if(!Number.isSafeInteger(members)||!Number.isSafeInteger(trips)||members<1||trips<1)return fc34Status('團員與旅程上限須為大於 0 的整數。');const mode=field('mode'),start=field('start'),end=field('end'),term=Number(field('term'));if(mode==='term'&&(!Number.isSafeInteger(term)||term<1||term>3650))return fc34Status('授權天數須為 1–3650 的整數。');const status=mode==='permanent'?'permanent':(mode==='term'?'pending':'active');const payload={customer_id:fc34ActiveCustomer,status,starts_at:mode==='dates'&&start?start+'T00:00:00+08:00':null,expires_at:mode==='dates'&&end?end+'T23:59:59+08:00':null,member_limit:members,trip_limit:trips,room_id:field('room').trim(),admin_note:field('note').trim()};if(mode==='term')payload.term_days=term;if(payload.starts_at&&payload.expires_at&&new Date(payload.expires_at)<=new Date(payload.starts_at))return fc34Status('到期日期必須晚於開始日期。');const button=document.getElementById('fc34-save-license');fc34LicenseBusy=true;button.disabled=true;try{await fc34Call('create_license',payload);document.getElementById('fc34-license-form').classList.add('hidden');fc34ActiveCustomer='';await fc34LoadCustomers();showToast('授權已建立'+(payload.room_id?'，房間已綁定':''));}catch(e){fc34Status(fc34Error(e));}finally{fc34LicenseBusy=false;button.disabled=false;}}
     if(location.hash==='#platform-admin')setTimeout(()=>openPlaceAdmin(),300);
@@ -3466,7 +3478,8 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
         const headerInfo = getStoredData('headerInfo', defaultHeaderInfo);
         h+=`<div class="fc44-flight p-4 rounded-2xl shadow-sm text-xs">
           <div class="flex justify-between"><h3 class="font-bold">✈️ 班機資訊</h3>${infoEditButton('flight')}</div>
-          <div class="mt-2 space-y-1">
+          ${['outboundNo','outboundDate','outboundTime','outboundArrivalDate','outboundArrivalTime','returnNo','returnDate','returnTime','returnArrivalDate','returnArrivalTime'].some(k=>String(c.flight?.[k]||'').trim())?'':'<p class="text-slate-400 mt-2">尚未填寫，按編輯新增航班</p>'}
+          <div class="mt-2 space-y-1 ${['outboundNo','outboundDate','outboundTime','outboundArrivalDate','outboundArrivalTime','returnNo','returnDate','returnTime','returnArrivalDate','returnArrivalTime'].some(k=>String(c.flight?.[k]||'').trim())?'':'hidden'}">
             <p class="font-bold ">🛫 去程 ${escapeHtml(c.flight.outboundNo)}</p><p class="fc44-time-row"><span class="fc44-time-label">起飛</span><span class="fc44-time-value fc44-depart">${escapeHtml(formatDateZh(c.flight.outboundDate))} ${escapeHtml(c.flight.outboundTime)}</span></p>
             ${(c.flight.outboundArrivalDate||c.flight.outboundArrivalTime)?`<p class="fc44-time-row"><span class="fc44-time-label">抵達</span><span class="fc44-time-value fc44-arrive">${escapeHtml(formatDateZh(c.flight.outboundArrivalDate||''))} ${escapeHtml(c.flight.outboundArrivalTime||'')}</span></p>`:''}
             ${buildFlightReminderHtml(c.flight.outboundNo,c.flight.outboundDate,c.flight.outboundTime,headerInfo.startDate)}
@@ -3474,7 +3487,7 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
             ${(c.flight.returnArrivalDate||c.flight.returnArrivalTime)?`<p class="fc44-time-row"><span class="fc44-time-label">抵達</span><span class="fc44-time-value fc44-arrive">${escapeHtml(formatDateZh(c.flight.returnArrivalDate||''))} ${escapeHtml(c.flight.returnArrivalTime||'')}</span></p>`:''}
             ${buildFlightReminderHtml(c.flight.returnNo,c.flight.returnDate,c.flight.returnTime,headerInfo.endDate)}
           </div>
-          <p class="fc44-flight-footnote text-[9px] mt-2">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
+          <p class="fc44-flight-footnote text-[9px] mt-2 ${['outboundNo','outboundDate','outboundTime','outboundArrivalDate','outboundArrivalTime','returnNo','returnDate','returnTime','returnArrivalDate','returnArrivalTime'].some(k=>String(c.flight?.[k]||'').trim())?'':'hidden'}">提醒時間依內建航空公司規則推算；若票價產品、艙等、航線或航空公司規定不同，仍以實際訂單與航空公司公告為準。</p>
         </div>`;
       }
       if(v.shuttle)h+=`<div class="bg-white p-4 rounded-2xl border shadow-sm text-xs"><div class="flex justify-between"><h3 class="font-bold">🚐 交通接駁資訊</h3>${infoEditButton('shuttle')}</div><div class="mt-2 space-y-1"><p class="text-sky-600 font-bold">${c.shuttle.plan ? '已設定 '+c.shuttle.plan.vehicles.length+' 個車次：'+escapeHtml(c.shuttle.plan.vehicles.map(x=>x.name).join('、')) : '尚未設定車次'}</p><p><b>${escapeHtml(c.shuttle.company)}</b>${c.shuttle.driver?'（司機：'+escapeHtml(c.shuttle.driver)+'）':''}</p><p>電話：${escapeHtml(c.shuttle.phone1)}${c.shuttle.phone2?' / '+escapeHtml(c.shuttle.phone2):''}</p><p>Line ID：${escapeHtml(c.shuttle.line)}</p></div></div>`;
@@ -5087,7 +5100,7 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
       if(copy){const state=collectRoomState();return JSON.parse(JSON.stringify({headerInfo:header,itinerary:getStoredData('itinerary',defaultItineraryData),packing:getStoredData('packing',defaultPackingData),favorites:getStoredData('favorites',defaultFavoritesData),tickets:getStoredData('tickets',defaultTicketsData),fixedExpenses:getStoredData('fixedExpenses',defaultFixedExpensesData),rooms:getStoredData('rooms',defaultRoomsData),souvenirs:getStoredData('souvenirs',defaultSouvenirsData),notes:getStoredData('notes',''),fixedActivities:getFixedActivities(),infoConfig:info,...state}));}
       const d=new Date(),today=[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-');
       const blank={};for(const key of CLOUD_KEYS)blank[key]=[];
-      blank.headerInfo={...header,title:'新旅程',startDate:today,endDate:today,adults:1,children:0,infants:0,headcount:'1大',duration:'1D',dates:today.replaceAll('-','/'),groupTag:'',requiredInfo:{}};
+      blank.headerInfo={...header,blankFields:['title','dates','headcount'],title:'',startDate:today,endDate:today,adults:1,children:0,infants:0,headcount:'1大',duration:'1D',dates:today.replaceAll('-','/'),groupTag:'',requiredInfo:{}};
       blank.itinerary={1:{items:[]}};blank.notes='';
       blank.infoConfig={visibility:{...defaultInfoConfig.visibility},flight:Object.fromEntries(Object.keys(defaultInfoConfig.flight).map(k=>[k,''])),hotel:Object.fromEntries(Object.keys(defaultInfoConfig.hotel).map(k=>[k,''])),shuttle:Object.fromEntries(Object.keys(defaultInfoConfig.shuttle).map(k=>[k,''])),emergency:Object.fromEntries(Object.keys(defaultInfoConfig.emergency).map(k=>[k,''])),reminders:[]};return blank;
     }
@@ -5663,7 +5676,7 @@ function fc50Header(){return getStoredData('headerInfo',defaultHeaderInfo)||{};}
 function fc50Companions(){const h=fc50Header(),parts=[];if(+h.adults)parts.push(h.adults+' 位大人');if(+h.children)parts.push(h.children+' 位國小兒童');if(+h.infants)parts.push(h.infants+' 位嬰兒');return parts.join('、')||scenicPlainText(h.headcount||'')||'未填寫';}
 function fc50Region(){return scenicPlainText(fc50Header().title||'').trim();}
 function fc50FormatRules(){return ['請先上網查詢最新資料，使用繁體中文（台灣用語），並嚴格依照下列格式回答；標題文字不要更改，不要加開場白、結語、表格或網址。','','【簡介】','（3～5 句，介紹這個地方的特色、歷史或值得去的原因）','','【介紹重點】','（4～6 項，每項一行，以「・」開頭，例如必看、必吃、拍照點、玩法）','','【實用資訊】','（每項一行，格式為「項目：內容」，包含：門票或價位、營業時間、建議停留時間、交通方式；查不到請寫「待確認」，不要猜測）','','【重要提醒】','（每項一行，以「・」開頭；包含年齡或身高限制、公休日、服裝規定、是否需預約、嬰幼兒與長輩注意事項；沒有就寫「無」）'];}
-function fc50PlacePrompt(title,dateText){return ['請幫我寫一份旅遊景點／餐廳介紹，要給家族旅遊團的團員看。','地點：'+title,'旅程：'+(fc50Region()||'未填寫'),...(dateText?['預計造訪日期：'+dateText]:[]),'同行團員：'+fc50Companions(),'',...fc50FormatRules()].join('\n');}
+function fc50PlacePrompt(title,dateText){return ['請幫我寫一份旅遊景點／餐廳介紹，要給旅遊團的團員看。','地點：'+title,'旅程：'+(fc50Region()||'未填寫'),...(dateText?['預計造訪日期：'+dateText]:[]),'同行團員：'+fc50Companions(),'',...fc50FormatRules()].join('\n');}
 async function fc50Copy(text,fallbackField){
   try{if(!navigator.clipboard?.writeText)throw new Error('no clipboard');await navigator.clipboard.writeText(text);return true;}catch(e){
     const ta=document.createElement('textarea');ta.value=text;ta.setAttribute('readonly','');ta.style.cssText='position:fixed;top:0;left:0;opacity:0;user-select:text;-webkit-user-select:text;';document.body.appendChild(ta);ta.select();ta.setSelectionRange(0,text.length);let ok=false;try{ok=Boolean(document.execCommand&&document.execCommand('copy'));}catch(_){}ta.remove();
@@ -5710,7 +5723,7 @@ function fc50BatchTargets(){const sel=document.getElementById('scenic-pdf-day')?
 async function fc50CopyBatchPrompt(btn){
   const status=document.getElementById('fc50-ai-status-batch'),list=fc50BatchTargets();
   if(!list.length){status.textContent='目前選擇的天數沒有景點。';return;}
-  const text=['請幫我為以下每個旅遊地點各寫一份介紹，要給家族旅遊團的團員看。','旅程：'+(fc50Region()||'未填寫'),'同行團員：'+fc50Companions(),'','地點清單：',
+  const text=['請幫我為以下每個旅遊地點各寫一份介紹，要給旅遊團的團員看。','旅程：'+(fc50Region()||'未填寫'),'同行團員：'+fc50Companions(),'','地點清單：',
     ...list.map(({e},n)=>`${n+1}. ${fc46TextTitle(e.title)}（${travelBookDay(e.day)} ${e.date}${e.time&&e.time!=='收藏推薦'?'，'+scenicPlainText(e.time):''}）`),
     '','每個地點請先寫一行「＝＝ 第N項：地點名稱 ＝＝」（N 是上面清單的編號），接著依下列格式回答，清單上的地點都要寫完：','',...fc50FormatRules()].join('\n');
   fc50BatchList=list.map(x=>x.i);
@@ -6149,7 +6162,9 @@ async function fc59Call(action,payload={}){const token=fc32Token;if(!token||fc31
 function fc59Err(e){const m=String(e?.message||e);if(/PGRST202|Could not find/.test(m))return '資料庫尚未安裝房間管理功能。';const pairs=[[/room_not_found/,'找不到這個房間。'],[/license_not_found/,'找不到這張授權。'],[/room_already_linked/,'這個房間已經連結授權，請先解除。'],[/room_not_linked/,'這個房間沒有連結授權。'],[/trip_limit_reached/,'這張授權的旅程數已達上限。'],[/customer_license_denied/,'此客戶已被設為拒絕授權。'],[/invalid_days/,'天數必須是 0 到 3650 之間的整數。'],[/invalid_/,'請檢查欄位內容。']];return pairs.find(([re])=>re.test(m))?.[1]||fc31Message(e);}
 function fc59Msg(t){const el=document.getElementById('fc59-status');if(el)el.textContent=t||'';}
 function fc59Fmt(ts){return ts?fc34TaipeiDay(new Date(ts)):'';}
-function fc59LicLabel(l){const c=fc34Customers.find(x=>x.id===l.customer_id);return `${c?.display_name||'?'}｜${l.status}｜到期 ${l.expires_at?fc59Fmt(l.expires_at):'無'}`;}
+function fc59LicLabel(l){const c=fc34Customers.find(x=>x.id===l.customer_id),zh={pending:'待兌換',active:'使用中',permanent:'永久',paused:'已暫停'}[l.status]||l.status;
+  const term=l.status==='permanent'?'無到期日':(l.expires_at?'到期 '+fc59Fmt(l.expires_at):(l.term_days?'兌換後起算 '+l.term_days+' 天':'到期 無'));
+  return `${c?.display_name||'?'}｜${zh}｜${term}｜#${String(l.id||'').replace(/-/g,'').slice(-4)}`;}
 function fc59LicOptions(){return fc34Licenses.map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(fc59LicLabel(l))}</option>`).join('')||'<option value="">（尚無授權）</option>';}
 async function fc59Load(){
   fc59Msg('載入房間…');
@@ -6158,7 +6173,7 @@ async function fc59Load(){
     fc59Rooms=res.rooms||[];fc34Customers=customers;fc34Licenses=licenses;
     document.getElementById('fc59-default-days').value=res.default_trial_days??7;
     const sel=document.getElementById('fc59-code-license'),cur=sel.value;sel.innerHTML=fc59LicOptions();if(cur)sel.value=cur;
-    fc59Render();fc59Msg(`共 ${fc59Rooms.length} 個房間。`);
+    fc59Render();fc59Msg(`共 ${fc59Rooms.length} 個房間`);
   }catch(e){fc59Msg(fc59Err(e));}
 }
 function fc59Badge(r){
@@ -6174,7 +6189,7 @@ function fc59Render(){
   const btn='class="p-2 rounded-lg border text-xs font-bold"';
   box.innerHTML=rows.length?rows.map(r=>{
     const s=r.status||{},days=s.state==='trial'?s.days_left:7;
-    return `<article class="p-4 border rounded-xl space-y-2" data-room="${esc(r.room_id)}"><div class="flex justify-between gap-2 items-start"><h4 class="font-bold break-all">${esc(r.room_id)}</h4>${fc59Badge(r)}</div><p class="text-xs text-slate-600">建立 ${fc59Fmt(r.created_at)}・團員 ${r.members} 人${r.customer_name?'・客戶：'+esc(r.customer_name):''}${r.trial_ends_at&&!r.license_exempt?'・試用到期 '+fc59Fmt(r.trial_ends_at):''}</p><div class="flex flex-wrap gap-2 items-center"><input type="number" min="0" max="3650" step="1" value="${days}" class="fc59-days border rounded-lg p-2 w-20 text-sm" aria-label="試用天數"><button type="button" data-fc59="trial" ${btn}>從現在起試用這麼多天</button><button type="button" data-fc59="exempt" ${btn}>設為不限期</button></div>${r.license_id?`<button type="button" data-fc59="unlink" ${btn}>解除授權連結</button>`:`<div class="flex gap-2"><select class="fc59-lic border rounded-lg p-2 text-sm flex-1 min-w-0">${fc59LicOptions()}</select><button type="button" data-fc59="link" ${btn}>連結授權</button></div>`}</article>`;}).join(''):'<p class="text-sm">沒有符合的房間。</p>';
+    return `<article class="p-4 border rounded-xl space-y-2" data-room="${esc(r.room_id)}"><div class="flex justify-between gap-2 items-start"><h4 class="font-bold break-all">${esc(r.room_id)}</h4>${fc59Badge(r)}</div><p class="text-xs text-slate-600">建立 ${fc59Fmt(r.created_at)}・團員 ${r.members} 人${r.customer_name?'・客戶：'+esc(r.customer_name):''}${r.license_id?(s.expires_at?'・授權到期 '+fc59Fmt(s.expires_at):'・永久授權'):(r.trial_ends_at&&!r.license_exempt?'・試用到期 '+fc59Fmt(r.trial_ends_at):'')}</p>${r.license_id?'':`<div class="flex flex-wrap gap-2 items-center"><input type="number" min="0" max="3650" step="1" value="${days}" class="fc59-days border rounded-lg p-2 w-20 text-sm" aria-label="試用天數"><button type="button" data-fc59="trial" ${btn}>從現在起試用這麼多天</button><button type="button" data-fc59="exempt" ${btn}>設為不限期</button></div>`}${r.license_id?`<button type="button" data-fc59="unlink" ${btn}>解除授權連結</button>`:`<div class="flex gap-2"><select class="fc59-lic border rounded-lg p-2 text-sm flex-1 min-w-0">${fc59LicOptions()}</select><button type="button" data-fc59="link" ${btn}>連結授權</button></div>`}</article>`;}).join(''):'<p class="text-sm">沒有符合的房間。</p>';
 }
 async function fc59Click(ev){
   const b=ev.target.closest('[data-fc59]');if(!b||fc59Busy)return;
@@ -6366,19 +6381,23 @@ function fc62TermText(st){
   if(st.state==='exempt')return '此房間不受期限限制';
   return '';
 }
-function fc62Box(el,kind,text){
+function fc62Box(el,kind,main,sub,small){
   el.className='rounded-xl p-3 mb-3 text-xs leading-relaxed '+({ok:'bg-emerald-50 text-emerald-800',warn:'bg-amber-50 text-amber-800',info:'bg-slate-100 text-slate-700'})[kind];
-  el.textContent=text;el.classList.remove('hidden');
+  el.replaceChildren();
+  const add=(t,c)=>{if(!t)return;const d=document.createElement('div');d.className=c;d.textContent=t;el.append(d);};
+  add(main,'font-bold');add(sub,'mt-0.5');add(small,'mt-1.5 text-[10px] opacity-75');
+  el.classList.remove('hidden');
 }
 async function fc62SeedPrompt(room,outcome={}){
   if(room!==roomId||!isOrganizer())return;
   let st=null;try{st=await fc32Rpc('get_trip_room_status',{p_room_id:room});}catch(e){}
   if(room!==roomId)return;
   const box=document.getElementById('fc62-seed-result'),term=fc62TermText(st);
-  if(outcome.ok)fc62Box(box,'ok','兌換碼已生效，'+(term||'房間已啟用授權')+'。');
-  else if(outcome.code)fc62Box(box,'warn','兌換碼未生效：'+(outcome.err||'請稍後再試')+'。房間先以試用期建立'+(term?'，'+term:'')+'。之後可在房間內再輸入兌換碼。');
-  else if(st&&st.state==='trial')fc62Box(box,'info','免費試用中，'+term+'。有兌換碼可在房間內輸入。');
+  if(outcome.ok)fc62Box(box,'ok','兌換碼已生效',term||'房間已啟用授權');
+  else if(outcome.code)fc62Box(box,'warn','兌換碼未生效：'+(outcome.err||'請稍後再試'),'房間先以試用期建立'+(term?'，'+term:''),'之後可在房間內再輸入兌換碼');
+  else if(st&&st.state==='trial')fc62Box(box,'info','免費試用中',term,'之後可申辦正式會員取得兌換碼');
   else box.classList.add('hidden');
+  {const sb=document.getElementById('fc62-seed-sample');if(sb){sb.disabled=false;sb.textContent='載入範例旅程';}}
   try{fc59RefreshStatus();}catch(e){}
   document.getElementById('modal-backdrop').classList.remove('hidden','trip-login-overlay');
   document.getElementById('fc62-copy-view').classList.add('hidden');document.getElementById('fc62-seed-main').classList.remove('hidden');
@@ -6389,7 +6408,7 @@ async function fc62LoadSample(){
   const btn=document.getElementById('fc62-seed-sample');btn.disabled=true;btn.textContent='載入中…';
   const c=o=>JSON.parse(JSON.stringify(o));
   try{
-    const header={...getStoredData('headerInfo',defaultHeaderInfo),...c(defaultHeaderInfo)};
+    const header={...c(defaultHeaderInfo),blankFields:['dates','headcount']};
     for(const [k,v] of [['headerInfo',header],['itinerary',c(defaultItineraryData)],['packing',c(defaultPackingData)],['favorites',c(defaultFavoritesData)]])if(pushStateToCloud(k,v)===false)throw new Error('not_ready');
     closeModal(true);try{renderHeaderInfo();refreshUI();}catch(e){}showToast('已載入範例旅程');
   }catch(e){btn.disabled=false;btn.textContent='載入範例旅程';showToast('載入失敗，請稍後再試');}
@@ -6460,11 +6479,13 @@ fc65Gate();setInterval(fc65Gate,1000);
 
 function fc62RedeemReset(){
   const st=document.getElementById('fc59-redeem-status'),btn=document.getElementById('fc59-redeem-btn'),input=document.getElementById('fc59-redeem-code');
+  for(const id of ['fc67-redeem-intro','fc67-redeem-apply'])document.getElementById(id)?.classList.remove('hidden');
   st.className='text-[11px] text-rose-600 min-h-[1rem]';btn.textContent='兌換';btn.onclick=fc59Redeem;input.disabled=false;
 }
 function fc62RedeemDone(st,btn,d){
   st.className='text-xs text-emerald-800 bg-emerald-50 rounded-xl p-3 leading-relaxed';
-  st.textContent=(d&&d.renewed?'續用成功，':'兌換成功，')+(fc62TermText(fc59Status)||'房間已啟用授權')+'。';
+  st.textContent=(d&&d.renewed?'續用成功，':'兌換成功，')+(fc62TermText(fc59Status)||'房間已啟用授權');
+  for(const id of ['fc67-redeem-intro','fc67-redeem-apply'])document.getElementById(id)?.classList.add('hidden');
   document.getElementById('fc59-redeem-code').disabled=true;btn.textContent='完成';btn.onclick=()=>closeModal(true);
 }
 
@@ -6472,6 +6493,8 @@ function fc62RedeemDone(st,btn,d){
 Object.assign(FC59_ERR,{license_permanent:'這張授權是永久授權，不需要續用',renewal_days_missing:'這張授權是固定日期，無法判斷續用天數，請聯絡平台管理者'});
 function fc67Wording(){
   const renew=!!(fc59Status&&fc59Status.has_license),set=(id,t)=>{const el=document.getElementById(id);if(el&&el.textContent!==t)el.textContent=t;};
+  set('fc68-redeem-entry',renew?'輸入兌換碼續用':'輸入兌換碼開通正式會員');
+  try{document.getElementById('fc68-redeem-entry')?.classList.toggle('hidden',!(isOrganizer()&&cloudConnected));}catch(e){}
   set('fc67-apply-btn',renew?'申請續用／查詢進度':'申辦正式會員／查詢進度');
   set('fc67-redeem-apply',renew?'申請續用，取得兌換碼':'申辦正式會員取得兌換碼');
   set('fc67-redeem-intro',renew?'輸入續用碼後，目前授權的到期日會往後延長。':'兌換成功後，這個房間會連結到你的授權，並依授權的期限與人數上限使用。');
