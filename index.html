@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
   <title>旅遊小秘書</title>
   <meta name="apple-mobile-web-app-title" content="旅遊小秘書">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -426,8 +426,26 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
 </style>
 <style id="fc70-style">
 html{touch-action:manipulation}
-@media (max-width:900px){input:not([type=checkbox]):not([type=radio]):not([type=range]),select,textarea{font-size:16px!important}}
 .fc70-st{top:-1.25rem!important;box-shadow:none!important}
+#page-itinerary{margin-top:-8px}
+#page-itinerary.space-y-3>*+*{margin-top:8px!important}
+#fixed-activity-editor.space-y-2\.5>*+*{margin-top:8px!important}
+#fixed-activity-editor label.block,#fixed-activity-editor label.mb-1{margin-bottom:2px}
+#modal-member-settings button.fc70-mb{border-radius:12px;padding:9px 0;font-size:12px;font-weight:700;width:100%}
+#fc70-switch-btn{background:#dbeafe!important;color:#1e40af!important}
+#fc62-copy-entry{background:#ffedd5!important;color:#c2410c!important}
+#fc43-members-entry{background:#ede9fe!important;color:#6d28d9!important}
+#fc68-redeem-entry{background:#dcfce7!important;color:#166534!important}
+#fc67-apply-btn{background:#fce7f3!important;color:#be185d!important}
+#fc34-tab-customers{background:#dbeafe!important;color:#1e40af!important}
+#fc34-tab-requests{background:#fce7f3!important;color:#be185d!important}
+#fc34-tab-rooms{background:#dcfce7!important;color:#166534!important}
+#fc34-tab-guides{background:#ffedd5!important;color:#c2410c!important}
+#fc34-tab-customers[aria-pressed="true"]{background:#2563eb!important;color:#fff!important}
+#fc34-tab-requests[aria-pressed="true"]{background:#db2777!important;color:#fff!important}
+#fc34-tab-rooms[aria-pressed="true"]{background:#16a34a!important;color:#fff!important}
+#fc34-tab-guides[aria-pressed="true"]{background:#ea580c!important;color:#fff!important}
+.trip-version{cursor:default;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 .fc70-sb{bottom:-1.25rem!important;box-shadow:none!important}
 .fc70-sec{border:1px solid #e2e8f0;border-radius:12px;padding:8px 10px;background:#fff}
 .fc70-sec>summary{font-size:12px;font-weight:800;cursor:pointer;color:#334155}
@@ -444,7 +462,7 @@ html{touch-action:manipulation}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70d</span>
+        <span id="test-version-badge" class="trip-version">FC-70e</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -1049,12 +1067,11 @@ html{touch-action:manipulation}
         <label class="text-[11px] font-bold text-slate-600 block mb-1">更改我的暱稱</label>
         <input type="text" id="input-member-new-nickname" maxlength="30" placeholder="輸入新暱稱" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
-      <button onclick="openMemberIdentityModal()" class="w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換團員／建立自己的身份</button>
-      <button id="fc62-copy-entry" type="button" onclick="fc62OpenCopy(false)" class="hidden w-full bg-amber-50 text-amber-700 py-2 rounded-xl text-xs font-bold">從其他房間複製旅程</button>
-      <button id="fc43-members-entry" onclick="fc43OpenMembers()" class="hidden w-full bg-sky-50 text-sky-700 py-2 rounded-xl text-xs font-bold">團員管理</button>
-      <button type="button" id="fc68-redeem-entry" onclick="fc59OpenRedeem()" class="hidden w-full bg-emerald-50 text-emerald-700 py-2 rounded-xl text-xs font-bold">輸入兌換碼</button>
-      <button type="button" id="fc67-apply-btn" onclick="fc60OpenApply()" class="w-full text-emerald-700 py-1 text-xs font-bold">申辦正式會員／查詢進度</button>
-      <button type="button" onclick="openPlaceAdmin()" class="w-full text-slate-500 py-1 text-xs">平台管理者登入</button>
+      <button id="fc70-switch-btn" onclick="openMemberIdentityModal()" class="fc70-mb w-full bg-indigo-50 text-indigo-700 py-2 rounded-xl text-xs font-bold">切換團員／建立自己的身份</button>
+      <button id="fc62-copy-entry" type="button" onclick="fc62OpenCopy(false)" class="fc70-mb hidden w-full bg-amber-50 text-amber-700 py-2 rounded-xl text-xs font-bold">從其他房間複製旅程</button>
+      <button id="fc43-members-entry" onclick="fc43OpenMembers()" class="fc70-mb hidden w-full bg-sky-50 text-sky-700 py-2 rounded-xl text-xs font-bold">團員管理</button>
+      <button type="button" id="fc68-redeem-entry" onclick="fc59OpenRedeem()" class="fc70-mb hidden w-full bg-emerald-50 text-emerald-700 py-2 rounded-xl text-xs font-bold">輸入兌換碼</button>
+      <button type="button" id="fc67-apply-btn" onclick="fc60OpenApply()" class="fc70-mb w-full text-xs font-bold">申辦正式會員／查詢進度</button>
       <p id="member-settings-status" class="text-[10px] text-slate-400"></p>
       <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
@@ -3225,7 +3242,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     async function fc31Merge(){const source=fc31MergeChoices[Number(document.getElementById('fc31-merge-source').value)],target=fc31MergeChoices[Number(document.getElementById('fc31-merge-target').value)];if(!source||!target||source.place_key===target.place_key)return showToast('請選擇兩筆不同地點，並確認地圖確為同一地點');if(!confirm(`已確認「${source.title}」和「${target.title}」是同一地點？合併後保留「${target.title}」的介紹，兩者舊版本均會保留。不同分店不能合併。`))return;try{await fc31AdminCall('merge',{source_key:source.place_key,target_key:target.place_key,source_version:source.version,target_version:target.version});fc31MergeChoices=[];document.getElementById('fc31-merge-preview').textContent='已合併，搜尋結果與地圖別名已更新。';await fc31RefreshAdmin();}catch(e){showToast(fc31Message(e));}}
     async function fc31Restore(i){const h=fc31History[i];if(!h||!confirm('還原此介紹？會建立新版本，現有版本也會保留。'))return;try{const g=await fc31AdminCall('restore',{place_key:h.place_key||fc31HistoryKey,version:h.version,expected_version:fc31CurrentVersion});await fc32AdminIndex();await fc31LoadHistory(g.place_key,g.version);}catch(e){showToast(fc31Message(e));}}
 
-    let fc34ActiveTab='guides',fc34Customers=[],fc34Licenses=[],fc34CustomerRevision=0,fc34ActiveCustomer='',fc34CustomerBusy=false,fc34LicenseBusy=false;
+    let fc34ActiveTab='customers',fc34Customers=[],fc34Licenses=[],fc34CustomerRevision=0,fc34ActiveCustomer='',fc34CustomerBusy=false,fc34LicenseBusy=false;
     function fc34ClearCustomers(){fc34CustomerRevision++;fc34Customers=[];fc34Licenses=[];fc34ActiveCustomer='';for(const id of ['fc34-customer-list','fc34-stats','fc34-customer-status'])document.getElementById(id).textContent='';for(const id of ['fc34-c-name','fc34-c-phone','fc34-c-email','fc34-c-source','fc34-c-note','fc34-l-note','fc34-l-room','fc34-search'])document.getElementById(id).value='';document.getElementById('fc34-license-form').classList.add('hidden');document.getElementById('fc34-customer-form').open=false;}
     async function fc34Call(action,payload={}){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');try{const d=await fc32Rpc('fc34_customer_admin',{p_token:token,p_action:action,p_payload:payload});if(token!==fc32Token)throw new Error('platform_session_expired');return d;}catch(e){if(/platform_session_expired|platform_login_required/.test(e.message)&&token===fc32Token)fc32ClearAdmin();throw e;}}
     function fc34Error(e){const m=String(e?.message||e);{const d=typeof fc70DelErr==='function'&&fc70DelErr(e);if(d)return d;}if(/PGRST202|Could not find|does not exist/.test(m))return '請先在 Supabase 執行 FC34_unified_admin.sql，再重新整理。';const pairs=[[/room_already_linked/,'此 Room ID 已綁定授權；本次沒有建立新授權，原資料保留。'],[/customer_license_denied/,'此客戶已被設為拒絕授權，無法建立。'],[/customer_not_found/,'客戶不存在，請重新整理。'],[/invalid_license_dates/,'到期日期必須晚於開始日期。'],[/invalid_license|invalid_customer|invalid_payload|invalid_room_id|invalid input|out of range/,'請檢查欄位內容、日期與人數，不能填寫負數或小數。']];return pairs.find(([re])=>re.test(m))?.[1]||fc31Message(e);}
@@ -3241,6 +3258,9 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     function fc34LicenseStatusChanged(){const mode=document.getElementById('fc34-l-mode').value,show=(id,on)=>document.getElementById(id).classList.toggle('hidden',!on);show('fc34-l-term-wrap',mode==='term');show('fc34-l-start-wrap',mode==='dates');show('fc34-l-end-wrap',mode==='dates');document.getElementById('fc34-l-term').required=mode==='term';document.getElementById('fc34-l-mode-hint').textContent=mode==='term'?'客戶輸入兌換碼（或你把房間綁上來）的那天才開始計算。若下方填了 Room ID，會立刻綁定並從今天開始算。':(mode==='dates'?'依照指定的開始與到期日期生效。':'沒有到期日。');}
     function fc34OpenLicense(id){const customer=fc34Customers.find(c=>c.id===id);if(!customer)return;fc34ActiveCustomer=id;document.getElementById('fc34-license-for').textContent='授權客戶：'+customer.display_name;document.getElementById('fc34-l-start').value=fc34TaipeiDay(new Date());document.getElementById('fc34-l-end').value=fc34TaipeiDay(new Date(Date.now()+30*864e5));document.getElementById('fc34-l-term').value=30;document.getElementById('fc34-l-members').value=10;document.getElementById('fc34-l-trips').value=1;document.getElementById('fc34-l-mode').value='term';for(const key of ['room','note'])document.getElementById('fc34-l-'+key).value='';fc34LicenseStatusChanged();const form=document.getElementById('fc34-license-form');form.classList.remove('hidden');form.scrollIntoView({block:'nearest',behavior:'smooth'});}
     async function fc34SaveLicense(){if(fc34LicenseBusy||!fc34ActiveCustomer)return;const field=id=>document.getElementById('fc34-l-'+id).value;const members=Number(field('members')),trips=Number(field('trips'));if(!Number.isSafeInteger(members)||!Number.isSafeInteger(trips)||members<1||trips<1)return fc34Status('團員與旅程上限須為大於 0 的整數。');const mode=field('mode'),start=field('start'),end=field('end'),term=Number(field('term'));if(mode==='term'&&(!Number.isSafeInteger(term)||term<1||term>3650))return fc34Status('授權天數須為 1–3650 的整數。');const status=mode==='permanent'?'permanent':(mode==='term'?'pending':'active');const payload={customer_id:fc34ActiveCustomer,status,starts_at:mode==='dates'&&start?start+'T00:00:00+08:00':null,expires_at:mode==='dates'&&end?end+'T23:59:59+08:00':null,member_limit:members,trip_limit:trips,room_id:field('room').trim(),admin_note:field('note').trim()};if(mode==='term')payload.term_days=term;if(payload.starts_at&&payload.expires_at&&new Date(payload.expires_at)<=new Date(payload.starts_at))return fc34Status('到期日期必須晚於開始日期。');const button=document.getElementById('fc34-save-license');fc34LicenseBusy=true;button.disabled=true;try{await fc34Call('create_license',payload);document.getElementById('fc34-license-form').classList.add('hidden');fc34ActiveCustomer='';await fc34LoadCustomers();showToast('授權已建立'+(payload.room_id?'，房間已綁定':''));}catch(e){fc34Status(fc34Error(e));}finally{fc34LicenseBusy=false;button.disabled=false;}}
+    (function(){let n=0,t=0;function hit(){const now=Date.now();if(now-t>3000)n=0;t=now;n++;if(n>=5){n=0;try{openPlaceAdmin();}catch(e){}}}
+      function bind(){for(const id of ['test-version-badge','fc65-gate-ver']){const el=document.getElementById(id);if(el&&!el.dataset.fc70){el.dataset.fc70='1';el.addEventListener('click',hit);}}}
+      bind();document.addEventListener('DOMContentLoaded',bind);setTimeout(bind,1500);})();
     if(location.hash==='#platform-admin')setTimeout(()=>openPlaceAdmin(),300);
     if(location.hash==='#apply')setTimeout(()=>fc60OpenApply(),300);
     const TRAVEL_BOOK_THEMES={
