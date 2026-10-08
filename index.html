@@ -355,7 +355,7 @@ section.page-content h2 i{ margin-right:2px; }
 .fc52-sub{font-size:11px;color:#64748b;margin-top:2px;word-break:break-word}.fc52-chev{color:#94a3b8;font-size:18px}.fc52-acts{display:flex;align-items:center}
 .fc52-tag{display:inline-block;font-size:10px;font-weight:700;border-radius:6px;padding:1px 6px}
 .fc52-tag-group{background:#ccfbf1;color:#115e59}.fc52-tag-follow{background:#ede9fe;color:#5b21b6}
-.fc52-tag-private{background:#fef3c7;color:#92400e}.fc52-tag-shared{background:#ffedd5;color:#9a3412}.fc52-tag-clash{background:#fee2e2;color:#991b1b}
+.fc52-tag-private{background:#fef3c7;color:#92400e}.fc52-tag-shared{background:#ffedd5;color:#9a3412}.fc52-tag-clash{background:#dc2626;color:#fff;white-space:normal}
 .fc52-addbtn{width:100%;border:1.5px solid #0f766e;color:#0f766e;background:#fff;border-radius:12px;padding:10px;font-size:12px;font-weight:700}
 .fc52-addbtn-alt{border-color:#c4b5fd;color:#6d28d9}
 .fc52-sharehead{display:flex;align-items:center;justify-content:space-between;background:#f1f5f9;border-radius:8px;padding:5px 8px;font-size:12px;font-weight:700;color:#334155;margin-top:4px}
@@ -465,7 +465,7 @@ html{touch-action:manipulation}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70j</span>
+        <span id="test-version-badge" class="trip-version">FC-70j8</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -1423,6 +1423,7 @@ html{touch-action:manipulation}
     <!-- Add Fav Category Modal -->
     <div id="modal-fc51-plan" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
       <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-user-lock text-violet-500 mr-1.5"></i><span id="fc51-plan-title">新增私人行程</span></h3>
+      <p id="fc51-plan-sharenote" class="hidden text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1.5 leading-relaxed"></p>
       <input type="hidden" id="fc51-plan-id">
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">從收藏選擇地點：</label>
@@ -1444,7 +1445,7 @@ html{touch-action:manipulation}
     </div>
     <div id="modal-fc51-share" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
       <div><h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-user-group text-violet-500 mr-1.5"></i>分享自由行程</h3>
-      <p class="text-[11px] text-slate-500 leading-relaxed mt-0.5">只分享勾選的行程，其他私人安排不公開。</p></div>
+      <p class="text-[11px] text-slate-500 leading-relaxed mt-0.5">只分享勾選的行程，其他私人安排不公開。</p><p class="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-2 py-1 mt-1.5 leading-relaxed">⚠ 已分享的那一天，之後新增的私人行程也會自動一併分享；不想分享請回到這裡取消勾選。</p></div>
       <div><label class="text-[11px] font-bold text-slate-600 block mb-1">分享哪幾天：</label><div id="fc51-share-days" class="flex flex-wrap gap-1.5"></div></div>
       <div id="fc52-share-plans"></div>
       <label class="text-[11px] font-bold text-slate-600 block">邀請跟隨：</label>
@@ -2801,7 +2802,7 @@ html{touch-action:manipulation}
     const FC71_WMO={0:['☀️','晴朗'],1:['🌤️','大致晴朗'],2:['⛅','多雲'],3:['☁️','陰天'],45:['🌫️','有霧'],48:['🌫️','有霧'],51:['🌦️','毛毛雨'],53:['🌦️','毛毛雨'],55:['🌦️','毛毛雨'],56:['🌧️','凍雨'],57:['🌧️','凍雨'],61:['🌧️','小雨'],63:['🌧️','下雨'],65:['🌧️','大雨'],66:['🌧️','凍雨'],67:['🌧️','凍雨'],71:['🌨️','小雪'],73:['🌨️','下雪'],75:['❄️','大雪'],77:['🌨️','雪粒'],80:['🌦️','陣雨'],81:['🌧️','陣雨'],82:['⛈️','強陣雨'],85:['🌨️','陣雪'],86:['❄️','強陣雪'],95:['⛈️','雷雨'],96:['⛈️','雷雨冰雹'],99:['⛈️','雷雨冰雹']};
     let fc71State={key:'',inflight:false,failAt:0,fetchedAt:0,days:{},msg:''};
     function fc71Dest(){try{const i=getStoredData('headerInfo',defaultHeaderInfo);if(i&&Number.isFinite(i.destLat)&&Number.isFinite(i.destLon))return {name:i.destName||'',lat:i.destLat,lon:i.destLon};}catch(e){}return null;}
-    function fc71Key(d){const days=getTripDays();return d.lat.toFixed(2)+','+d.lon.toFixed(2)+'|'+(days[0]||'')+'|'+(days[days.length-1]||'');}
+    function fc71Key(d){const days=getTripDays();return d.lat.toFixed(2)+','+d.lon.toFixed(2)+'|'+(days[0]||'')+'|'+(days[days.length-1]||'')+'|c2';}
     function fc71Load(key){try{const raw=JSON.parse(localStorage.getItem('fc71_wx:'+roomId)||'null');if(raw&&raw.key===key)return raw;}catch(e){}return null;}
     function fc71Tip(w){
       const tips=[];let warn=false;
@@ -2814,7 +2815,7 @@ html{touch-action:manipulation}
     function fc71Day(n){
       const dest=fc71Dest();if(!dest)return null;const date=getTripDays()[n-1];const w=fc71State.days&&fc71State.days[date];if(!w)return null;
       const m=FC71_WMO[w.code]||['🌤️','天氣'];
-      return {temp:Math.round(w.tmin)+'°C - '+Math.round(w.tmax)+'°C',status:(dest.name?dest.name+' ':'')+m[0]+' '+m[1],tip:fc71Tip(w),past:!!w.past};
+      return {temp:Math.round(w.tmin)+'°C - '+Math.round(w.tmax)+'°C',status:(dest.name?dest.name+' ':'')+m[0]+' '+m[1]+(w.clim?'（去年同期參考）':''),tip:w.clim?'':fc71Tip(w),past:!!w.past,clim:!!w.clim};
     }
     async function fc71Fetch(url){const r=await fetch(url);if(!r.ok)throw new Error('http '+r.status);return r.json();}
     function fc71Fmt(d){return d.toISOString().slice(0,10);}
@@ -2838,6 +2839,14 @@ html{touch-action:manipulation}
         const fs=start>minF?start:minF,fe=end<maxF?end:maxF;
         if(fs<=fe)take(await fc71Fetch('https://api.open-meteo.com/v1/forecast?'+base+'&start_date='+fs+'&end_date='+fe+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum'),false);
         if(start<minF){const ae=end<minF?end:minF;take(await fc71Fetch('https://archive-api.open-meteo.com/v1/archive?'+base+'&start_date='+start+'&end_date='+ae+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum'),true);}
+        try{
+          const unc=days.filter(d=>d>maxF&&d>=todayStr);
+          if(unc.length){
+            const sh=d=>(parseInt(d.slice(0,4),10)-1)+d.slice(4),up=d=>(parseInt(d.slice(0,4),10)+1)+d.slice(4);
+            const j=await fc71Fetch('https://archive-api.open-meteo.com/v1/archive?'+base+'&start_date='+sh(unc[0])+'&end_date='+sh(unc[unc.length-1])+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum');
+            (j?.daily?.time||[]).forEach((t,i)=>{const d=up(t);if(unc.includes(d))out[d]={code:j.daily.weather_code[i],tmax:j.daily.temperature_2m_max[i],tmin:j.daily.temperature_2m_min[i],pop:null,rain:j.daily.precipitation_sum?j.daily.precipitation_sum[i]:null,past:false,clim:true};});
+          }
+        }catch(e){}
         fc71State.days=out;fc71State.fetchedAt=Date.now();fc71State.failAt=0;fc71State.msg='';
         try{localStorage.setItem('fc71_wx:'+roomId,JSON.stringify({key,fetchedAt:fc71State.fetchedAt,days:out}));}catch(e){}
         if(force)showToast('天氣已更新');
@@ -3796,6 +3805,12 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         departure.addEventListener('change',syncIfInvalid);
         syncIfInvalid();
       });
+      const outArrEl=document.getElementById('info-flight-out-arrival-date'),retEl=document.getElementById('info-flight-return-date');
+      if(outArrEl&&retEl){
+        const sync=()=>{if(!outArrEl.value)return;retEl.min=outArrEl.value;if(retEl.value&&retEl.value<outArrEl.value){retEl.value=outArrEl.value;retEl.dispatchEvent(new Event('change'));showToast('回程起飛日期已調整為不早於去程抵達日');}};
+        outArrEl.addEventListener('change',sync);outArrEl.addEventListener('input',sync);
+        if(outArrEl.value)retEl.min=outArrEl.value;
+      }
     }
 
     function openFlightArrivalCalendar(mode){
@@ -3934,6 +3949,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         if(outDep && outArr && outArr < outDep) return showToast('去程抵達日期不能早於起飛日期');
         if(retDep && retArr && retArr < retDep) return showToast('回程抵達日期不能早於起飛日期');
 
+        const outArrOrDep=outArr||outDep;
+        if(outArrOrDep && retDep && retDep < outArrOrDep) return showToast('回程起飛日期不能早於去程抵達日期（'+outArrOrDep.replaceAll('-','/')+'）');
         if(!validateFlightLegChronology('out')) return;
         if(!validateFlightLegChronology('return')) return;
       }
@@ -4008,18 +4025,13 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
               <button onclick="openEditItineraryModal('${item.id}')" class="hover:text-sky-600 p-1" title="編輯行程與註解"><i class="fa-solid fa-pen-to-square"></i></button>
               <button onclick="openMoveDayModal('${item.id}', '${item.title}')" class="hover:text-sky-600 p-1" title="轉移天數"><i class="fa-solid fa-calendar-day"></i></button>
               <button onclick="deleteItineraryItem('${item.id}')" class="hover:text-rose-600 p-1" title="刪除行程"><i class="fa-solid fa-trash-can"></i></button>
-              ` : (isOrganizer() && item.autoTransfer ? `<button onclick="openAirportTransferModal()" class="text-sky-600 text-[10px] p-1">編輯接駁</button>` : '')}
+              ` : (isOrganizer() && item.autoHotel ? `<button onclick="openInfoEdit('hotel')" class="text-sky-600 text-[10px] p-1">編輯住宿</button>` : isOrganizer() && item.autoTransfer ? `<button onclick="openAirportTransferModal()" class="text-sky-600 text-[10px] p-1">編輯接駁</button>` : '')}
             </div>
           </div>
           <h3 class="fc45-itin-title">${item.title}</h3>
           
           ${itineraryDescriptionForDisplay(item) ? `<div class="text-xs text-slate-600 leading-relaxed">${itineraryDescriptionForDisplay(item)}</div>` : ''}
-          ${item.alert ? `
-            <div class="bg-rose-50 border border-rose-200 p-2.5 rounded-xl text-[11px] text-rose-800 mt-1 flex items-start space-x-1.5">
-              <i class="fa-solid fa-triangle-exclamation text-rose-600 mt-0.5 shrink-0"></i>
-              <div class="leading-relaxed"><strong>提醒：</strong>${escapeHtml(item.alert).replace(/\n/g,'<br>')}</div>
-            </div>
-          ` : ''}
+
           ${(item.guideNote||item.comment) ? `
             <div class="flex items-start gap-1.5 text-[11px] text-slate-600 mt-1"><i class="fa-regular fa-pen-to-square text-sky-500 mt-0.5 shrink-0"></i><div class="leading-relaxed">${escapeHtml([item.guideNote,item.comment].filter(Boolean).join('\n')).replace(/\n/g,'<br>')}</div></div>
           ` : ''}
@@ -5672,6 +5684,20 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const c=getInfoConfig();delete c.shuttle.plan;pushStateToCloud('infoConfig',c);closeModal();
     }
     function getItineraryWithTransfers(source){
+      const data=fc70BaseTransfers(source);
+      try{
+        const header=getStoredData('headerInfo',defaultHeaderInfo);if(header.requiredInfo?.hotel===false)return data;
+        const days=getTripDays(),hl=fc70Hotels(getInfoConfig());
+        for(const h of hl){
+          if(!h.name)continue;
+          const ci=days.indexOf(h.start)+1,co=days.indexOf(h.end)+1,map=buildAutoMapLink(h.name);
+          if(co>0){if(!data[co])data[co]={items:[]};data[co].items.unshift({id:'auto-hotel-out-'+co,autoTransfer:true,autoHotel:true,title:'🏨 退房：'+h.name,time:'',desc:'',map});}
+          if(ci>0){if(!data[ci])data[ci]={items:[]};data[ci].items.push({id:'auto-hotel-in-'+ci,autoTransfer:true,autoHotel:true,title:'🏨 入住：'+h.name,time:'',desc:fc70HotelDates(h),map});}
+        }
+      }catch(e){console.error(e);}
+      return data;
+    }
+    function fc70BaseTransfers(source){
       const data=JSON.parse(JSON.stringify(source));Object.values(data).forEach(x=>{if(Array.isArray(x?.items))x.items=x.items.filter(i=>!i.autoTransfer);});
       const header=getStoredData('headerInfo',defaultHeaderInfo);if(header.requiredInfo?.shuttle===false)return data;
       const d=getInfoConfig().shuttle.plan;if(!d?.vehicles?.length)return data;
@@ -6156,7 +6182,7 @@ function fc51IsSharedRaw(p){const n=Object.keys(p.shareTo||{}).length;return p.s
 function fc51ActiveShares(p){return Object.values(p.shareTo||{}).filter(v=>v&&v.status!=='declined').length;}
 function fc51IsShared(p){return fc51IsSharedRaw(p)&&fc51ActiveShares(p)>0;}
 function fc51Shares(ownerId,day){const map={};for(const {plan} of fc51Flat()){if(String(plan.ownerId)!==String(ownerId)||Number(plan.day)!==Number(day))continue;for(const [id,v] of Object.entries(plan.shareTo||{}))if(!map[id])map[id]={...v};}return map;}
-function fc51Incoming(meId){const map=new Map();for(const {plan} of fc51Flat()){if(String(plan.ownerId)===String(meId))continue;const s=(plan.shareTo||{})[meId];if(!s)continue;const k=plan.ownerId+'|'+plan.day,cur=map.get(k)||{ownerId:String(plan.ownerId),ownerName:plan.ownerName||'',day:Number(plan.day),status:s.status,hasShared:false};if(fc51IsSharedRaw(plan))cur.hasShared=true;map.set(k,cur);}return [...map.values()].filter(x=>x.hasShared);}
+function fc51Incoming(meId){const map=new Map();for(const {plan} of fc51Flat()){if(String(plan.ownerId)===String(meId))continue;const s=(plan.shareTo||{})[meId];if(!s)continue;const k=plan.ownerId+'|'+plan.day,cur=map.get(k)||{ownerId:String(plan.ownerId),ownerName:plan.ownerName||'',day:Number(plan.day),status:s.status,hasShared:false,at:0};cur.at=Math.max(cur.at||0,s.at||0);if(fc51IsSharedRaw(plan))cur.hasShared=true;map.set(k,cur);}return [...map.values()].filter(x=>x.hasShared);}
 function fc51Pending(meId){return fc51Incoming(meId).filter(x=>x.status==='pending');}
 function fc51Following(meId,day){return fc51Incoming(meId).find(x=>x.day===Number(day)&&x.status==='accepted')||null;}
 function fc51Mine(day){const me=fc51Me();return me?fc51Sorted(fc51Flat().filter(x=>String(x.plan.ownerId)===me.id&&Number(x.plan.day)===Number(day))):[];}
@@ -6176,6 +6202,8 @@ function fc51OpenPlan(planId){
   document.getElementById('fc51-plan-id').value=plan?plan.id:'';
   document.getElementById('fc51-plan-title').textContent=(plan?'編輯':'新增')+'私人行程・Day '+(plan?plan.day:currentDay);
   document.getElementById('fc51-plan-start').value=plan?.start||'';document.getElementById('fc51-plan-end').value=plan?.end||'';fc70MirrorPlanTime();document.getElementById('fc51-plan-note').value=plan?.note||'';
+  {const n=document.getElementById('fc51-plan-sharenote'),day=plan?plan.day:currentDay,cnt=plan?0:(()=>{const m=fc51Shares(me.id,day);return Object.values(m).filter(v=>v.status!=='declined').length;})();
+  if(n){if(cnt&&fc51SharingDay(me.id,day)){n.textContent='⚠ 這天你已分享給 '+cnt+' 人，新增的行程會一併分享給他們；若不想分享，儲存後請到「分享自由行程」手動取消勾選。';n.classList.remove('hidden');}else{n.textContent='';n.classList.add('hidden');}}}
   fc51Open('modal-fc51-plan');
 }
 function fc51SavePlan(){
@@ -6191,7 +6219,8 @@ function fc51SavePlan(){
   if(!plan){const sib=fc51Flat().find(x=>String(x.plan.ownerId)===me.id&&Number(x.plan.day)===day&&x.plan.shareTo&&Object.keys(x.plan.shareTo).length);plan={id:'plan-'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),ownerId:me.id,ownerName:me.name,day,shareTo:sib?JSON.parse(JSON.stringify(sib.plan.shareTo)):{}};}
   Object.assign(plan,{ownerName:me.name,start,end:end||'',note});
   (item.plans=item.plans||[]).push(plan);
-  closeModal(true);fc51Save(data);showToast(planId?'已更新私人行程':'已新增私人行程');
+  let warn='';try{const r=fc51Range(plan),gi=(getItineraryWithTransfers(getStoredData('itinerary',defaultItineraryData))[day]?.items)||[];const hit=gi.find(g=>{const t=fc41ParseTime(g.time);return t&&r&&fc51Overlap(r,{start:t.start,end:t.end!==null&&t.end>t.start?t.end:t.start+60});});if(hit)warn='（⚠ 與「'+scenicPlainText(hit.title)+'」時間重疊）';}catch(e){}
+  closeModal(true);fc51Save(data);showToast((planId?'已更新私人行程':'已新增私人行程')+warn);
 }
 function fc51DeletePlan(planId){
   const me=fc51Me();if(!requireRoom()||!me)return;if(!confirm('刪除這個私人行程？'))return;
@@ -6263,7 +6292,7 @@ function fc51ApplyShare(){
   if(!anyChecked&&fc51Sel.size)return showToast('請至少勾選一個要分享的行程');
   for(const d of days){
     const prev=fc51Shares(me.id,d),next={};
-    for(const id of fc51Sel){const m=fc51Members.find(x=>x.id===id);if(!m)continue;const old=prev[id];next[id]={name:m.name,status:(!old||fc51Reinvite.has(id))?'pending':old.status};}
+    for(const id of fc51Sel){const m=fc51Members.find(x=>x.id===id);if(!m)continue;const old=prev[id];const fresh=!old||fc51Reinvite.has(id);next[id]={name:m.name,status:fresh?'pending':old.status,at:fresh?Date.now():(old.at||0)};}
     for(const c of data)for(const it of (c.items||[]))for(const p of (it.plans||[]))if(String(p.ownerId)===me.id&&Number(p.day)===d){p.shared=fc52Checked.has(p.id)&&fc51Sel.size>0;p.shareTo=JSON.parse(JSON.stringify(next));}
   }
   fc51Store('last',[...fc51Sel]);closeModal(true);fc51Save(data);
@@ -6309,9 +6338,9 @@ function fc51RenderPersonal(){
   const invites=fc51Incoming(me.id).filter(x=>x.day===day&&x.status==='pending'),following=fc51Following(me.id,day);
   const plans=[...fc51Mine(day).map(x=>({...x,own:true})),...fc51Theirs(day).map(x=>({...x,own:false}))];
   const merged=fc52Merge(groupItems,plans);
-  const clash=(e,i)=>{if(e.start===null)return false;return merged.some((o,j)=>j!==i&&o.start!==null&&(e.kind!=='group'||o.kind!=='group')&&fc51Overlap({start:e.start,end:e.end},{start:o.start,end:o.end}));};
+  const nm=o=>o.kind==='group'?scenicPlainText(o.g.title||''):(o.x.item.name||'');const clash=(e,i)=>{if(e.start===null)return null;const o=merged.find((o,j)=>j!==i&&o.start!==null&&(e.kind!=='group'||o.kind!=='group')&&fc51Overlap({start:e.start,end:e.end},{start:o.start,end:o.end}));return o?nm(o):null;};
   const cards=merged.map((e,i)=>{
-    const c=clash(i)?'<span class="fc52-tag fc52-tag-clash">時間重疊</span>':'';
+    const cl=clash(e,i),c=cl?`<span class="fc52-tag fc52-tag-clash">⚠ 時間重疊：${esc(cl)}</span>`:'';
     if(e.kind==='group'){const g=e.g;return `<div class="fc52-card" onclick="fc52SetView('group')"><div class="fc52-body"><div class="fc52-head">${g.time?`<span class="fc52-time">${esc(scenicPlainText(g.time))}</span>`:''}<span class="fc52-tag fc52-tag-group">團體行程</span>${c}</div><div class="fc52-title">${esc(scenicPlainText(g.title||''))}</div></div><span class="fc52-chev">›</span></div>`;}
     const p=e.x.plan,item=e.x.item,mapUrl=item.map||buildAutoMapLink(item.name||'');
     const tag=e.kind==='theirs'?`<span class="fc52-tag fc52-tag-follow">跟隨 ${esc(p.ownerName)}</span>`:(fc51IsShared(p)?`<span class="fc52-tag fc52-tag-shared">私人・已分享給 ${fc51ActiveShares(p)} 人</span>`:'<span class="fc52-tag fc52-tag-private">私人・僅自己可見</span>');
@@ -6344,8 +6373,8 @@ function fc51RefreshIndicators(){
   document.querySelectorAll('.fc51-day-dot').forEach(e=>e.remove());
   for(const p of pend){const b=document.getElementById('day-btn-'+p.day);if(b){const d=document.createElement('i');d.className='fc51-day-dot';b.append(d);}}
   if(!on)return;
-  const seen=new Set(fc51Load('seen',[])),fresh=pend.filter(p=>!seen.has(p.ownerId+'|'+p.day));
-  if(fresh.length){showToast(`${fresh[0].ownerName} 邀請你跟隨 Day ${fresh[0].day}`+(fresh.length>1?`（還有 ${fresh.length-1} 則）`:''));fc51Store('seen',[...new Set([...seen,...fresh.map(p=>p.ownerId+'|'+p.day)])]);}
+  const seen=new Set(fc51Load('seen',[])),fresh=pend.filter(p=>!seen.has(p.ownerId+'|'+p.day+'|'+(p.at||0)));
+  if(fresh.length){showToast(`${fresh[0].ownerName} 邀請你跟隨 Day ${fresh[0].day}`+(fresh.length>1?`（還有 ${fresh.length-1} 則）`:''));fc51Store('seen',[...new Set([...seen,...fresh.map(p=>p.ownerId+'|'+p.day+'|'+(p.at||0))])]);}
   const inc=fc51Incoming(me.id),nowAcc=inc.filter(x=>x.status==='accepted'),prev=fc51Load('following',null);
   if(prev){for(const k of prev){const still=inc.some(x=>x.ownerId===k.ownerId&&x.day===k.day);if(!still)showToast(`${k.ownerName} 已取消分享 Day ${k.day}`);}}
   fc51Store('following',nowAcc.map(x=>({ownerId:x.ownerId,ownerName:x.ownerName,day:x.day})));
