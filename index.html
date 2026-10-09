@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-70w</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-70x</span>
         </div>
       </div>
     </header>
@@ -7566,7 +7566,7 @@ function fc71View(v){fc34SwitchTab(v);}
     info:{sel:'#fc45-display-settings summary',t:'資訊',x:'翻譯、換匯、航班、住宿等工具在這頁；「畫面自訂」可以選要顯示哪些。'}
   };
   function tabHint(tab){
-    if(running||!TT[tab]||!ident()||LS(tKey(tab)))return;
+    if(running||modalOpen()||!TT[tab]||!ident()||LS(tKey(tab)))return;
     if(!LS(gKey()))return;
     const c=TT[tab];let sel=c.sel;if(!vis($(sel)))sel=c.alt;if(!sel||!vis($(sel)))return;
     SS(tKey(tab),'1');running=true;show([{sel,t:c.t,x:c.x}],0,null);
@@ -7587,14 +7587,17 @@ function fc71View(v){fc34SwitchTab(v);}
     const b=document.createElement('button');b.type='button';b.id='fc91-replay';b.className='fc70-mb';b.style.marginTop='12px';b.textContent='📖 重看新手導覽';b.onclick=()=>fc91Replay();m.append(b);
   }
   // auto start
+  let calm=0;
+  const modalOpen=()=>{const bd=document.getElementById('modal-backdrop');return !!(bd&&!bd.classList.contains('hidden'))};
   setInterval(()=>{
     try{
-      if(running||!roomId||!cloudConnected||!currentMember||document.body.classList.contains('fc65-nologin'))return;
-      const bd=document.getElementById('modal-backdrop');if(bd&&!bd.classList.contains('hidden'))return;
+      if(running){if(modalOpen()){cur=null;close();calm=0;}return;}
+      if(!roomId||!cloudConnected||!currentMember||document.body.classList.contains('fc65-nologin')||modalOpen()){calm=0;return;}
       if(LS(gKey()))return;
+      if(++calm<2)return;
       startGlobal();
     }catch(e){}
-  },1500);
+  },1200);
 })();
 </script>
 </body>
