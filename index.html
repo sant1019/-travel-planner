@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-70u</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-70v</span>
         </div>
       </div>
     </header>
@@ -7442,7 +7442,7 @@ function fc71View(v){fc34SwitchTab(v);}
 </script>
 <style id="fc91-css">
 #fc91-ov{position:fixed;inset:0;z-index:99990;touch-action:none}
-#fc91-spot{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(15,23,42,.68);outline:3px solid #fbbf24;outline-offset:2px;pointer-events:none;transition:all .25s}
+#fc91-spot{position:fixed;z-index:99991;border-radius:14px;box-shadow:0 0 0 9999px rgba(15,23,42,.6);outline:3px solid #fbbf24;outline-offset:2px;pointer-events:none;transition:all .25s}
 #fc91-hand{position:fixed;font-size:34px;line-height:1;pointer-events:none;z-index:99992;animation:fc91-bob .9s ease-in-out infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
 @keyframes fc91-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
 #fc91-hand.up{animation-name:fc91-bob2}
