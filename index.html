@@ -516,7 +516,7 @@ html{touch-action:manipulation}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70m2</span>
+        <span id="test-version-badge" class="trip-version">FC-70m3</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -1045,7 +1045,6 @@ html{touch-action:manipulation}
         <div><label for="trip-login-nickname">個人暱稱</label><input id="trip-login-nickname" name="username" autocomplete="username" autocapitalize="none" maxlength="30" placeholder="輸入暱稱" required></div>
         <div><label for="trip-login-password">個人密碼</label><div class="trip-password-wrap"><input id="trip-login-password" name="password" type="password" autocomplete="current-password" placeholder="輸入個人密碼" required><button type="button" onclick="toggleTripPassword('trip-login-password',this)" aria-label="顯示個人密碼" aria-pressed="false"><i class="fa-regular fa-eye"></i></button></div><p id="fc62-pp-hint" class="fc62-hint hidden">只有你自己用，至少 6 個字，跟房間密碼不同。</p></div>
         <div id="trip-confirm-field" class="hidden"><label for="trip-login-confirm">確認個人密碼</label><input id="trip-login-confirm" type="password" autocomplete="new-password" placeholder="再次輸入個人密碼" oninput="fc62Hints()"><p id="fc62-confirm-hint" class="fc62-hint"></p></div>
-        <div id="fc62-code-field" class="hidden"><label for="fc59-create-code">兌換碼（選填，沒有就先免費試用）</label><input id="fc59-create-code" type="text" autocomplete="off" autocapitalize="characters" placeholder="例如 ABCD-EFGH-JKLM-NPQR"></div>
         <p id="trip-login-status" role="status" aria-live="polite"></p>
         <button type="submit" id="trip-login-submit" class="trip-login-submit">登入</button>
       </form>
@@ -2360,7 +2359,7 @@ html{touch-action:manipulation}
       if(fc43CheckingSession||!cloudConnected||!currentMember||!getMemberToken()||document.hidden)return;
       const targetRoom=roomId,token=getMemberToken();fc43CheckingSession=true;
       try{const {data,error}=await cloudClient.rpc('get_trip_member_session',{p_room_id:targetRoom,p_member_token:token});if(roomId!==targetRoom||getMemberToken()!==token)return;
-        if(error&&String(error.message).includes('member_login_required')){clearMemberToken();localStorage.removeItem(memberStorageKey());currentMember=null;closeModal(true);refreshUI();showToast('登入資格已失效，請重新登入');}
+        if(error&&String(error.message).includes('member_login_required')){if(await fc70CheckRename(targetRoom))return;clearMemberToken();localStorage.removeItem(memberStorageKey());currentMember=null;closeModal(true);refreshUI();showToast('登入資格已失效，請重新登入');}
         else if(!error&&data?.id&&currentMember&&(data.role!==currentMember.role||data.nickname!==currentMember.nickname)){saveMemberIdentity(data);closeModal(true);refreshUI();}
       }finally{fc43CheckingSession=false;}
     }
@@ -2388,6 +2387,7 @@ html{touch-action:manipulation}
           await new Promise(r=>setTimeout(r,1200));
         }
         if(failed&&!invalid){showToast('網路不穩，暫時無法確認登入狀態，請稍後重新整理');return;}
+        if(invalid&&await fc70CheckRename())return;
         clearMemberToken();
       }
       currentMember=null;renderMemberIdentity();refreshUI();
@@ -2743,7 +2743,7 @@ html{touch-action:manipulation}
         }
         setCloudStatus('同步失敗，資料已保留在本機');
         if(error?.message?.includes('license_expired')){fc59OnExpired();return;}
-        if(error?.message?.includes('member_login_required')){currentMember=null;clearMemberToken();refreshUI();openMemberIdentityModal();return;}
+        if(error?.message?.includes('member_login_required')){if(await fc70CheckRename())return;currentMember=null;clearMemberToken();refreshUI();openMemberIdentityModal();return;}
       }
 
       if (Object.prototype.hasOwnProperty.call(cloudSectionPending, key)) {
@@ -2759,6 +2759,7 @@ html{touch-action:manipulation}
       const { data, error } = await cloudClient.rpc('get_trip_room', { p_room_id: roomId, p_password: cloudPassword });
       if (!cloudConnected || roomId !== requestedRoom || cloudPassword !== requestedPassword){cloudPullBusy=false;return;}
       if (error || data === null) {
+        if (!error && data === null && await fc70CheckRename(requestedRoom)) { cloudPullBusy = false; return; }
         if (!error && data === null) cloudConnected = false;
         cloudPullBusy = false;
         setCloudStatus('同步失敗：無法讀取雲端資料', false);
@@ -5387,7 +5388,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           const result=await Promise.race([cloudClient.rpc('fc45_search_rooms',{p_prefix:prefix}),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(new Error('search_timeout')),10000);})]);
           if(revision!==fc45RoomRevision||input.value.trim()!==prefix)return;
           if(result.error)throw result.error;if(!Array.isArray(result.data))throw new Error('invalid_search_result');
-          const allNames=result.data.map(x=>x.room_name).filter(x=>typeof x==='string'),names=allNames.filter(x=>x.toLowerCase().startsWith(prefix.toLowerCase())).slice(0,8);fc62SetMode(prefix.length<4?'unknown':(allNames.some(x=>x.toLowerCase()===prefix.toLowerCase())?'exists':'new'),false);
+          const allNames=result.data.map(x=>x.room_name).filter(x=>typeof x==='string'),names=allNames.filter(x=>x.toLowerCase().startsWith(prefix.toLowerCase())).slice(0,8);let md=prefix.length<4?'unknown':(allNames.some(x=>x.toLowerCase()===prefix.toLowerCase())?'exists':'new');if(md==='new'){const rs=await fc70ReservedName(prefix);if(revision!==fc45RoomRevision||input.value.trim()!==prefix)return;if(rs)md='reserved';}fc62SetMode(md,false);
           const list=document.getElementById('fc45-room-options');
           for(const name of names){const b=document.createElement('button');b.type='button';b.role='option';b.textContent=name;b.onclick=()=>fc45SelectRoom(name);b.onkeydown=e=>{if(e.key==='Escape'){fc45CancelRoomSearch();input.focus();}else if(e.key==='ArrowDown'){e.preventDefault();b.nextElementSibling?.focus();}else if(e.key==='ArrowUp'){e.preventDefault();(b.previousElementSibling||input).focus();}};list.append(b);}
           list.classList.toggle('hidden',!names.length);input.setAttribute('aria-expanded',String(!!names.length));status.textContent='';
@@ -5422,7 +5423,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         roomId=target;applyRoomState(state);activateCloudRoom(target,password,false);useAuthenticatedMember(data);
         if(previousToken&&previousToken!==data.token)Promise.resolve().then(()=>cloudClient.rpc('logout_trip_member_secure',{p_room_id:previousRoom,p_member_token:previousToken})).catch(()=>{});
         ['input-room-password','trip-login-password','trip-login-confirm'].forEach(id=>document.getElementById(id).value='');tripLoginBusy=false;closeModal(true);showToast('房間已建立，你已成為主辦人');
-        const code59=(document.getElementById('fc59-create-code')?.value||'').trim();document.getElementById('fc59-create-code').value='';
+        const code59='';
         let outcome59={code:!!code59};
         if(code59){try{const d59=await fc32Rpc('redeem_license_code',{p_room_id:target,p_member_token:data.token,p_code:code59});if(d59?.ok)outcome59.ok=true;else outcome59.err=FC59_ERR[d59?.error]||'請稍後再試';}catch(e59){const m59=String(e59?.message||e59),k59=Object.keys(FC59_ERR).find(x=>m59.includes(x));outcome59.err=k59?FC59_ERR[k59]:'無法連線，請稍後再試';}}
         fc62SeedPrompt(target,outcome59);
@@ -6494,7 +6495,7 @@ function fc52PdfPlanEntries(day,date){
 <script id="fc59-license">
 // FC59: trial / license status banner, redeem code, and platform-admin "rooms" tab.
 let fc59Status=null,fc59Last=0,fc59Room='',fc59ToastAt=0,fc59Rooms=[],fc59Busy=false;
-const FC59_ERR={invalid_code:'兌換碼不正確、已使用或已過期',too_many_attempts:'輸入錯誤次數過多，請 15 分鐘後再試',customer_license_denied:'此客戶的授權已被停用，請聯絡平台管理者',license_missing:'找不到對應的授權，請聯絡平台管理者',license_not_usable:'這張授權目前無法使用，請聯絡平台管理者',room_already_linked:'這組兌換碼不屬於這個房間目前的授權，無法用來續用。請向平台管理者確認兌換碼',trip_limit_reached:'這張授權的旅程數已達上限',organizer_required:'只有主辦人可以輸入兌換碼'};
+const FC59_ERR={invalid_code:'兌換碼不正確、已使用或已過期',too_many_attempts:'輸入錯誤次數過多，請 15 分鐘後再試',customer_license_denied:'此客戶的授權已被停用，請聯絡平台管理者',license_missing:'找不到對應的授權，請聯絡平台管理者',license_not_usable:'這張授權目前無法使用，請聯絡平台管理者',room_already_linked:'這個房間已綁定另一張授權，不能兌換其他授權的兌換碼。如需續約，請使用原授權的續約碼。',trip_limit_reached:'這張授權的旅程數已達上限',organizer_required:'只有主辦人可以輸入兌換碼'};
 function fc59Writable(){return !fc59Status||fc59Status.writable!==false;}
 async function fc59RefreshStatus(){
   if(!cloudClient||!roomId||!cloudConnected){fc59Status=null;fc59RenderBanner();return;}
@@ -6760,16 +6761,18 @@ let fc62Mode='unknown',fc62SearchFailed=false,fc62Forced=false;
 function fc62SetMode(mode,failed=false){if(fc62Forced&&mode==='unknown')return;fc62Mode=mode;fc62SearchFailed=!!failed&&mode==='unknown';if(mode==='exists')fc62Forced=false;fc62Apply();}
 function fc62RoomChanged(){fc62Forced=false;fc62Mode='unknown';fc62SearchFailed=false;fc62Apply();}
 function fc62ForceNew(){fc62Forced=true;fc62Mode='new';fc62Apply();}
+async function fc70ReservedName(name){try{const q=await cloudClient.rpc('fc70_room_name_reserved',{p_name:name});return !q.error&&q.data===true;}catch(e){return false;}}
 async function fc62Probe(){
   const name=document.getElementById('input-room-id').value.trim();
   if(name.length<4||!cloudClient)return;
-  try{const r=await cloudClient.rpc('fc45_search_rooms',{p_prefix:name});if(document.getElementById('input-room-id').value.trim()!==name)return;if(r.error||!Array.isArray(r.data))throw 1;fc62SetMode(r.data.some(x=>String(x.room_name).toLowerCase()===name.toLowerCase())?'exists':'new');}catch(e){fc62SetMode('unknown',true);}
+  try{const r=await cloudClient.rpc('fc45_search_rooms',{p_prefix:name});if(document.getElementById('input-room-id').value.trim()!==name)return;if(r.error||!Array.isArray(r.data))throw 1;if(r.data.some(x=>String(x.room_name).toLowerCase()===name.toLowerCase())){fc62SetMode('exists');return;}const res=await fc70ReservedName(name);if(document.getElementById('input-room-id').value.trim()!==name)return;fc62SetMode(res?'reserved':'new');}catch(e){fc62SetMode('unknown',true);}
 }
 function fc62Hints(){
   const hint=document.getElementById('fc62-room-hint'),name=document.getElementById('input-room-id').value.trim(),confirm=document.getElementById('fc62-confirm-hint');
   let text='',bad=false;
   if(fc62Mode==='new')text='這個名稱還沒有人用，將為你建立新房間';
   else if(fc62Mode==='exists')text='房間已存在，請輸入房間密碼登入';
+  else if(fc62Mode==='reserved'){text='這個名稱剛被更名，暫時保留，請換一個名稱。原房間成員請改用新房名登入。';bad=true;}
   else if(name&&name.length<4){text='房間名稱至少 4 個字';bad=true;}
   hint.textContent=text;hint.style.color=bad?'#e11d48':(fc62Mode==='new'?'#047857':'#64748b');
   const p=document.getElementById('trip-login-password').value,c=document.getElementById('trip-login-confirm').value;
@@ -6784,6 +6787,7 @@ function fc62Apply(){
   document.getElementById('trip-login-title').textContent=isNew?'建立新房間':'登入旅程';
   document.getElementById('trip-login-sub').textContent=isNew?'你會成為這個房間的主辦人':'enjoy your trip';
   document.getElementById('trip-login-submit').textContent=isNew?'建立新房間':(join?'註冊並登入':'登入');
+  document.getElementById('trip-login-submit').disabled=fc62Mode==='reserved'&&document.getElementById('input-room-id').value.trim().length>=4;
   fc62Hints();
 }
 function fc62Submit(){if(fc62Mode==='new')return createCloudRoom();return submitTripLogin();}
@@ -6961,7 +6965,15 @@ async function fc70RoomMismatch(code){
     const want=String(d&&d.found&&d.room_name||'').trim();
     if(!want||want.toLowerCase()===String(roomId||'').trim().toLowerCase())return true;
     return await fc70Confirm({title:'房名不同',body:'這組兌換碼申請時填的房間是「'+want+'」，但你現在要兌換到「'+roomId+'」。\n兌換後授權會綁定在「'+roomId+'」。',okText:'仍要兌換到本房',cancelText:'取消'});
-  }catch(e){return true;}
+  }catch(e){
+    const m=String(e?.message||e||'');
+    if(/PGRST202|Could not find|does not exist/.test(m))return true;
+    return await fc70Confirm({title:'無法確認房名',body:'目前無法確認這組兌換碼申請時填的房名。\n（原因：'+m.slice(0,80)+'）\n要繼續兌換到「'+roomId+'」嗎？',okText:'仍要兌換到本房',cancelText:'取消'});
+  }
+}
+async function fc70CheckRename(room){
+  try{const d=await fc32Rpc('get_trip_room_status',{p_room_id:room||roomId});if(d&&d.state==='renamed'&&d.renamed_to){fc70FollowRename(d.renamed_to);return true;}}catch(e){}
+  return false;
 }
 let fc70Following=false;
 function fc70FollowRename(nk){
@@ -7191,8 +7203,15 @@ const FC90={
       if(st.sel.has('dup')&&!dup)return false;
       if((st.from||st.to)&&!rg(r.created_at))return false;return true;},
     head:r=>{const n=r.same_email_total??r.same_email_pending,dup=n>1?`<div class="fc90-mini">⚠ 同 Email 共 ${n} 筆${r.same_email_unredeemed>0&&r.status==='pending'?'（含已核准未兌換）':''}</div>`:'';
+      const want=String(r.room_name||'').trim(),md=v=>v?fc60Fmt(v).slice(5).replace('-','/'):'';
+      let sub,mis='';
+      if(r.status==='approved'){
+        if(r.redeemed_at){const got=String(r.redeemed_room_id||'').trim();sub='申請：'+(want||'未填房名')+' → 已兌換：'+(got||'?');
+          if(want&&got&&want.toLowerCase()!==got.toLowerCase())mis='<div class="fc90-mini">⚠ 房名不同</div>';}
+        else sub='申請：'+(want||'未填房名')+'｜尚未兌換（碼 …'+(r.code_hint||'')+(r.code_expires_at?'，'+md(r.code_expires_at)+' 到期':'')+'）';
+      }else sub=(want||'未填房名')+'｜'+fc60Fmt(r.created_at);
       const t=r.status==='pending'?['待審核','y']:r.status==='approved'?['已核准','g']:['已拒絕','r'];
-      return {key:r.id,title:r.request_no+'　'+r.applicant_name,sub:(r.room_name||'未填房名')+'｜'+fc60Fmt(r.created_at),extra:dup,tag:fc90Tag(t[0],t[1])};}},
+      return {key:r.id,title:r.request_no+'　'+r.applicant_name,sub:sub,extra:mis+dup,tag:fc90Tag(t[0],t[1])};}},
   rooms:{list:'fc59-room-list',date:'到期日（試用／授權）',ph:'房間代碼、客戶',
     chips:[['trial','試用中'],['licensed','已授權'],['expired','已到期'],['exempt','無限制'],['nolink','未連結授權']],
     rec:a=>fc59Rooms.find(r=>r.room_id===a.dataset.room),hideFirst:true,
@@ -7269,6 +7288,18 @@ function fc90Init(){
   fc90Wrap('fc34RenderCustomers','customers',()=>{if(!fc90Reqs)fc90LoadReqs();});
   fc90Wrap('fc60RenderAdmin','requests');fc90Wrap('fc59Render','rooms');fc90Wrap('fc84AdminRender','feedback');
 }
+let fc90BadgeAt=0,fc90BadgeBusy=false;
+async function fc90Badges(force){
+  if(fc90BadgeBusy)return;
+  try{if(!(fc32Token&&fc31AdminIdentity===fc32Token))return;}catch(e){return;}
+  const tools=document.getElementById('fc31-admin-tools');if(!tools||tools.classList.contains('hidden'))return;
+  if(!force&&Date.now()-fc90BadgeAt<60000)return;
+  fc90BadgeBusy=true;fc90BadgeAt=Date.now();
+  try{const d=await fc60Call('list',{status:'pending'});const n=d.counts?.pending||0,el=document.getElementById('fc34-tab-requests');if(el)el.textContent=n?`申請（${n}）`:'申請';}catch(e){}
+  try{const f=await fc84Call('list',{status:'open'});const n=f.open||0,el=document.getElementById('fc34-tab-feedback');if(el)el.textContent=n?`問題反應（${n}）`:'問題反應';}catch(e){}
+  fc90BadgeBusy=false;
+}
+setInterval(()=>fc90Badges(false),3000);
 fc90Init();
 </script>
 </body>
