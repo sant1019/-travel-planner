@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-71b</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-71c</span>
         </div>
       </div>
     </header>
@@ -6460,7 +6460,7 @@ function fc52Merge(groupItems,plans){
   return out;
 }
 function fc51RenderPersonal(){
-  const box=document.getElementById('fc51-personal'),seg=document.getElementById('fc52-seg'),me=fc51Me(),logged=!!me&&cloudConnected;
+  const box=document.getElementById('fc51-personal'),seg=document.getElementById('fc52-seg'),me=fc51Me(),logged=!!me&&(cloudConnected||(window.fc93Offline&&fc93Offline()));
   if(seg)seg.classList.toggle('hidden',!logged);
   const mode=fc52Effective();
   for(const id of ['fc52-group-label','itinerary-items-container'])document.getElementById(id)?.classList.toggle('hidden',mode==='mine');
@@ -7524,9 +7524,12 @@ function fc71View(v){fc34SwitchTab(v);}
     const unlocked=!!(cloudConnected&&cloudPassword&&cloudClient&&currentMember&&getMemberToken());
     return !unlocked&&hasData()&&!!cloudPassword&&(!navigator.onLine||failed);
   }
+  window.fc93Offline=()=>{try{return offlineMode()}catch(e){return false}};
+  let restored=false;
   function paint(){
     if(!warn)return;
     if(offlineMode()){
+      if(!currentMember&&!restored){restored=true;try{const m=loadStoredMember();if(m){currentMember=m;setTimeout(()=>{try{refreshUI()}catch(e){}},0);}}catch(e){}}
       const t=LSG(stampKey());
       warn.classList.remove('hidden');
       warn.innerHTML='';
