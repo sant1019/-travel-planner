@@ -448,17 +448,31 @@ html{touch-action:manipulation}
 #modal-fc70-pw input,#modal-fc70-setup input,#modal-fc60-apply input:not([type=checkbox]):not([type=hidden]):not([tabindex="-1"]),#modal-fc84-feedback input:not([type=file]):not([tabindex="-1"]),#fc59-redeem-code{min-height:44px;padding:10px 12px!important;font-size:14px!important;border-radius:12px!important;border:1px solid #d7dee6!important}
 #modal-fc84-feedback textarea,#modal-fc60-apply textarea{padding:10px 12px!important;font-size:14px!important;border-radius:12px!important;border:1px solid #d7dee6!important}
 #fc84-add:disabled{opacity:.5;border-color:#cbd5e1;color:#64748b}
-#fc34-tab-customers{background:#dbeafe!important;color:#1e40af!important}
-#fc34-tab-requests{background:#fce7f3!important;color:#be185d!important}
-#fc34-tab-rooms{background:#dcfce7!important;color:#166534!important}
-#fc34-tab-guides{background:#ffedd5!important;color:#c2410c!important}
-#fc34-tab-feedback{background:#fef3c7!important;color:#92400e!important}
-#fc34-tab-feedback[aria-pressed="true"]{background:#d97706!important;color:#fff!important}
 .fc84-th{position:relative;width:64px;height:64px;border-radius:10px;overflow:hidden;border:1px solid #cbd5e1}.fc84-th img{width:100%;height:100%;object-fit:cover}.fc84-th button{position:absolute;top:0;right:0;background:rgba(15,23,42,.7);color:#fff;font-size:11px;line-height:1;padding:3px 5px;border-bottom-left-radius:8px}.fc84-lb{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:12px}.fc84-lb img{max-width:100%;max-height:100%;border-radius:8px}
-#fc34-tab-customers[aria-pressed="true"]{background:#2563eb!important;color:#fff!important}
-#fc34-tab-requests[aria-pressed="true"]{background:#db2777!important;color:#fff!important}
-#fc34-tab-rooms[aria-pressed="true"]{background:#16a34a!important;color:#fff!important}
-#fc34-tab-guides[aria-pressed="true"]{background:#ea580c!important;color:#fff!important}
+
+#fc31-admin-tools>.fc71-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fc71-tabs button{position:relative;background:#f1f5f9!important;color:#475569!important;border:1px solid #e2e8f0;border-radius:14px!important;font-weight:800}
+.fc71-tabs button[aria-pressed="true"]{background:#0f766e!important;color:#fff!important;border-color:#0f766e}
+#fc34-tab-rooms{display:none!important}
+.fc71-dot{position:absolute;top:-6px;right:-4px;min-width:20px;height:20px;border-radius:99px;background:#ef4444;color:#fff;font-size:11px;font-style:normal;display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #fff;line-height:1}
+.fc71-seg{display:flex;background:#f1f5f9;border-radius:12px;padding:3px;margin-bottom:12px}
+.fc71-seg button{flex:1;text-align:center;font-size:13px;font-weight:800;padding:8px;border-radius:10px;color:#64748b}
+.fc71-seg button.on{background:#fff;color:#0f172a;box-shadow:0 1px 4px #0002}
+.fc32-utility:has(.fc71-ver){grid-template-columns:minmax(90px,34%) minmax(0,1fr) auto}
+.fc71-ver{position:relative;margin:-6px 0;padding:12px 0 12px 10px;min-width:46px;min-height:44px;display:flex!important;align-items:center;justify-content:flex-end;cursor:default}
+.fc71-sec{font-size:12px;font-weight:800;color:#0f766e;margin:10px 0 6px}
+.fc71-rm{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.fc71-rm.un{border-style:dashed;border-color:#f59e0b;background:#fffbeb}
+.fc71-rt{display:flex;justify-content:space-between;align-items:center;gap:8px}.fc71-rn{font-weight:800;font-size:14px;word-break:break-all}
+.fc71-kv{display:grid;grid-template-columns:48px 1fr;gap:3px 8px;font-size:12px;margin-top:6px}.fc71-kv b{color:#64748b;font-weight:600}
+.fc71-tg{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.fc71-tg.g{background:#dcfce7;color:#166534}.fc71-tg.y{background:#fef3c7;color:#92400e}.fc71-tg.r{background:#fee2e2;color:#b91c1c}.fc71-tg.n{background:#f1f5f9;color:#64748b}
+.fc71-pill{display:inline-block;font-size:11px;background:#fff6e5;border:1px solid #f5d896;color:#8a5a00;border-radius:99px;padding:1px 8px;margin-left:6px;font-weight:700;vertical-align:middle}
+.fc71-ban{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c;border-radius:10px;padding:8px 10px;font-size:12px;font-weight:700}
+.fc71-adv{margin-top:6px;border:1px dashed #cbd5e1;border-radius:12px;background:#fff}
+.fc71-adv>summary{cursor:pointer;padding:10px 12px;font-size:12px;font-weight:800;color:#64748b}
+.fc71-adv>div{border-top:1px dashed #cbd5e1;padding:10px 12px}
+.fc71-info{font-size:12px;display:grid;grid-template-columns:48px 1fr;gap:3px 8px}.fc71-info b{color:#64748b;font-weight:600}
 .trip-version{cursor:default;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
 .fc70-sb{bottom:-1.25rem!important;box-shadow:none!important}
 .fc70-sec{border:1px solid #e2e8f0;border-radius:12px;padding:8px 10px;background:#fff}
@@ -520,7 +534,6 @@ html{touch-action:manipulation}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70o</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -538,6 +551,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-70q</span>
         </div>
       </div>
     </header>
@@ -909,7 +923,7 @@ html{touch-action:manipulation}
       </form>
 
       <div id="fc31-admin-tools" class="hidden space-y-5">
-        <div class="grid grid-cols-2 gap-2"><button id="fc34-tab-customers" type="button" onclick="fc34SwitchTab('customers')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">客戶／授權</button><button id="fc34-tab-requests" type="button" onclick="fc34SwitchTab('requests')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">申請</button><button id="fc34-tab-rooms" type="button" onclick="fc34SwitchTab('rooms')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">房間／試用</button><button id="fc34-tab-feedback" type="button" onclick="fc34SwitchTab('feedback')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">問題反應</button></div>
+        <div class="fc71-tabs"><button id="fc34-tab-customers" type="button" onclick="fc34SwitchTab('customers')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">客戶／房間</button><button id="fc34-tab-requests" type="button" onclick="fc34SwitchTab('requests')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">申請</button><button id="fc34-tab-rooms" type="button" onclick="fc34SwitchTab('rooms')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">房間／試用</button><button id="fc34-tab-feedback" type="button" onclick="fc34SwitchTab('feedback')" class="w-full p-3 rounded-lg bg-slate-100 text-sm font-bold">問題反應</button></div>
         <div id="fc34-customers-panel" class="hidden space-y-4">
           <p id="fc34-customer-status" role="status" class="text-sm text-slate-600"></p>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="fc34-stats"></div>
@@ -6565,7 +6579,7 @@ async function fc59Load(){
     fc59Rooms=res.rooms||[];fc34Customers=customers;fc34Licenses=licenses;
     document.getElementById('fc59-default-days').value=res.default_trial_days??7;
     const sel=document.getElementById('fc59-code-license'),cur=sel.value;sel.innerHTML=fc59LicOptions();if(cur)sel.value=cur;
-    fc59Render();fc59Msg(`共 ${fc59Rooms.length} 個房間`);
+    await fc71Hdr();fc59Render();fc59Msg(`共 ${fc59Rooms.length} 個房間`);
   }catch(e){fc59Msg(fc59Err(e));}
 }
 function fc59Badge(r){
@@ -6585,7 +6599,7 @@ function fc59Render(){
   const btn='class="p-2 rounded-lg border text-xs font-bold"';
   box.innerHTML=rows.length?rows.map(r=>{
     const s=r.status||{},days=s.state==='trial'?s.days_left:7;
-    return `<article class="p-4 border rounded-xl space-y-2" data-room="${esc(r.room_id)}"><div class="flex justify-between gap-2 items-start"><h4 class="font-bold break-all">${esc(r.room_id)}</h4>${fc59Badge(r)}</div><p class="text-xs text-slate-600">建立 ${fc59Fmt(r.created_at)}・團員 ${r.members} 人${r.customer_name?'・客戶：'+esc(r.customer_name):''}${r.license_id?(s.expires_at?'・授權到期 '+fc59Fmt(s.expires_at):'・永久授權'):(r.trial_ends_at&&!r.license_exempt?'・試用到期 '+fc59Fmt(r.trial_ends_at):'')}</p>${r.license_id?'':`<div class="space-y-2"><div class="flex gap-2 items-center"><input type="number" min="0" max="3650" step="1" value="${days}" class="fc59-days border rounded-lg p-2 w-24 text-sm" aria-label="試用天數"><span class="text-xs">天</span></div><div class="grid grid-cols-2 gap-2"><button type="button" data-fc59="trial" ${btn}>開始試用</button><button type="button" data-fc59="exempt" ${btn}>不限期</button></div></div>`}${r.license_id?`<button type="button" data-fc59="unlink" ${btn}>解除授權連結</button>`:`<div class="space-y-2"><select class="fc59-lic border rounded-lg p-2 text-sm w-full min-w-0" onchange="this.closest('[data-room]').querySelector('[data-fc59=link]').disabled=!this.value">${fc59LicOptions()}</select><button type="button" data-fc59="link" ${btn} style="width:100%" disabled>連結授權</button></div>`}<div class="pt-1 border-t"><div class="flex gap-2"><button type="button" data-fc59="rename" class="p-2 rounded-lg border text-xs font-bold">改房間名稱</button><button type="button" data-fc59="delete" class="p-2 rounded-lg border border-rose-300 text-rose-700 text-xs font-bold">刪除房間</button></div></div></article>`;}).join(''):'<p class="text-sm">沒有符合的房間。</p>';
+    return `<article class="p-4 border rounded-xl space-y-2" data-room="${esc(r.room_id)}"><div class="flex justify-between gap-2 items-start"><h4 class="font-bold break-all">${esc(r.room_id)}</h4>${fc59Badge(r)}</div><p class="text-xs text-slate-600">建立 ${fc59Fmt(r.created_at)}・團員 ${r.members} 人${r.customer_name?'・客戶：'+esc(r.customer_name):''}${r.license_id?(s.expires_at?'・授權到期 '+fc59Fmt(s.expires_at):'・永久授權'):(r.trial_ends_at&&!r.license_exempt?'・試用到期 '+fc59Fmt(r.trial_ends_at):'')}</p>${fc71RoomInfo(r)}${r.license_id?'':`<div class="space-y-2"><div class="flex gap-2 items-center"><input type="number" min="0" max="3650" step="1" value="${days}" class="fc59-days border rounded-lg p-2 w-24 text-sm" aria-label="試用天數"><span class="text-xs">天</span></div><div class="grid grid-cols-2 gap-2"><button type="button" data-fc59="trial" ${btn}>開始試用</button><button type="button" data-fc59="exempt" ${btn}>不限期</button></div></div>`}<details class="fc71-adv"><summary>⚙ 進階操作</summary><div class="space-y-2"><p class="text-[11px] text-slate-500">手動綁定授權：用於線下付款直接開通、兌換到錯誤房間需改綁、修正舊資料。一般客戶請用兌換碼，系統會自動綁定。</p>${r.license_id?`<button type="button" data-fc59="unlink" ${btn}>解除授權連結</button>`:`<div class="space-y-2"><select class="fc59-lic border rounded-lg p-2 text-sm w-full min-w-0" onchange="this.closest('[data-room]').querySelector('[data-fc59=link]').disabled=!this.value">${fc59LicOptions()}</select><button type="button" data-fc59="link" ${btn} style="width:100%" disabled>連結授權</button></div>`}</div></details><div class="pt-1 border-t"><div class="flex gap-2"><button type="button" data-fc59="rename" class="p-2 rounded-lg border text-xs font-bold">改房間名稱</button><button type="button" data-fc59="delete" class="p-2 rounded-lg border border-rose-300 text-rose-700 text-xs font-bold">刪除房間</button></div></div></article>`;}).join(''):'<p class="text-sm">沒有符合的房間。</p>';
 }
 async function fc70Delete(kind,id){const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');const d=await fc32Rpc('fc70_admin_delete',{p_token:token,p_kind:kind,p_id:id});if(token!==fc32Token)throw new Error('platform_session_expired');return d;}
 function fc70DelErr(e){const m=String(e?.message||e);if(/PGRST202|Could not find|does not exist/.test(m))return '資料庫尚未安裝刪除功能，請先在 Supabase 執行 FC70_admin_delete.sql。';if(/customer_has_licenses/.test(m))return '這位客戶還有授權，請先處理授權再刪除。';if(/customer_has_orders/.test(m))return '這位客戶還有訂單紀錄，無法刪除。';if(/room_not_found/.test(m))return '房間不存在，請重新整理。';if(/customer_not_found/.test(m))return '客戶不存在，請重新整理。';return null;}
@@ -6628,7 +6642,7 @@ document.getElementById('fc59-room-list')?.addEventListener('click',fc59Click);
 </script>
 <script id="fc60-requests">
 // FC60: buyer application form + progress lookup, and platform-admin "申請" review tab (manual review).
-const FC60_ERR={invalid_name:'請輸入姓名（60 字內）',invalid_email:'Email 格式不正確',agree_required:'請先勾選同意',too_long:'有欄位內容太長，請縮短',rate_limited:'目前申請人數較多，請稍後再試',too_many_pending:'這個 Email 已有待審核的申請，請等審核結果',duplicate_unredeemed:'這個 Email 已有一筆核准的申請，兌換碼還沒兌換。請到「續約兌換碼」用申請編號查詢進度，取得兌換碼後兌換。',duplicate_pending:'這個 Email 已有一筆審核中的申請，請先到「續約兌換碼」用申請編號查詢進度；找不到編號請聯絡管理者。',invalid_ref:'申請編號格式不正確，應為 REQ-XXXXXX-XXXXXXXX',not_found:'查無這筆申請，請確認編號是否完整',too_many_attempts:'輸入錯誤次數過多，請 15 分鐘後再試'};
+const FC60_ERR={invalid_name:'請輸入姓名（60 字內）',invalid_email:'Email 格式不正確',agree_required:'請先勾選同意',too_long:'有欄位內容太長，請縮短',rate_limited:'目前申請人數較多，請稍後再試',too_many_pending:'這個 Email 已有待審核的申請，請等審核結果',customer_blocked:'此 Email 無法申請，請聯絡管理者。',duplicate_unredeemed:'這個 Email 已有一筆核准的申請，兌換碼還沒兌換。請到「續約兌換碼」用申請編號查詢進度，取得兌換碼後兌換。',duplicate_pending:'這個 Email 已有一筆審核中的申請，請先到「續約兌換碼」用申請編號查詢進度；找不到編號請聯絡管理者。',invalid_ref:'申請編號格式不正確，應為 REQ-XXXXXX-XXXXXXXX',not_found:'查無這筆申請，請確認編號是否完整',too_many_attempts:'輸入錯誤次數過多，請 15 分鐘後再試'};
 let fc60Tab='apply',fc60Requests=[],fc60Filter='pending',fc60Busy=false,fc60LastIssued=null,fc60Issued={};
 function fc60Key(){return 'fc60_last_ref';}
 function fc60SetTab(t){
@@ -6674,7 +6688,7 @@ async function fc60Submit(){
     let saved='';try{saved=localStorage.getItem(fc60Key())||'';}catch(e){}
     if(saved){let q=null;try{q=await fc32Rpc('get_license_request',{p_ref:saved});}catch(e){}if(q&&q.ok&&q.status==='pending'){st.textContent='你已有一筆審核中的申請（'+q.request_no+'），請到「續約兌換碼」查詢進度，不用重複申請。';return;}}
     const d=await fc32Rpc('submit_license_request',{p_name:name,p_email:email,p_phone:document.getElementById('fc60-phone').value.trim(),p_room_name:document.getElementById('fc60-room').value.trim(),p_need_note:fc70NeedNote(),p_agree:true,p_hp:document.getElementById('fc60-hp').value});
-    if(!d?.ok){st.textContent=FC60_ERR[d?.error]||'送出失敗，請稍後再試';return;}
+    if(!d?.ok){st.textContent=(d?.error==='duplicate_unredeemed'&&d.request_no)?'這個 Email 已有一筆核准的申請 '+d.request_no+'，兌換碼還沒兌換'+(d.code_expires_at?'（'+fc60Fmt(d.code_expires_at)+' 到期）':'')+'。請到「續約兌換碼」用這個編號查詢進度，取得兌換碼後兌換；若不需要，請聯絡管理者作廢。':(FC60_ERR[d?.error]||'送出失敗，請稍後再試');return;}
     try{localStorage.setItem(fc60Key(),d.ref);localStorage.setItem('fc70_apply_profile',JSON.stringify({name,email,phone:document.getElementById('fc60-phone').value.trim()}));}catch(e){}
     document.getElementById('fc60-ref-shown').textContent=d.ref;
     document.getElementById('fc60-form-box').classList.add('hidden');document.getElementById('fc60-done-box').classList.remove('hidden');fc60FootSync();
@@ -6716,7 +6730,7 @@ async function fc60Load(){
   fc60Msg('載入申請…');
   try{
     const d=await fc60Call('list',{status:'all'});fc60Requests=d.requests||[];
-    const pend=d.counts?.pending||0;document.getElementById('fc34-tab-requests').textContent=pend?`申請（${pend}）`:'申請';
+    const pend=d.counts?.pending||0;fc71Dot('fc34-tab-requests','申請',pend);
     fc60RenderAdmin();fc60Msg('');
   }catch(e){fc60Msg(fc60AdmErr(e));}
 }
@@ -6732,13 +6746,13 @@ const fc70n={
 function fc60RenderAdmin(){
   const esc=escapeHtml,box=document.getElementById('fc60-adm-list');
   box.innerHTML=fc60Requests.length?fc60Requests.map(r=>{
-    const badge=r.status==='pending'?'<span class="fc59-badge fc59-b-trial">待審核</span>':r.status==='approved'?'<span class="fc59-badge fc59-b-licensed">已核准</span>':'<span class="fc59-badge fc59-b-expired">已拒絕</span>';
+    const badge=r.status==='pending'?'<span class="fc59-badge fc59-b-trial">待審核</span>':r.status==='approved'?(r.redeemed_at?'<span class="fc59-badge fc59-b-licensed">已核准・已兌換</span>':'<span class="fc59-badge fc59-b-trial">已核准・待兌換</span>'):'<span class="fc59-badge fc59-b-expired">已拒絕</span>';
     let actions='';
     if(r.status==='pending')actions=`<div class="grid grid-cols-2 gap-2 text-xs"><label>授權天數（兌換後起算）<input type="number" min="1" max="3650" value="30" data-k="days" class="w-full border rounded-lg p-2"><span class="flex items-center gap-1 mt-1"><input type="checkbox" data-k="unlimited" onchange="const i=this.closest('label').querySelector('[data-k=days]');i.disabled=this.checked;i.style.opacity=this.checked?.4:1"> 無期限（永久）</span></label><label>團員上限<input type="number" min="1" max="500" value="20" data-k="member_limit" class="w-full border rounded-lg p-2"></label><label>旅程上限<input type="number" min="1" max="50" value="1" data-k="trip_limit" class="w-full border rounded-lg p-2"></label><label>兌換碼有效天數<input type="number" min="1" max="180" value="14" data-k="code_days" class="w-full border rounded-lg p-2"></label></div><input type="text" maxlength="200" placeholder="內部備註（選填）" data-k="admin_note" class="w-full border rounded-lg p-2 text-xs"><div class="flex gap-2"><button type="button" data-a="approve" class="fc60-btn flex-1">核准並產生兌換碼</button><button type="button" data-a="reject" class="p-2 rounded-lg border text-xs font-bold flex-1">拒絕</button></div>`;
     else if(r.status==='approved'){
       const sm=fc70n.sum(r),want=String(r.room_name||'').trim(),got=String(r.redeemed_room_id||'').trim();
       const room=r.redeemed_at?`<p class="text-xs"><b>申請房名：</b>${esc(want||'未填')}<br><b>實際房間：</b>${esc(got||'?')}（${fc60Fmt(r.redeemed_at)} 兌換）${(want&&got&&want.toLowerCase()!==got.toLowerCase())?'<br><b class="text-amber-700">⚠ 房名與申請時不同</b>':''}</p>`:`<p class="text-xs"><b>目標房間：</b>${esc(want||'未填房名')}（尚未綁定，兌換後記錄實際房間）</p>`;
-      actions=`<p class="text-xs text-slate-600">核准於 ${fc60Fmt(r.reviewed_at)}｜${esc(sm)}${r.license_expires_at?'｜授權到期 '+fc60Fmt(r.license_expires_at):''}</p>${room}${r.redeemed_at?'':fc70n.codeBox(r)+'<div class="flex gap-2 items-center"><label class="text-xs">兌換碼有效天數<input type="number" min="1" max="180" value="14" data-k="code_days" class="border rounded-lg p-2 w-20 ml-1"></label><button type="button" data-a="reissue" class="p-2 rounded-lg border text-xs font-bold">作廢舊碼並重新發碼</button></div>'}`;
+      actions=`<p class="text-xs text-slate-600">核准於 ${fc60Fmt(r.reviewed_at)}｜${esc(sm)}${r.license_expires_at?'｜授權到期 '+fc60Fmt(r.license_expires_at):''}</p>${room}${r.redeemed_at?'':fc70n.codeBox(r)+'<div class="flex gap-2 items-center"><label class="text-xs">兌換碼有效天數<input type="number" min="1" max="180" value="14" data-k="code_days" class="border rounded-lg p-2 w-20 ml-1"></label><button type="button" data-a="reissue" class="p-2 rounded-lg border text-xs font-bold">作廢舊碼並重新發碼</button></div><button type="button" data-a="voidcode" class="p-2 rounded-lg border text-xs font-bold text-rose-700 w-full">作廢未兌換碼（取消核准）</button>'}`;
     }else actions=`<p class="text-xs text-slate-600">${r.review_note?'拒絕原因：'+esc(r.review_note):'（沒有填原因）'}</p>`;
     return `<article class="p-4 border rounded-xl space-y-2" data-id="${esc(r.id)}" data-name="${esc(r.applicant_name)}"><div class="flex justify-between items-start gap-2"><b class="text-sm break-all">${esc(r.request_no)}</b>${badge}</div>${(r.status==='pending'&&r.same_email_pending>1)?`<p class="fc90-hide text-[11px] font-bold text-rose-700 bg-rose-50 rounded-lg px-2 py-1">⚠ 重複申請：同 Email 共有 ${r.same_email_pending} 筆待審核，建議只保留一筆，其餘按「拒絕」</p>`:''}<p class="fc90-hide text-sm font-bold">${esc(r.applicant_name)}</p><p class="text-xs text-slate-600 break-all">${esc(r.email)}${r.phone?'｜'+esc(r.phone):''}</p>${(r.room_name&&r.status!=='approved')?`<p class="text-xs">想用的房間：${esc(r.room_name)}</p>`:''}${r.need_note?`<p class="text-xs text-slate-700 break-words">需求：${esc(r.need_note)}</p>`:''}<p class="text-[11px] text-slate-500">申請於 ${fc60Fmt(r.created_at)}</p>${actions}</article>`;}).join(''):'<p class="text-sm">目前沒有這類申請。</p>';
 }
@@ -6753,6 +6767,7 @@ async function fc60AdminClick(ev){
   const val=k=>card.querySelector(`[data-k="${k}"]`)?.value;
   fc60Busy=true;b.disabled=true;
   try{
+    if(act==='voidcode'){if(!(await fc70Confirm({title:'作廢未兌換碼',body:'「'+name+'」的兌換碼會立刻失效，這筆申請改為已拒絕，同 Email 可以再次申請。\n確定作廢？',okText:'作廢',cancelText:'取消'})))return;await fc60Call('void_code',{request_id:id});showToast('已作廢，這個 Email 可再次申請');await fc60Load();return;}
     if(act==='reject'){const reason=prompt('拒絕原因（購買者查詢時會看到，可留空）：');if(reason===null)return;await fc60Call('reject',{request_id:id,reason:reason.trim()});showToast('已拒絕');await fc60Load();return;}
     const payload={request_id:id,code_days:Number(val('code_days')||14)};
     if(act==='approve'){Object.assign(payload,{days:card.querySelector('[data-k="unlimited"]')?.checked?0:Number(val('days')),member_limit:Number(val('member_limit')),trip_limit:Number(val('trip_limit')),admin_note:(val('admin_note')||'').trim()});}
@@ -7146,7 +7161,7 @@ async function fc84AdminLoad(){
   const msg=document.getElementById('fc84-adm-status');msg.textContent='載入中…';
   try{
     const d=await fc84Call('list',{status:'all'});fc84Items=d.items||[];
-    const n=d.open||0;document.getElementById('fc34-tab-feedback').textContent=n?`問題反應（${n}）`:'問題反應';
+    const n=d.open||0;fc71Dot('fc34-tab-feedback','問題反應',n);
     fc84AdminRender();msg.textContent='';
   }catch(e){msg.textContent=fc84AdmErr(e);}
 }
@@ -7192,24 +7207,24 @@ function fc90CustInfo(c){
   const now=Date.now(),ls=fc34Licenses.filter(l=>l.customer_id===c.id);
   const live=l=>['active','permanent'].includes(fc34LicenseState(l))&&(!l.starts_at||new Date(l.starts_at)<=now);
   const lv=ls.filter(live),soon=lv.some(l=>l.expires_at&&new Date(l.expires_at)<=now+14*864e5);
-  return {ls,licensed:lv.length>0,soon,expired:ls.length>0&&!lv.length&&ls.some(l=>fc34LicenseState(l)==='expired'),pending:ls.some(l=>l.status==='pending'),none:!ls.length,blocked:!!c.is_blocked};
+  return {ls,licensed:lv.length>0,soon,expired:ls.length>0&&!lv.length&&ls.some(l=>fc34LicenseState(l)==='expired'),pending:ls.some(l=>l.status==='pending'),none:!ls.length,blocked:!!c.is_blocked,deny:!!(c.is_blocked&&c.block_mode==='deny_license'),unred:fc71Unred(c),reqs:fc71Reqs(c)};
 }
 const FC90={
   customers:{list:'fc34-customer-list',date:'授權到期日',ph:'姓名、電話、Email、來源、Room ID',
-    chips:[['licensed','已授權'],['soon','14 天內到期'],['expired','授權已到期'],['pending','尚未啟用'],['none','無授權'],['blocked','已標記']],
+    chips:[['licensed','已授權'],['soon','14 天內到期'],['expired','授權已到期'],['pending','尚未啟用'],['none','無授權'],['unred','待兌換'],['onlyreq','僅申請'],['deny','已黑名單'],['blocked','已標記']],
     rec:a=>{const id=a.querySelector('[data-fc34-customer]')?.dataset.fc34Customer;return fc34Customers.find(c=>c.id===id);},
     match:(c,st,rg)=>{const i=fc90CustInfo(c),q=st.q.toLowerCase();
       if(q&&![c.display_name,c.phone,c.email,c.source,...i.ls.flatMap(l=>l.rooms||[])].some(v=>String(v||'').toLowerCase().includes(q)))return false;
-      if(st.sel.size&&![...st.sel].some(k=>i[k]))return false;
+      if(st.sel.size&&![...st.sel].some(k=>k==='unred'?i.unred>0:k==='onlyreq'?(!i.ls.length&&fc71RoomsOf(c).length===0):i[k]))return false;
       if((st.from||st.to)&&!i.ls.some(l=>rg(l.expires_at)))return false;return true;},
-    head:c=>{const i=fc90CustInfo(c);let t,k;if(i.blocked){t='已標記';k='r';}else if(i.licensed){t=i.soon?'14 天內到期':'使用中';k=i.soon?'r':'g';}else if(i.pending){t='尚未啟用';k='y';}else if(i.expired){t='已到期';k='n';}else{t='無授權';k='n';}
-      return {key:c.id,title:c.display_name,sub:c.email||c.phone||'',tag:fc90Tag(t,k)};}},
+    head:c=>{const i=fc90CustInfo(c),rn=fc71RoomsOf(c).length;let t,k;if(i.deny){t='已黑名單';k='r';}else if(i.blocked){t='已標記';k='r';}else if(i.licensed){t=i.soon?'14 天內到期':'使用中';k=i.soon?'r':'g';}else if(i.pending){t='尚未啟用';k='y';}else if(i.expired){t='已到期';k='n';}else if(i.reqs.some(r=>r.status==='pending')){t='申請中';k='y';}else if(i.reqs.length&&!rn){t='僅申請';k='n';}else{t='無授權';k='n';}
+      return {key:c.id,title:c.display_name,titleHtml:fc90Esc(c.display_name)+(i.unred?'<span class="fc71-pill">待兌換 '+i.unred+'</span>':''),sub:(c.email||c.phone||'')+(rn?'｜'+rn+' 個房間':''),tag:fc90Tag(t,k)};}},
   requests:{list:'fc60-adm-list',date:'申請日',ph:'申請編號、姓名、Email、房名',
-    chips:[['pending','待審核'],['approved','已核准'],['rejected','已拒絕'],['dup','只看重複']],
+    chips:[['pending','待審核'],['approved','已核准'],['unredeemed','核准・待兌換'],['redeemed','核准・已兌換'],['rejected','已拒絕'],['dup','只看重複']],
     rec:a=>fc60Requests.find(r=>r.id===a.dataset.id),hideFirst:true,
     match:(r,st,rg)=>{const q=st.q.toLowerCase(),dup=(r.same_email_total??r.same_email_pending)>1;
       if(q&&![r.request_no,r.applicant_name,r.email,r.phone,r.room_name,r.redeemed_room_id].some(v=>String(v||'').toLowerCase().includes(q)))return false;
-      const sts=[...st.sel].filter(k=>k!=='dup');if(sts.length&&!sts.includes(r.status))return false;
+      const sts=[...st.sel].filter(k=>k!=='dup');if(sts.length&&!sts.some(k=>k==='unredeemed'?(r.status==='approved'&&!r.redeemed_at):k==='redeemed'?(r.status==='approved'&&!!r.redeemed_at):r.status===k))return false;
       if(st.sel.has('dup')&&!dup)return false;
       if((st.from||st.to)&&!rg(r.created_at))return false;return true;},
     head:r=>{const n=r.same_email_total??r.same_email_pending,dup=n>1?`<div class="fc90-mini">⚠ 同 Email 共 ${n} 筆${r.same_email_unredeemed>0&&r.status==='pending'?'（含已核准未兌換）':''}</div>`:'';
@@ -7224,17 +7239,17 @@ const FC90={
           meta='核准 '+md(r.reviewed_at)+'｜碼 …'+(r.code_hint||'')+(r.code_expires_at?' '+md(r.code_expires_at)+' 到期':'')+lim;}
       }else{sub=(want||'未填房名')+'｜申請 '+fc60Fmt(r.created_at);}
       if(meta)meta='<div class="fc90-meta">'+meta+'</div>';
-      const t=r.status==='pending'?['待審核','y']:r.status==='approved'?['已核准','g']:['已拒絕','r'];
+      const exp=r.status==='approved'&&!r.redeemed_at&&r.code_expires_at&&new Date(r.code_expires_at)<new Date();const t=r.status==='pending'?['待審核','y']:r.status==='approved'?(r.redeemed_at?['已核准・已兌換','g']:exp?['核准・碼已過期','n']:['已核准・待兌換','y']):['已拒絕','r'];
       return {key:r.id,title:r.request_no+'　'+r.applicant_name,sub:sub,extra:meta+mis+dup,tag:fc90Tag(t[0],t[1])};}},
   rooms:{list:'fc59-room-list',date:'到期日（試用／授權）',ph:'房間代碼、客戶',
-    chips:[['trial','試用中'],['licensed','已授權'],['expired','已到期'],['exempt','無限制'],['nolink','未連結授權']],
+    chips:[['trial','試用中'],['licensed','已授權'],['expired','已到期'],['exempt','無限制'],['nolink','未連結授權'],['nocust','未歸屬客戶']],
     rec:a=>fc59Rooms.find(r=>r.room_id===a.dataset.room),hideFirst:true,
     match:(r,st,rg)=>{const q=st.q.toLowerCase(),s=(r.status||{}).state;
       if(q&&![r.room_id,r.customer_name].some(v=>String(v||'').toLowerCase().includes(q)))return false;
-      if(st.sel.size&&![...st.sel].some(k=>k==='nolink'?!r.license_id:s===k))return false;
+      if(st.sel.size&&![...st.sel].some(k=>k==='nolink'?!r.license_id:k==='nocust'?!r.customer_name:s===k))return false;
       if((st.from||st.to)&&!rg((r.status||{}).expires_at||r.trial_ends_at))return false;return true;},
-    head:r=>{const s=r.status||{},m={trial:['試用中','y'],licensed:['已授權','g'],expired:['已到期','n'],exempt:['無限制','b']}[s.state]||['未知','n'];
-      return {key:r.room_id,title:r.room_id,sub:'團員 '+r.members+' 人'+(r.customer_name?'｜'+r.customer_name:''),tag:fc90Tag(m[0],m[1])};}},
+    head:r=>{const s=r.status||{};let m={trial:['試用中','y'],licensed:['已授權','g'],expired:['已到期','n'],exempt:['無限制','b']}[s.state]||['未知','n'];
+      const h=fc71.hdr[r.room_id]||{};if(fc71BlockedRoom(r)){m=['已封鎖沿用','r'];}return {key:r.room_id,title:r.room_id,sub:(h.title?h.title+'｜':'')+(r.customer_name||'未歸屬客戶')+'｜'+r.members+' 人',tag:fc90Tag(m[0],m[1])};}},
   feedback:{list:'fc84-adm-list',date:'反應日',ph:'標題、暱稱、房間',
     chips:[['open','未處理'],['done','已處理']],
     rec:a=>fc84Items.find(x=>x.id===a.dataset.id),
@@ -7271,7 +7286,7 @@ function fc90Enhance(tab){
     const r=cfg.rec(art);if(!r)continue;const h=cfg.head(r);
     const bd=document.createElement('div');bd.className='fc90-bd';while(art.firstChild)bd.appendChild(art.firstChild);
     const hd=document.createElement('button');hd.type='button';hd.className='fc90-hd';
-    hd.innerHTML=`<span class="fc90-hl"><span class="fc90-hn">${fc90Esc(h.title)}</span><span class="fc90-hs">${fc90Esc(h.sub)}</span>${h.extra||''}</span><span class="fc90-hr">${h.tag}<span class="fc90-chev">▼</span></span>`;
+    hd.innerHTML=`<span class="fc90-hl"><span class="fc90-hn">${h.titleHtml||fc90Esc(h.title)}</span><span class="fc90-hs">${fc90Esc(h.sub)}</span>${h.extra||''}</span><span class="fc90-hr">${h.tag}<span class="fc90-chev">▼</span></span>`;
     if(cfg.hideFirst&&bd.firstElementChild)bd.firstElementChild.style.display='none';
     art.className='fc90-cr';art.dataset.k=h.key;art.append(hd,bd);
     if(fc90Open[tab]===h.key)art.classList.add('open');
@@ -7299,7 +7314,7 @@ function fc90Wrap(name,tab,extra){
 function fc90Init(){
   fc90Mount('customers','fc34-cust-filters');fc90Mount('requests','fc60-filters');fc90Mount('rooms','fc59-filters');fc90Mount('feedback','fc84-filters');
   for(const id of ['fc34-cust-filters','fc60-filters','fc59-filters','fc84-filters','fc34-search','fc59-search']){const e=document.getElementById(id);if(e)e.style.display='none';}
-  fc90Wrap('fc34RenderCustomers','customers',()=>{if(!fc90Reqs)fc90LoadReqs();});
+  fc90Wrap('fc34RenderCustomers','customers',()=>{if(!fc90Reqs)fc90LoadReqs();fc71Load();fc71Inject();});
   fc90Wrap('fc60RenderAdmin','requests');fc90Wrap('fc59Render','rooms');fc90Wrap('fc84AdminRender','feedback');
 }
 let fc90BadgeAt=0,fc90BadgeBusy=false;
@@ -7309,13 +7324,114 @@ async function fc90Badges(force){
   const tools=document.getElementById('fc31-admin-tools');if(!tools||tools.classList.contains('hidden'))return;
   if(!force&&Date.now()-fc90BadgeAt<15000)return;
   fc90BadgeBusy=true;fc90BadgeAt=Date.now();
-  try{const d=await fc60Call('list',{status:'pending'});const n=d.counts?.pending||0,el=document.getElementById('fc34-tab-requests');if(el)el.textContent=n?`申請（${n}）`:'申請';}catch(e){}
-  try{const f=await fc84Call('list',{status:'open'});const n=f.open||0,el=document.getElementById('fc34-tab-feedback');if(el)el.textContent=n?`問題反應（${n}）`:'問題反應';}catch(e){}
+  try{const d=await fc60Call('list',{status:'pending'});const n=d.counts?.pending||0;fc71Dot('fc34-tab-requests','申請',n);}catch(e){}
+  try{const f=await fc84Call('list',{status:'open'});const n=f.open||0;fc71Dot('fc34-tab-feedback','問題反應',n);}catch(e){}
   fc90BadgeBusy=false;
 }
 setInterval(()=>fc90Badges(false),3000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)fc90Badges(true);});window.addEventListener('focus',()=>fc90Badges(true));
 fc90Init();
+</script>
+<script id="fc71-admin">
+/* FC71: 客戶／房間合併、房間明細、待處理紅點 */
+const fc71={hdr:{},hdrAt:0,loadAt:0,busy:false};
+function fc71Dot(id,label,n){const el=document.getElementById(id);if(!el)return;el.textContent=label;if(n>0){const i=document.createElement('i');i.className='fc71-dot';i.textContent=n>99?'99+':String(n);el.appendChild(i);}}
+function fc71AllReqs(){return (typeof fc90Reqs!=='undefined'&&fc90Reqs)||fc60Requests||[];}
+function fc71Reqs(c){const em=String(c.email||'').toLowerCase();if(!em)return [];return fc71AllReqs().filter(r=>String(r.email||'').toLowerCase()===em);}
+function fc71Open(r){return r.status==='approved'&&!r.redeemed_at&&(!r.code_expires_at||new Date(r.code_expires_at)>new Date());}
+function fc71Unred(c){return fc71Reqs(c).filter(fc71Open).length;}
+function fc71Deny(c){return !!(c&&c.is_blocked&&c.block_mode==='deny_license');}
+function fc71BlockedRoom(r){const l=r.license_id&&fc34Licenses.find(x=>x.id===r.license_id);const c=l&&fc34Customers.find(x=>x.id===l.customer_id);return fc71Deny(c);}
+function fc71RoomsOf(c){
+  const map=new Map(),key=n=>String(n||'').trim().toLowerCase();
+  const get=n=>{const k=key(n);if(!k)return null;if(!map.has(k))map.set(k,{name:String(n).trim(),reqs:[]});return map.get(k);};
+  for(const l of fc34Licenses.filter(l=>l.customer_id===c.id))for(const n of (l.rooms||[])){const o=get(n);if(o)o.lic=l;}
+  for(const q of fc71Reqs(c)){
+    const real=q.redeemed_room_id,want=q.room_name;
+    if(real){const o=get(real);if(o)o.reqs.push(q);}
+    else if(q.status!=='rejected'&&want){const o=get(want);if(o)o.reqs.push(q);}
+    else if(q.status==='rejected'&&want&&fc59Rooms.some(r=>key(r.room_id)===key(want))){const o=get(want);if(o)o.reqs.push(q);}
+  }
+  return [...map.values()];
+}
+function fc71Md(v){return v?fc60Fmt(v).slice(5).replace('-','/'):'';}
+function fc71RoomCard(o,c){
+  const esc=escapeHtml,real=fc59Rooms.find(r=>String(r.room_id).trim().toLowerCase()===o.name.toLowerCase()),h=(real&&fc71.hdr[real.room_id])||{},s=(real&&real.status)||{};
+  const un=o.reqs.find(fc71Open),deny=fc71Deny(c);
+  let tag=['未建立','n'];
+  if(deny&&real)tag=['已封鎖沿用','r'];
+  else if(real){tag={licensed:['授權中','g'],trial:['試用中','y'],exempt:['不限期','g'],expired:['已到期','r']}[s.state]||['未知','n'];}
+  else if(un)tag=['待兌換','y'];else if(o.reqs.some(q=>q.status==='pending'))tag=['申請中','y'];
+  const kv=[];
+  const need=(o.reqs.find(q=>q.need_note)||{}).need_note;
+  if(real){
+    kv.push(['用途',h.tag||(need?'（未設定）申請需求：'+String(need).slice(0,40):'（未設定）')]);
+    kv.push(['地點',h.title||'（未設定）']);
+    kv.push(['期程',(h.start&&h.end)?h.start.replace(/-/g,'/')+'–'+h.end.slice(5).replace('-','/')+(h.duration?'（'+h.duration+'）':''):(h.dates||'（未設定）')]);
+    kv.push(['成員',real.members+' 人'+(h.headcount?'｜'+h.headcount:'')]);
+    if(s.state==='licensed')kv.push(['授權',(s.expires_at?'到期 '+fc60Fmt(s.expires_at):'永久')+(o.lic?'｜團員 '+o.lic.member_limit+'｜旅程 '+o.lic.trip_limit:'')]);
+    else if(s.state==='trial')kv.push(['試用','剩 '+s.days_left+' 天']);
+  }
+  for(const q of o.reqs){
+    const st=q.status==='approved'?(q.redeemed_at?'已兌換 '+fc71Md(q.redeemed_at):(fc71Open(q)?'待兌換':'碼已過期')):(q.status==='pending'?'待審核':'已拒絕');
+    kv.push(['申請',q.request_no+'（'+st+(q.reviewed_at?'，核准 '+fc71Md(q.reviewed_at):'')+'）']);
+    if(fc71Open(q))kv.push(['兌換碼','…'+(q.code_hint||'')+'，'+fc71Md(q.code_expires_at)+' 到期｜尚未綁定，兌換後記錄實際房間']);
+    if(q.redeemed_at&&q.room_name&&String(q.room_name).trim().toLowerCase()!==o.name.toLowerCase())kv.push(['原申請','「'+q.room_name+'」（與實際房間不同）']);
+  }
+  return `<div class="fc71-rm${un&&!real?' un':''}"><div class="fc71-rt"><span class="fc71-rn">${esc(o.name)}</span><span class="fc71-tg ${tag[1]}">${tag[0]}</span></div><div class="fc71-kv">${kv.map(([a,b])=>`<b>${a}</b><span>${esc(b)}</span>`).join('')}</div></div>`;
+}
+function fc71RoomsHtml(c){
+  const rs=fc71RoomsOf(c),deny=fc71Deny(c);
+  let h='';
+  if(deny)h+=`<div class="fc71-ban">⛔ 黑名單：不得申請，名下房間不得兌換／沿用${c.blocked_reason?'<br><span style="font-weight:500">原因：'+escapeHtml(c.blocked_reason)+'</span>':''}</div>`;
+  h+=`<div class="fc71-sec">名下房間（${rs.length}）</div>`;
+  h+=rs.length?rs.map(o=>fc71RoomCard(o,c)).join(''):'<p class="text-xs text-slate-500">還沒有房間。</p>';
+  return `<div class="fc71-rooms">${h}</div>`;
+}
+function fc71Inject(){
+  const box=document.getElementById('fc34-customer-list');if(!box)return;
+  for(const art of [...box.children]){
+    if(art.tagName!=='ARTICLE'||art.classList.contains('fc90-cr')||art.querySelector('.fc71-rooms'))continue;
+    const c=FC90.customers.rec(art);if(!c)continue;
+    art.insertAdjacentHTML('beforeend',fc71RoomsHtml(c));
+  }
+}
+function fc71RoomInfo(r){
+  const h=fc71.hdr[r.room_id];if(!h)return '';
+  const rows=[['用途',h.tag||'（未設定）'],['地點',h.title||'（未設定）'],['期程',(h.start&&h.end)?h.start.replace(/-/g,'/')+'–'+h.end.slice(5).replace('-','/')+(h.duration?'（'+h.duration+'）':''):(h.dates||'（未設定）')],['人數',h.headcount||'（未設定）']];
+  return '<div class="fc71-info">'+rows.map(([a,b])=>'<b>'+a+'</b><span>'+escapeHtml(b)+'</span>').join('')+'</div>';
+}
+async function fc71Hdr(){
+  if(Date.now()-fc71.hdrAt<15000)return;
+  try{const t=fc32Token;if(!t)return;const d=await fc32Rpc('fc70_room_headers',{p_token:t});if(d&&typeof d==='object')fc71.hdr=d;fc71.hdrAt=Date.now();}catch(e){fc71.hdrAt=Date.now();}
+}
+async function fc71Load(){
+  if(fc71.busy||Date.now()-fc71.loadAt<60000)return;
+  fc71.busy=true;fc71.loadAt=Date.now();
+  try{
+    const [res]=await Promise.all([fc59Call('rooms'),fc71Hdr()]);
+    fc59Rooms=res.rooms||fc59Rooms;
+    if(!fc90Reqs)await fc90LoadReqs();
+    const box=document.getElementById('fc34-customer-list');if(box){box.querySelectorAll('.fc71-rooms').forEach(x=>x.remove());}
+    fc34RenderCustomers();
+  }catch(e){}finally{fc71.busy=false;}
+}
+function fc71View(v){fc34SwitchTab(v);}
+(function(){
+  for(const [pid,on] of [['fc34-customers-panel','customers'],['fc34-rooms-panel','rooms']]){
+    const p=document.getElementById(pid);if(!p||p.querySelector('.fc71-seg'))continue;
+    const d=document.createElement('div');d.className='fc71-seg';
+    d.innerHTML=`<button type="button" class="${on==='customers'?'on':''}" onclick="fc71View('customers')">依客戶</button><button type="button" class="${on==='rooms'?'on':''}" onclick="fc71View('rooms')">依房間</button>`;
+    p.insertBefore(d,p.firstChild);
+  }
+  const o=window.fc34SwitchTab;
+  if(typeof o==='function'&&!o.fc71){
+    const f=function(t){const r=o.apply(this,arguments);try{
+      const a=fc34ActiveTab,b=document.getElementById('fc34-tab-customers');
+      if(b){const on=a==='customers'||a==='rooms';b.setAttribute('aria-pressed',String(on));}
+    }catch(e){}return r;};f.fc71=1;window.fc34SwitchTab=f;
+  }
+})();
 </script>
 </body>
 </html>
