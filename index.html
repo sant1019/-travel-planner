@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-70s</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-70u</span>
         </div>
       </div>
     </header>
@@ -1129,6 +1129,13 @@ html{touch-action:manipulation}
     <div id="modal-room-members" class="hidden bg-white rounded-2xl p-5 w-full max-w-sm shadow-xl space-y-3 max-h-[80vh] overflow-y-auto">
       <div class="flex justify-between items-center"><h3 class="font-bold text-slate-800">團員管理</h3><button onclick="closeModal()" aria-label="關閉團員管理" class="p-2 text-slate-500">✕</button></div>
       <p class="text-xs text-slate-500">團員備註僅主辦人可查看與編輯。刪除會撤銷登入資格，旅程內容保留。</p>
+      <div id="fc92-invite" class="rounded-xl border border-teal-200 bg-teal-50 p-3 space-y-2">
+        <div class="text-xs font-bold text-teal-800">🔗 邀請朋友加入</div>
+        <label class="flex items-start gap-2 text-xs text-slate-700"><input id="fc92-withpw" type="checkbox" onchange="fc92Sync()" class="mt-0.5"><span>連結內含房間密碼<br><span class="text-[11px] text-slate-500">勾選：朋友點開就自動填好房名＋密碼。不勾：只填房名，密碼請另外告訴對方。</span></span></label>
+        <input id="fc92-pw" type="password" autocomplete="off" placeholder="輸入房間密碼（用來放進連結）" class="hidden w-full p-2 border rounded-lg text-xs" style="min-height:40px">
+        <div class="flex gap-2"><button type="button" onclick="fc92Copy()" class="flex-1 bg-teal-700 text-white rounded-xl text-xs font-bold" style="min-height:42px">複製邀請連結</button><button type="button" id="fc92-share" onclick="fc92Share()" class="hidden flex-1 bg-white text-teal-700 border border-teal-300 rounded-xl text-xs font-bold" style="min-height:42px">分享…</button></div>
+        <p class="text-[11px] text-slate-500">請只傳給同行朋友。若連結外流，可在下方刪除不認識的成員。</p>
+      </div>
       <div class="flex justify-between items-center"><p id="fc43-member-status" role="status" class="text-xs text-slate-500"></p><button onclick="fc43LoadMembers()" class="text-xs text-sky-700 p-2">重新整理</button></div>
       <div id="fc43-member-list" class="space-y-2"></div>
     </div>
@@ -7431,6 +7438,163 @@ function fc71View(v){fc34SwitchTab(v);}
       if(b){const on=a==='customers'||a==='rooms';b.setAttribute('aria-pressed',String(on));}
     }catch(e){}return r;};f.fc71=1;window.fc34SwitchTab=f;
   }
+})();
+</script>
+<style id="fc91-css">
+#fc91-ov{position:fixed;inset:0;z-index:99990;touch-action:none}
+#fc91-spot{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(15,23,42,.68);outline:3px solid #fbbf24;outline-offset:2px;pointer-events:none;transition:all .25s}
+#fc91-hand{position:fixed;font-size:34px;line-height:1;pointer-events:none;z-index:99992;animation:fc91-bob .9s ease-in-out infinite;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+@keyframes fc91-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+#fc91-hand.up{animation-name:fc91-bob2}
+@keyframes fc91-bob2{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#fc91-bub{position:fixed;z-index:99993;background:#fff;color:#1e293b;border-radius:16px;padding:14px 14px 12px;box-shadow:0 10px 30px rgba(0,0,0,.35);width:min(300px,calc(100vw - 24px));font-size:13.5px;line-height:1.55}
+#fc91-bub b{display:block;font-size:14.5px;margin-bottom:3px;color:#0f766e}
+#fc91-bub .ft{display:flex;align-items:center;justify-content:space-between;margin-top:10px;gap:8px}
+#fc91-bub .dots{display:flex;gap:5px}#fc91-bub .dots i{width:7px;height:7px;border-radius:50%;background:#cbd5e1}#fc91-bub .dots i.on{background:#0f766e}
+#fc91-bub button{min-height:40px;border-radius:12px;font-weight:700;font-size:13px;padding:0 14px}
+#fc91-bub .skip{color:#64748b;background:transparent}
+#fc91-bub .nx{background:#0f766e;color:#fff}
+</style>
+<script id="fc92-invite-js">
+(function(){
+  const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  const dec=t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';return JSON.parse(decodeURIComponent(escape(atob(t))))};
+  window.fc92Sync=function(){const on=document.getElementById('fc92-withpw').checked;document.getElementById('fc92-pw').classList.toggle('hidden',!(on&&!(cloudPassword&&cloudPassword.length>=6)));const sh=document.getElementById('fc92-share');if(sh)sh.classList.toggle('hidden',!navigator.share);};
+  window.fc92Link=function(){
+    if(!roomId||!isOrganizer())return null;
+    const o={r:roomId};
+    if(document.getElementById('fc92-withpw').checked){
+      const pw=(cloudPassword&&cloudPassword.length>=6)?cloudPassword:document.getElementById('fc92-pw').value;
+      if(!pw||pw.length<6){showToast('請輸入房間密碼（至少六個字元）');return null;}
+      o.p=pw;
+    }
+    return location.origin+location.pathname+'#join='+enc(o);
+  };
+  window.fc92Copy=async function(){
+    const u=fc92Link();if(!u)return;
+    try{await navigator.clipboard.writeText(u);showToast('已複製邀請連結');}
+    catch(e){window.prompt('請長按複製這串邀請連結：',u);}
+  };
+  window.fc92Share=async function(){
+    const u=fc92Link();if(!u)return;
+    try{await navigator.share({title:'邀請你加入旅程',text:`加入「${roomId}」旅程`,url:u});}catch(e){}
+  };
+  window.fc92Join=function(){
+    const m=/^#join=([\w-]+)/.exec(location.hash);if(!m)return false;
+    let o;try{o=dec(m[1]);}catch(e){return false}
+    try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}
+    if(!o||typeof o.r!=='string'||!o.r.trim())return false;
+    if(cloudConnected&&currentMember&&roomId===o.r){showToast('你已經在這個房間裡了');return true;}
+    openSyncModal(true);
+    document.getElementById('input-room-id').value=o.r;
+    document.getElementById('input-room-password').value=typeof o.p==='string'?o.p:'';
+    fc62SetMode('exists');setTripLoginMode(true);
+    setTripLoginStatus(typeof o.p==='string'?'房間名稱與密碼已自動填入，請設定你的暱稱與個人密碼':'房間名稱已填入，請輸入房間密碼，並設定你的暱稱與個人密碼');
+    setTimeout(()=>{try{document.getElementById(o.p?'trip-login-nickname':'input-room-password').focus()}catch(e){}},200);
+    return true;
+  };
+  if(/^#join=/.test(location.hash))setTimeout(()=>{try{fc92Join()}catch(e){}},700);
+  window.addEventListener('hashchange',()=>{if(/^#join=/.test(location.hash))try{fc92Join()}catch(e){}});
+  const o=window.fc43OpenMembers;
+  if(typeof o==='function'&&!o.fc92){const f=async function(){const r=await o.apply(this,arguments);try{fc92Sync()}catch(e){}return r};f.fc92=1;window.fc43OpenMembers=f;}
+})();
+</script>
+<script id="fc91-tour">
+(function(){
+  const LS=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+  const SS=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+  const $=s=>document.querySelector(s);
+  let running=false;
+  function ident(){try{return roomId+':'+(currentMember&&(currentMember.id||currentMember.nickname))}catch(e){return ''}}
+  const gKey=()=>'fc91:g:'+ident(), tKey=t=>'fc91:t:'+ident()+':'+t;
+  function vis(el){if(!el)return false;const r=el.getBoundingClientRect();return r.width>0&&r.height>0&&!el.closest('.hidden')}
+  const TABS=['packing','itinerary','favorites','budget','notes','info'];
+  function steps(){
+    const org=typeof isOrganizer==='function'&&isOrganizer();
+    const nav={sel:'nav.border-b',t:'分頁列',x:'六個分頁：必備、行程、收藏、預算、筆記、資訊，點一下就能切換。'};
+    const me={sel:'#member-header-badge',t:'你的名字',x:org?'點這裡開「團員設定」：更換暱稱、房間設定、團員管理。':'點這裡開「團員設定」，可以更換自己的暱稱。'};
+    if(org)return [
+      {sel:'.trip-heading',t:'旅程標題',x:'點這裡修改旅程標題、日期與人數。'},
+      nav,
+      {sel:'#fc59-banner:not(.hidden)',t:'試用與開通',x:'試用到期前，點這裡的「開通正式會員」送出申請。'},
+      {sel:'.fc32-room-link',t:'房間與同步',x:'這裡顯示目前房間與雲端同步狀態。'},
+      me,
+      {sel:'#member-header-badge',t:'邀請朋友',x:'團員設定 → 團員管理 → 「複製邀請連結」，傳給朋友，他們點開就能加入。'}
+    ].filter(s=>vis($(s.sel)));
+    return [nav,me,{sel:'.fc32-room-link',t:'同步狀態',x:'雲端圖示代表同步狀態；資料會自動與團員同步。'}].filter(s=>vis($(s.sel)));
+  }
+  function close(){document.getElementById('fc91-ov')?.remove();['fc91-hand','fc91-bub'].forEach(i=>document.getElementById(i)?.remove());running=false;window.removeEventListener('resize',rel)}
+  let cur=null;function rel(){if(cur)show(cur.list,cur.i,cur.done)}
+  function show(list,i,done){
+    cur={list,i,done};const s=list[i];let el=$(s.sel);
+    if(!el){return next()}
+    el.scrollIntoView({block:'center',behavior:'instant'});
+    const r=el.getBoundingClientRect(),p=6;
+    let ov=document.getElementById('fc91-ov');if(!ov){ov=document.createElement('div');ov.id='fc91-ov';document.body.append(ov);
+      const sp=document.createElement('div');sp.id='fc91-spot';const h=document.createElement('div');h.id='fc91-hand';h.textContent='👆';const b=document.createElement('div');b.id='fc91-bub';b.setAttribute('role','dialog');
+      document.body.append(sp,h,b);window.addEventListener('resize',rel);}
+    const sp=document.getElementById('fc91-spot'),h=document.getElementById('fc91-hand'),b=document.getElementById('fc91-bub');
+    sp.style.cssText=`left:${r.left-p}px;top:${r.top-p}px;width:${r.width+p*2}px;height:${r.height+p*2}px`;
+    const last=i===list.length-1;
+    b.innerHTML='';
+    const t=document.createElement('b');t.textContent=s.t;const x=document.createElement('div');x.textContent=s.x;
+    const ft=document.createElement('div');ft.className='ft';
+    const sk=document.createElement('button');sk.type='button';sk.className='skip';sk.textContent=list.length>1?'略過導覽':'';sk.onclick=()=>finish(true);
+    const dots=document.createElement('div');dots.className='dots';if(list.length>1)list.forEach((_,k)=>{const d=document.createElement('i');if(k===i)d.className='on';dots.append(d)});
+    const nx=document.createElement('button');nx.type='button';nx.className='nx';nx.textContent=last?(list.length>1?'完成':'知道了'):'下一步';nx.onclick=next;
+    ft.append(...(list.length>1?[sk,dots]:[]),nx);b.append(t,x,ft);
+    const below=r.bottom+p+170<innerHeight;
+    h.className=below?'':'up';h.textContent=below?'👆':'👇';
+    const hx=Math.min(Math.max(r.left+r.width/2-14,8),innerWidth-44);
+    h.style.left=hx+'px';h.style.top=(below?r.bottom+p+2:r.top-p-42)+'px';
+    const bw=Math.min(300,innerWidth-24);b.style.left=Math.min(Math.max(r.left+r.width/2-bw/2,12),innerWidth-bw-12)+'px';
+    if(below){b.style.top=(r.bottom+p+46)+'px';b.style.bottom='auto'}else{b.style.top='auto';b.style.bottom=(innerHeight-r.top+p+46)+'px'}
+    nx.focus();
+  }
+  function next(){if(!cur)return;const{list,i,done}=cur;if(i+1>=list.length)return finish(false);show(list,i+1,done)}
+  function finish(skipped){const d=cur&&cur.done;cur=null;close();if(d)d(skipped)}
+  function startGlobal(force){
+    if(running)return;const list=steps();if(!list.length)return;running=true;
+    show(list,0,sk=>{SS(gKey(),'1');if(sk)TABS.forEach(t=>SS(tKey(t),'1'));});
+  }
+  const TT={
+    packing:{sel:'#page-packing button',t:'必備清單',x:'按「新增分類」建立行李分類；新增品項全團同步，打勾是個人專屬。'},
+    itinerary:{sel:'#organizer-add-itinerary-wrap button',alt:'#itinerary-items-container',t:'行程',x:'主辦人在這裡排固定行程；一般團員可看到團體行程並安排個人行程。'},
+    favorites:{sel:'#page-favorites button',t:'收藏與投票',x:'把想去的景點加入口袋名單，大家投票「我想去」，再用智慧排行程。'},
+    budget:{sel:'#page-budget button',t:'預算',x:'按「新增項目」記錄每人固定開銷，系統會自動統計。'},
+    notes:{sel:'#group-notes-input',t:'筆記',x:'緊急聯絡人、集合注意事項都可以寫在這裡，全團共用。'},
+    info:{sel:'#fc45-display-settings summary',t:'資訊',x:'翻譯、換匯、航班、住宿等工具在這頁；「畫面自訂」可以選要顯示哪些。'}
+  };
+  function tabHint(tab){
+    if(running||!TT[tab]||!ident()||LS(tKey(tab)))return;
+    if(!LS(gKey()))return;
+    const c=TT[tab];let sel=c.sel;if(!vis($(sel)))sel=c.alt;if(!sel||!vis($(sel)))return;
+    SS(tKey(tab),'1');running=true;show([{sel,t:c.t,x:c.x}],0,null);
+  }
+  window.fc91Replay=function(){
+    TABS.forEach(t=>{try{localStorage.removeItem(tKey(t))}catch(e){}});try{localStorage.removeItem(gKey())}catch(e){}
+    if(typeof closeModal==='function')closeModal();
+    setTimeout(()=>startGlobal(true),250);
+  };
+  // wrap switchTab
+  if(typeof switchTab==='function'&&!switchTab.fc91){
+    const o=switchTab;const f=function(t){const r=o.apply(this,arguments);setTimeout(()=>{try{tabHint(t)}catch(e){}},450);return r};f.fc91=1;
+    try{switchTab=f}catch(e){window.switchTab=f}
+  }
+  // settings button
+  const m=document.getElementById('modal-member-settings');
+  if(m&&!document.getElementById('fc91-replay')){
+    const b=document.createElement('button');b.type='button';b.id='fc91-replay';b.className='fc70-mb';b.style.marginTop='12px';b.textContent='📖 重看新手導覽';b.onclick=()=>fc91Replay();m.append(b);
+  }
+  // auto start
+  setInterval(()=>{
+    try{
+      if(running||!roomId||!cloudConnected||!currentMember||document.body.classList.contains('fc65-nologin'))return;
+      const bd=document.getElementById('modal-backdrop');if(bd&&!bd.classList.contains('hidden'))return;
+      if(LS(gKey()))return;
+      startGlobal();
+    }catch(e){}
+  },1500);
 })();
 </script>
 </body>
