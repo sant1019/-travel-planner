@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-70v</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-70w</span>
         </div>
       </div>
     </header>
@@ -7523,7 +7523,7 @@ function fc71View(v){fc34SwitchTab(v);}
     ].filter(s=>vis($(s.sel)));
     return [nav,me,{sel:'.fc32-room-link',t:'同步狀態',x:'雲端圖示代表同步狀態；資料會自動與團員同步。'}].filter(s=>vis($(s.sel)));
   }
-  function close(){document.getElementById('fc91-ov')?.remove();['fc91-hand','fc91-bub'].forEach(i=>document.getElementById(i)?.remove());running=false;window.removeEventListener('resize',rel)}
+  function close(){document.getElementById('fc91-ov')?.remove();['fc91-spot','fc91-hand','fc91-bub'].forEach(i=>document.getElementById(i)?.remove());running=false;window.removeEventListener('resize',rel)}
   let cur=null;function rel(){if(cur)show(cur.list,cur.i,cur.done)}
   function show(list,i,done){
     cur={list,i,done};const s=list[i];let el=$(s.sel);
