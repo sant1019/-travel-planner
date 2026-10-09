@@ -502,6 +502,10 @@ html{touch-action:manipulation}
 .fc90-cr.open>.fc90-bd{display:block}
 .fc90-bd>*+*{margin-top:8px}
 .fc90-bd h4{display:none}
+.fc90-meta{font-size:11px;color:#64748b;margin-top:4px}
+.fc90-bd .fc90-hide{display:none}
+.fc90-bd>.fc90-hide+*,.fc90-bd>[style*="display: none"]+*{margin-top:0}
+.fc70n-code{background:#ecfdf5;border:1px solid #10b981;border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px}
 .fc90-bd>.flex.justify-between{justify-content:flex-end}
 .fc90-kv{display:grid;grid-template-columns:64px 1fr;gap:4px 8px;font-size:13px;color:#334}.fc90-kv i{font-style:normal;color:#94a3b8}.fc90-kv span{word-break:break-all}
 #fc60-adm-list input:not([type=checkbox]),#fc59-room-list input:not([type=checkbox]),#fc59-room-list select,#fc34-customer-list input{min-height:42px;padding:8px 12px!important;font-size:14px!important;border-radius:12px!important}
@@ -516,7 +520,7 @@ html{touch-action:manipulation}
     <!-- Top Navigation Header -->
     <header class="trip-header text-white relative">
       <div class="max-w-md mx-auto trip-header-inner">
-        <span id="test-version-badge" class="trip-version">FC-70m3</span>
+        <span id="test-version-badge" class="trip-version">FC-70n</span>
         <button onclick="openHeaderEditModal()" class="trip-heading" aria-label="旅程標題與設定">
           <div class="trip-title-row">
             <span id="header-display-title" class="trip-title">峴港會安</span>
@@ -6625,7 +6629,7 @@ document.getElementById('fc59-room-list')?.addEventListener('click',fc59Click);
 <script id="fc60-requests">
 // FC60: buyer application form + progress lookup, and platform-admin "申請" review tab (manual review).
 const FC60_ERR={invalid_name:'請輸入姓名（60 字內）',invalid_email:'Email 格式不正確',agree_required:'請先勾選同意',too_long:'有欄位內容太長，請縮短',rate_limited:'目前申請人數較多，請稍後再試',too_many_pending:'這個 Email 已有待審核的申請，請等審核結果',duplicate_unredeemed:'這個 Email 已有一筆核准的申請，兌換碼還沒兌換。請到「續約兌換碼」用申請編號查詢進度，取得兌換碼後兌換。',duplicate_pending:'這個 Email 已有一筆審核中的申請，請先到「續約兌換碼」用申請編號查詢進度；找不到編號請聯絡管理者。',invalid_ref:'申請編號格式不正確，應為 REQ-XXXXXX-XXXXXXXX',not_found:'查無這筆申請，請確認編號是否完整',too_many_attempts:'輸入錯誤次數過多，請 15 分鐘後再試'};
-let fc60Tab='apply',fc60Requests=[],fc60Filter='pending',fc60Busy=false,fc60LastIssued=null;
+let fc60Tab='apply',fc60Requests=[],fc60Filter='pending',fc60Busy=false,fc60LastIssued=null,fc60Issued={};
 function fc60Key(){return 'fc60_last_ref';}
 function fc60SetTab(t){
   fc60Tab=t;
@@ -6717,6 +6721,14 @@ async function fc60Load(){
   }catch(e){fc60Msg(fc60AdmErr(e));}
 }
 function fc60SetFilter(f){fc60Filter=f;document.querySelectorAll('#fc60-filters [data-f]').forEach(b=>b.classList.toggle('on',b.dataset.f===f));fc60Load();}
+const fc70n={
+  sum:r=>{const t=r.term_days?r.term_days+' 天':'無期限';return '授權 '+t+'｜團員 '+(r.lic_member_limit??'?')+' 人｜旅程 '+(r.lic_trip_limit??'?')+' 個';},
+  code:r=>r.code_full||(fc60Issued[r.id]&&fc60Issued[r.id].code)||'',
+  codeBox:r=>{const c=fc70n.code(r),esc=escapeHtml;
+    if(!c)return `<p class="text-xs text-slate-600">兌換碼 …${esc(r.code_hint||'')}，有效到 ${fc60Fmt(r.code_expires_at)}（完整碼未保存；需要請「作廢舊碼並重新發碼」）</p>`;
+    return `<div class="fc70n-code"><p class="text-xs text-slate-600">兌換碼（有效到 ${fc60Fmt(r.code_expires_at)}，只能使用一次）</p><div class="fc59-code-box">${esc(c)}</div><div class="flex gap-2"><button type="button" class="fc60-btn" data-a="copycode" data-code="${esc(c)}">複製兌換碼</button><button type="button" class="p-2 rounded-lg border text-xs font-bold" data-a="copymsg" data-code="${esc(c)}">複製通知訊息</button></div></div>`;},
+  msg:(r,code)=>fc60Message(r.applicant_name,{code,request_no:r.request_no,license_expires_at:r.license_expires_at,term_days:r.term_days},Math.max(1,Math.ceil((new Date(r.code_expires_at)-Date.now())/864e5)))
+};
 function fc60RenderAdmin(){
   const esc=escapeHtml,box=document.getElementById('fc60-adm-list');
   box.innerHTML=fc60Requests.length?fc60Requests.map(r=>{
@@ -6724,10 +6736,11 @@ function fc60RenderAdmin(){
     let actions='';
     if(r.status==='pending')actions=`<div class="grid grid-cols-2 gap-2 text-xs"><label>授權天數（兌換後起算）<input type="number" min="1" max="3650" value="30" data-k="days" class="w-full border rounded-lg p-2"></label><label>團員上限<input type="number" min="1" max="500" value="20" data-k="member_limit" class="w-full border rounded-lg p-2"></label><label>旅程上限<input type="number" min="1" max="50" value="1" data-k="trip_limit" class="w-full border rounded-lg p-2"></label><label>兌換碼有效天數<input type="number" min="1" max="180" value="14" data-k="code_days" class="w-full border rounded-lg p-2"></label></div><input type="text" maxlength="200" placeholder="內部備註（選填）" data-k="admin_note" class="w-full border rounded-lg p-2 text-xs"><div class="flex gap-2"><button type="button" data-a="approve" class="fc60-btn flex-1">核准並產生兌換碼</button><button type="button" data-a="reject" class="p-2 rounded-lg border text-xs font-bold flex-1">拒絕</button></div>`;
     else if(r.status==='approved'){
-      const lic=r.license_expires_at?`授權到期 ${fc60Fmt(r.license_expires_at)}`:(r.term_days?`授權兌換後 ${r.term_days} 天`:'');const mism=(r.redeemed_at&&r.room_name&&r.redeemed_room_id&&String(r.room_name).trim()!==String(r.redeemed_room_id).trim())?`<br><b class="text-amber-700">⚠ 申請時想用「${esc(r.room_name)}」，實際兌換到「${esc(r.redeemed_room_id)}」</b>`:'';const state=(r.redeemed_at?`實際兌換房間：${esc(r.redeemed_room_id||'?')}（${fc60Fmt(r.redeemed_at)}）${mism}`:`兌換碼 …${esc(r.code_hint||'')}，有效到 ${fc60Fmt(r.code_expires_at)}`)+(lic?'｜'+esc(lic):'');
-      actions=`<p class="text-xs text-slate-600">${state}</p>${r.redeemed_at?'':'<div class="flex gap-2 items-center"><label class="text-xs">有效天數<input type="number" min="1" max="180" value="14" data-k="code_days" class="border rounded-lg p-2 w-20 ml-1"></label><button type="button" data-a="reissue" class="p-2 rounded-lg border text-xs font-bold">作廢舊碼並重新發碼</button></div>'}`;
+      const sm=fc70n.sum(r),want=String(r.room_name||'').trim(),got=String(r.redeemed_room_id||'').trim();
+      const room=r.redeemed_at?`<p class="text-xs"><b>申請房名：</b>${esc(want||'未填')}<br><b>實際房間：</b>${esc(got||'?')}（${fc60Fmt(r.redeemed_at)} 兌換）${(want&&got&&want.toLowerCase()!==got.toLowerCase())?'<br><b class="text-amber-700">⚠ 房名與申請時不同</b>':''}</p>`:`<p class="text-xs"><b>目標房間：</b>${esc(want||'未填房名')}（尚未綁定，兌換後記錄實際房間）</p>`;
+      actions=`<p class="text-xs text-slate-600">核准於 ${fc60Fmt(r.reviewed_at)}｜${esc(sm)}${r.license_expires_at?'｜授權到期 '+fc60Fmt(r.license_expires_at):''}</p>${room}${r.redeemed_at?'':fc70n.codeBox(r)+'<div class="flex gap-2 items-center"><label class="text-xs">有效天數<input type="number" min="1" max="180" value="14" data-k="code_days" class="border rounded-lg p-2 w-20 ml-1"></label><button type="button" data-a="reissue" class="p-2 rounded-lg border text-xs font-bold">作廢舊碼並重新發碼</button></div>'}`;
     }else actions=`<p class="text-xs text-slate-600">${r.review_note?'拒絕原因：'+esc(r.review_note):'（沒有填原因）'}</p>`;
-    return `<article class="p-4 border rounded-xl space-y-2" data-id="${esc(r.id)}" data-name="${esc(r.applicant_name)}"><div class="flex justify-between items-start gap-2"><b class="text-sm break-all">${esc(r.request_no)}</b>${badge}</div>${(r.status==='pending'&&r.same_email_pending>1)?`<p class="text-[11px] font-bold text-rose-700 bg-rose-50 rounded-lg px-2 py-1">⚠ 重複申請：同 Email 共有 ${r.same_email_pending} 筆待審核，建議只保留一筆，其餘按「拒絕」</p>`:''}<p class="text-sm font-bold">${esc(r.applicant_name)}</p><p class="text-xs text-slate-600 break-all">${esc(r.email)}${r.phone?'｜'+esc(r.phone):''}</p>${r.room_name?`<p class="text-xs">想用的房間：${esc(r.room_name)}</p>`:''}${r.need_note?`<p class="text-xs text-slate-700 break-words">需求：${esc(r.need_note)}</p>`:''}<p class="text-[11px] text-slate-500">申請於 ${fc60Fmt(r.created_at)}</p>${actions}</article>`;}).join(''):'<p class="text-sm">目前沒有這類申請。</p>';
+    return `<article class="p-4 border rounded-xl space-y-2" data-id="${esc(r.id)}" data-name="${esc(r.applicant_name)}"><div class="flex justify-between items-start gap-2"><b class="text-sm break-all">${esc(r.request_no)}</b>${badge}</div>${(r.status==='pending'&&r.same_email_pending>1)?`<p class="fc90-hide text-[11px] font-bold text-rose-700 bg-rose-50 rounded-lg px-2 py-1">⚠ 重複申請：同 Email 共有 ${r.same_email_pending} 筆待審核，建議只保留一筆，其餘按「拒絕」</p>`:''}<p class="fc90-hide text-sm font-bold">${esc(r.applicant_name)}</p><p class="text-xs text-slate-600 break-all">${esc(r.email)}${r.phone?'｜'+esc(r.phone):''}</p>${(r.room_name&&r.status!=='approved')?`<p class="text-xs">想用的房間：${esc(r.room_name)}</p>`:''}${r.need_note?`<p class="text-xs text-slate-700 break-words">需求：${esc(r.need_note)}</p>`:''}<p class="text-[11px] text-slate-500">申請於 ${fc60Fmt(r.created_at)}</p>${actions}</article>`;}).join(''):'<p class="text-sm">目前沒有這類申請。</p>';
 }
 function fc60Message(name,d,codeDays){
   const url=location.origin+location.pathname+'#apply';
@@ -6736,6 +6749,7 @@ function fc60Message(name,d,codeDays){
 async function fc60AdminClick(ev){
   const b=ev.target.closest('[data-a]');if(!b||fc60Busy)return;
   const card=b.closest('[data-id]'),id=card.dataset.id,name=card.dataset.name,act=b.dataset.a;
+  if(act==='copycode'||act==='copymsg'){const r=fc60Requests.find(x=>x.id===id),code=b.dataset.code;const t=act==='copycode'?code:fc70n.msg(r,code);showToast((await fc50Copy(t))?(act==='copycode'?'已複製兌換碼':'已複製通知訊息'):'請手動複製');fc50FlashCopied(b);return;}
   const val=k=>card.querySelector(`[data-k="${k}"]`)?.value;
   fc60Busy=true;b.disabled=true;
   try{
@@ -6744,11 +6758,7 @@ async function fc60AdminClick(ev){
     if(act==='approve'){Object.assign(payload,{days:Number(val('days')),member_limit:Number(val('member_limit')),trip_limit:Number(val('trip_limit')),admin_note:(val('admin_note')||'').trim()});}
     else if(!confirm('舊的兌換碼會立刻失效。確定重新發碼？'))return;
     const d=await fc60Call(act,payload);fc60LastIssued={d,name,codeDays:payload.code_days};
-    const box=document.getElementById('fc60-issued');
-    box.innerHTML=`<div class="p-4 border-2 border-emerald-500 rounded-xl space-y-2"><b class="text-sm">${act==='approve'?'已核准':'已重新發碼'}：${escapeHtml(name)}</b><div class="fc59-code-box">${escapeHtml(d.code)}</div><p class="text-xs text-red-700">完整兌換碼只在這裡顯示這一次；購買者也可以到「查詢進度」自己看到。</p><div class="flex gap-2"><button type="button" class="fc60-btn" id="fc60-copy-code">複製兌換碼</button><button type="button" class="p-2 rounded-lg border text-xs font-bold" id="fc60-copy-msg">複製通知訊息</button></div></div>`;
-    document.getElementById('fc60-copy-code').onclick=async()=>showToast((await fc50Copy(d.code))?'已複製兌換碼':'請手動複製');
-    document.getElementById('fc60-copy-msg').onclick=async()=>showToast((await fc50Copy(fc60Message(name,d,payload.code_days)))?'已複製通知訊息':'請手動複製');
-    box.scrollIntoView({block:'center'});
+    fc60Issued[id]={code:d.code};fc90Open.requests=id;showToast(act==='approve'?'已核准，兌換碼在該筆下方':'已重新發碼');
     await fc60Load();
   }catch(e){fc60Msg(fc60AdmErr(e));}
   finally{fc60Busy=false;b.disabled=false;}
@@ -7204,14 +7214,18 @@ const FC90={
       if((st.from||st.to)&&!rg(r.created_at))return false;return true;},
     head:r=>{const n=r.same_email_total??r.same_email_pending,dup=n>1?`<div class="fc90-mini">⚠ 同 Email 共 ${n} 筆${r.same_email_unredeemed>0&&r.status==='pending'?'（含已核准未兌換）':''}</div>`:'';
       const want=String(r.room_name||'').trim(),md=v=>v?fc60Fmt(v).slice(5).replace('-','/'):'';
-      let sub,mis='';
+      let sub,mis='',meta='';
+      const lim=r.term_days!=null||r.lic_member_limit!=null?'｜'+(r.term_days?r.term_days+'天':'無期限')+'｜團員'+(r.lic_member_limit??'?')+'｜旅程'+(r.lic_trip_limit??'?'):'';
       if(r.status==='approved'){
-        if(r.redeemed_at){const got=String(r.redeemed_room_id||'').trim();sub='申請：'+(want||'未填房名')+' → 已兌換：'+(got||'?');
-          if(want&&got&&want.toLowerCase()!==got.toLowerCase())mis='<div class="fc90-mini">⚠ 房名不同</div>';}
-        else sub='申請：'+(want||'未填房名')+'｜尚未兌換（碼 …'+(r.code_hint||'')+(r.code_expires_at?'，'+md(r.code_expires_at)+' 到期':'')+'）';
-      }else sub=(want||'未填房名')+'｜'+fc60Fmt(r.created_at);
+        if(r.redeemed_at){const got=String(r.redeemed_room_id||'').trim();sub='申請：'+(want||'未填房名')+' → 實際房間：'+(got||'?');
+          if(want&&got&&want.toLowerCase()!==got.toLowerCase())mis='<div class="fc90-mini">⚠ 房名不同</div>';
+          meta='核准 '+md(r.reviewed_at)+'｜兌換 '+md(r.redeemed_at)+lim;}
+        else{sub='目標房間：'+(want||'未填房名')+'（尚未綁定）';
+          meta='核准 '+md(r.reviewed_at)+'｜碼 …'+(r.code_hint||'')+(r.code_expires_at?' '+md(r.code_expires_at)+' 到期':'')+lim;}
+      }else{sub=(want||'未填房名')+'｜申請 '+fc60Fmt(r.created_at);}
+      if(meta)meta='<div class="fc90-meta">'+meta+'</div>';
       const t=r.status==='pending'?['待審核','y']:r.status==='approved'?['已核准','g']:['已拒絕','r'];
-      return {key:r.id,title:r.request_no+'　'+r.applicant_name,sub:sub,extra:mis+dup,tag:fc90Tag(t[0],t[1])};}},
+      return {key:r.id,title:r.request_no+'　'+r.applicant_name,sub:sub,extra:meta+mis+dup,tag:fc90Tag(t[0],t[1])};}},
   rooms:{list:'fc59-room-list',date:'到期日（試用／授權）',ph:'房間代碼、客戶',
     chips:[['trial','試用中'],['licensed','已授權'],['expired','已到期'],['exempt','無限制'],['nolink','未連結授權']],
     rec:a=>fc59Rooms.find(r=>r.room_id===a.dataset.room),hideFirst:true,
