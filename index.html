@@ -332,6 +332,7 @@ section.page-content h2 i{ margin-right:2px; }
 .fc51-plan{display:flex;align-items:flex-start;gap:8px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:8px 10px}
 .fc51-time{font-size:11px;font-weight:700;color:#5b21b6;background:#ede9fe;border-radius:6px;padding:2px 6px;white-space:nowrap}
 .fc51-icon{font-size:13px;color:#64748b;padding:2px 4px;text-decoration:none}
+.fc52-acts{gap:8px}.fc52-acts .fc51-icon{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;font-size:18px;padding:0;border-radius:12px;background:#f1f5f9}.fc52-acts .fc51-icon.fc136-del{color:#dc2626;background:#fee2e2;margin-left:8px}
 .fc51-tag{display:inline-block;font-size:10px;font-weight:700;border-radius:6px;padding:1px 5px;vertical-align:middle}
 .fc51-tag-from{background:#ede9fe;color:#5b21b6}.fc51-tag-clash{background:#fee2e2;color:#991b1b}
 .fc51-tag-pending{background:#fef3c7;color:#92400e}.fc51-tag-accepted{background:#dcfce7;color:#166534}.fc51-tag-declined{background:#f1f5f9;color:#475569}
@@ -563,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72r</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72s</span>
         </div>
       </div>
     </header>
@@ -6549,7 +6550,7 @@ function fc51RenderPersonal(){
     if(e.kind==='group'){const g=e.g;return `<div class="fc52-card" onclick="fc52SetView('group')"><div class="fc52-body"><div class="fc52-head">${g.time?`<span class="fc52-time">${esc(scenicPlainText(g.time))}</span>`:''}<span class="fc52-tag fc52-tag-group">團體行程</span>${c}</div><div class="fc52-title">${esc(scenicPlainText(g.title||''))}</div></div><span class="fc52-chev">›</span></div>`;}
     const p=e.x.plan,item=e.x.item,mapUrl=item.map||buildAutoMapLink(item.name||'');
     const tag=e.kind==='theirs'?`<span class="fc52-tag fc52-tag-follow">跟隨 ${esc(p.ownerName)}</span>`:(fc51IsShared(p)?`<span class="fc52-tag fc52-tag-shared">私人・已分享給 ${fc51ActiveShares(p)} 人</span>`:'<span class="fc52-tag fc52-tag-private">私人・僅自己可見</span>');
-    return `<div class="fc52-card"><div class="fc52-body"><div class="fc52-head"><span class="fc52-time fc52-time-private">${esc(fc51TimeText(p)||'--')}</span>${tag}${c}</div><div class="fc52-title">${esc(item.name||'')}</div>${p.note?`<div class="fc52-sub">${esc(p.note)}</div>`:''}${e.kind==='theirs'?`<div class="fc52-sub">${esc(p.ownerName)} 安排・更新會同步</div>`:''}</div><div class="fc52-acts">${mapUrl?`<a href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer" class="fc51-icon" title="地圖">📍</a>`:''}${e.kind==='mine'?`<button type="button" class="fc51-icon" onclick="fc51OpenPlan('${esc(p.id)}')" title="編輯">✎</button><button type="button" class="fc51-icon" onclick="fc51DeletePlan('${esc(p.id)}')" title="刪除">✕</button>`:''}</div></div>`;
+    return `<div class="fc52-card"><div class="fc52-body"><div class="fc52-head"><span class="fc52-time fc52-time-private">${esc(fc51TimeText(p)||'--')}</span>${tag}${c}</div><div class="fc52-title">${esc(item.name||'')}</div>${p.note?`<div class="fc52-sub">${esc(p.note)}</div>`:''}${e.kind==='theirs'?`<div class="fc52-sub">${esc(p.ownerName)} 安排・更新會同步</div>`:''}</div><div class="fc52-acts">${mapUrl?`<a href="${esc(mapUrl)}" target="_blank" rel="noopener noreferrer" class="fc51-icon" title="地圖">📍</a>`:''}${e.kind==='mine'?`<button type="button" class="fc51-icon" onclick="fc51OpenPlan('${esc(p.id)}')" title="編輯">✎</button><button type="button" class="fc51-icon fc136-del" onclick="fc51DeletePlan('${esc(p.id)}')" title="刪除" aria-label="刪除">✕</button>`:''}</div></div>`;
   }).join('');
   let h='';
   if(following)h+=`<div class="flex items-center justify-between gap-2 text-[11px] text-violet-900 px-1"><span>正在跟隨 <b>${esc(following.ownerName)}</b> 的 Day ${day}，對方更新會自動同步</span><button type="button" class="fc51-link" onclick="fc51Respond('${esc(following.ownerId)}',${day},false)">取消跟隨</button></div>`;
