@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72k</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72m</span>
         </div>
       </div>
     </header>
@@ -7817,7 +7817,7 @@ function fc71View(v){fc34SwitchTab(v);}
       if(c){out.lat=c.lat;out.lon=c.lon;}
     }
     return out;};
-  window.fc129Pin=function(it){try{return window.fc128HasCoord&&fc128HasCoord(it)?' <span title="已有座標" style="font-size:10px">📍</span>':''}catch(e){return ''}};
+  window.fc129Pin=function(it){try{return window.fc128HasCoord&&fc128HasCoord(it)?' <span title="已有座標" style="font-size:10px">✅</span>':''}catch(e){return ''}};
 })();
 </script>
 <script id="fc125-mail-js">
