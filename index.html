@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-71c</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-71d</span>
         </div>
       </div>
     </header>
@@ -992,6 +992,15 @@ html{touch-action:manipulation}
             <button type="button" onclick="fc59CreateCode()" class="p-2 rounded-lg bg-emerald-600 text-white text-sm font-bold">產生兌換碼</button>
             <div id="fc59-code-result" class="space-y-2"></div>
             <ul id="fc59-code-list" class="text-xs text-slate-600 space-y-1 list-disc pl-4"></ul>
+          </details>
+          <details id="fc124-box" class="fc124-box border rounded-xl p-3 bg-white" ontoggle="if(this.open)fc124Load()">
+            <summary class="text-sm font-bold cursor-pointer" style="min-height:40px;display:flex;align-items:center">🗂 備份與還原（保留 30 天）</summary>
+            <div class="space-y-2 mt-2">
+              <p class="text-[11px] text-slate-500">刪除房間前會自動備份；每天凌晨也會自動備份有變動的房間（每房間留最近 7 份）。</p>
+              <div class="flex gap-2"><select id="fc124-room" class="flex-1 min-w-0 border rounded-lg p-2 text-sm" style="min-height:40px"></select><button type="button" onclick="fc124Create()" class="px-3 rounded-lg border text-xs font-bold" style="min-height:40px;white-space:nowrap">立即備份</button></div>
+              <p id="fc124-status" class="text-xs text-slate-500" role="status"></p>
+              <div id="fc124-list" class="space-y-2"></div>
+            </div>
           </details>
           <div id="fc59-filters" class="flex gap-2 flex-wrap"></div>
           <input id="fc59-search" type="search" oninput="fc59Render()" placeholder="搜尋房間或客戶" class="w-full border rounded-lg p-2 text-sm">
@@ -6629,7 +6638,7 @@ async function fc59Click(ev){
     if(act==='trial'){const n=Number(card.querySelector('.fc59-days').value);if(!Number.isInteger(n)||n<0||n>3650)throw new Error('invalid_days');await fc59Call('set_trial',{room_id:room,mode:'days',days:n});showToast('已設定從現在起試用 '+n+' 天');}
     else if(act==='exempt'){if(!confirm('設為不限期後，這個房間不會到期。確定？'))return;await fc59Call('set_trial',{room_id:room,mode:'exempt'});showToast('已設為不限期');}
     else if(act==='unlink'){if(!confirm('解除連結後，房間會改依試用期規則判斷。確定？'))return;await fc59Call('unlink_room',{room_id:room});showToast('已解除連結');}
-    else if(act==='delete'){const typed=prompt('【無法復原】將刪除房間「'+room+'」的所有資料（行程、團員、筆記）與授權連結。兌換碼與授權本身會保留。\n\n請輸入房間名稱確認：');if(typed===null)return;if(typed.trim()!==room)throw new Error('delete_name_mismatch');await fc70Delete('room',room);showToast('已刪除房間 '+room);}
+    else if(act==='delete'){const typed=prompt('【無法復原】將刪除房間「'+room+'」的所有資料（行程、團員、筆記）與授權連結。兌換碼與授權本身會保留。\n\n刪除前會自動備份，30 天內可在「備份與還原」復原。\n\n請輸入房間名稱確認：');if(typed===null)return;if(typed.trim()!==room)throw new Error('delete_name_mismatch');await fc70Delete('room',room);showToast('已刪除房間 '+room+'（已自動備份，30 天內可還原）');}
     else if(act==='rename'){const nn=prompt('把房間「'+room+'」改名為（至少 4 字）：\n改名後團員要用新名稱登入，舊名稱會失效。');if(nn===null)return;const nr=nn.trim();if(!nr)return;if(!confirm('確定把「'+room+'」改名為「'+nr+'」？'))return;const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');await fc32Rpc('fc70_admin_rename_room',{p_token:token,p_old:room,p_new:nr});showToast('已改名為 '+nr);}
     else if(act==='link'){const id=card.querySelector('.fc59-lic').value;if(!id)throw new Error('license_not_found');await fc59Call('link_room',{room_id:room,license_id:id});showToast('已連結授權');}
     await fc59Load();
@@ -7497,6 +7506,61 @@ function fc71View(v){fc34SwitchTab(v);}
   window.addEventListener('hashchange',()=>{if(/^#join=/.test(location.hash))try{fc92Join()}catch(e){}});
   const o=window.fc43OpenMembers;
   if(typeof o==='function'&&!o.fc92){const f=async function(){const r=await o.apply(this,arguments);try{fc92Sync()}catch(e){}return r};f.fc92=1;window.fc43OpenMembers=f;}
+})();
+</script>
+<script id="fc124-backup">
+(function(){
+  const esc=t=>typeof escapeHtml==='function'?escapeHtml(String(t??'')):String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function call(action,payload){
+    const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');
+    const d=await fc32Rpc('fc124_backup_admin',{p_token:token,p_action:action,p_payload:payload||{}});
+    if(token!==fc32Token)throw new Error('platform_session_expired');return d;
+  }
+  function msg(t){const el=document.getElementById('fc124-status');if(el)el.textContent=t||''}
+  function err(e){const m=String(e?.message||e);
+    if(/PGRST202|Could not find/.test(m))return '資料庫尚未安裝備份功能，請先執行 FC71c_room_backup.sql。';
+    if(/room_exists/.test(m))return '同名房間已存在，無法還原（請先改名或刪除現有房間）。';
+    if(/backup_not_found/.test(m))return '找不到這份備份（可能已過期）。';
+    if(/room_not_found/.test(m))return '找不到這個房間。';
+    if(/platform_/.test(m))return '平台登入已失效，請重新登入。';
+    return '操作失敗：'+m.slice(0,120);}
+  const REASON={manual:'手動',before_delete:'刪除前',daily:'每日'};
+  function fmt(t){const d=new Date(t),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`}
+  window.fc124Load=async function(){
+    const sel=document.getElementById('fc124-room');
+    try{
+      if(sel&&typeof fc59Rooms!=='undefined'){const cur=sel.value;sel.innerHTML=(fc59Rooms||[]).map(r=>`<option value="${esc(r.room_id)}">${esc(r.room_id)}</option>`).join('');if(cur)sel.value=cur;}
+      msg('讀取備份…');
+      const rows=await call('list');window.fc124Rows=rows||[];render();
+      msg((rows||[]).length?`共 ${rows.length} 份備份`:'目前沒有備份');
+    }catch(e){msg(err(e));}
+  };
+  function render(){
+    const box=document.getElementById('fc124-list');if(!box)return;box.replaceChildren();
+    for(const r of window.fc124Rows||[]){
+      const card=document.createElement('div');card.className='border rounded-xl p-3 text-xs space-y-1';
+      card.innerHTML=`<div class="flex justify-between gap-2"><b class="break-all">${esc(r.room_id)}</b><span class="text-slate-500 whitespace-nowrap">${esc(REASON[r.reason]||r.reason)}</span></div><div class="text-slate-500">${fmt(r.created_at)}・團員 ${esc(r.member_count)}・${r.room_exists?'房間仍存在':'房間已不存在'}・到期 ${fmt(r.expires_at)}</div>`;
+      const row=document.createElement('div');row.className='flex gap-2 pt-1';
+      const rb=document.createElement('button');rb.type='button';rb.textContent='還原';rb.className='flex-1 rounded-lg border font-bold';rb.style.minHeight='40px';
+      rb.disabled=!!r.room_exists;if(r.room_exists)rb.title='同名房間已存在';
+      rb.onclick=()=>restore(r);
+      const db=document.createElement('button');db.type='button';db.textContent='刪除備份';db.className='rounded-lg border text-rose-700 font-bold px-3';db.style.minHeight='40px';db.onclick=()=>del(r);
+      row.append(rb,db);card.append(row);box.append(card);
+    }
+  }
+  async function restore(r){
+    if(!confirm(`還原房間「${r.room_id}」（${fmt(r.created_at)} 的備份）？\n成員可用原本的個人密碼登入，但需要重新登入。`))return;
+    try{msg('還原中…');await call('restore',{id:r.id});showToast('已還原房間 '+r.room_id);if(typeof fc59Load==='function')await fc59Load();await fc124Load();}
+    catch(e){msg(err(e));}
+  }
+  async function del(r){
+    if(!confirm(`刪除這份備份（${r.room_id}，${fmt(r.created_at)}）？無法復原。`))return;
+    try{await call('delete',{id:r.id});await fc124Load();}catch(e){msg(err(e));}
+  }
+  window.fc124Create=async function(){
+    const room=document.getElementById('fc124-room')?.value;if(!room){msg('請先選擇房間');return;}
+    try{msg('備份中…');await call('create',{room_id:room});showToast('已備份 '+room);await fc124Load();}catch(e){msg(err(e));}
+  };
 })();
 </script>
 <script id="fc93-offline">
