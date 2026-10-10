@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72A</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72C</span>
         </div>
       </div>
     </header>
@@ -3108,7 +3108,7 @@ html{touch-action:manipulation}
         const days=fixedAssignments(x.id),status=days.length?'已安排至 '+days.map(d=>'Day '+d).join('、'):'待安排',open=(fc70OpenFixed===x.id)||(editing&&String(editing)===String(x.id)),unl=days.length&&!x.forced;
         const chip=!days.length?'<span class="fc70-lk fc70-lk-wait">待安排</span>':x.forced?'<span class="fc70-lk fc70-lk-on">🔒 已鎖定</span>':'<span class="fc70-lk fc70-lk-off">🔓 未鎖定</span>';
         const lockBtn=days.length?`<button type="button" onclick="fc70ToggleLock('${x.id}')" class="fc70-lkbtn ${x.forced?'fc70-lkbtn-on':'fc70-lkbtn-off'}">${x.forced?'🔒 已鎖定（點此解除）':'🔓 未鎖定（點此鎖定）'}</button>`:'';
-        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl ${unl?'fc70-fx-unl':''}"><button type="button" onclick="fc70ToggleFixedCard('${x.id}')" class="w-full flex items-center gap-2 p-3 text-left" aria-expanded="${open}"><span class="min-w-0 flex-1"><span class="block font-bold text-xs truncate">${escapeHtml(x.name)}</span><span class="block text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${unl?'・重新規劃會移動':''}</span></span>${chip}<span class="text-slate-400 text-sm shrink-0">${open?'▾':'▸'}</span></button><div class="fc70-fx-body ${open?'':'hidden'} px-3 pb-3 space-y-2"><div class="text-[10px] text-slate-500 leading-relaxed">${fixedActivityDescription(x)}</div>${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}${lockBtn}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div></div>`;
+        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl ${unl?'fc70-fx-unl':''}"><button type="button" onclick="fc70ToggleFixedCard('${x.id}')" class="w-full flex items-center gap-2 p-3 text-left" aria-expanded="${open}"><span class="min-w-0 flex-1"><span class="block font-bold text-xs truncate">${escapeHtml(x.name)}</span><span class="block text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${unl?'・重新規劃會移動':''}</span></span>${chip}<span class="text-slate-400 text-sm shrink-0">${open?'▾':'▸'}</span></button><div class="fc70-fx-body ${open?'':'hidden'} px-3 pb-3 space-y-2"><div class="text-[10px] text-slate-500 leading-relaxed">${fixedActivityDescription(x)}</div>${days.length&&x.scheduleReason==='未填時間，無法排入正確行程'?`<p class="text-[10px] text-amber-700"><b>⚠️ ${escapeHtml(x.scheduleReason)}</b>，已先排在當天第一項，請補上時間。</p>`:''}${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}${lockBtn}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div></div>`;
       }).join(''):'<div class="text-xs text-slate-400 text-center py-4">尚未建立固定活動</div>';
       if(editor&&!editor.classList.contains('hidden')&&editing){const card=[...box.querySelectorAll('[data-fixed-id]')].find(el=>el.dataset.fixedId===editing);if(card)card.querySelector('.fixed-editor-slot').appendChild(editor);}
       fc70RenderItinPlaces();
@@ -3276,8 +3276,10 @@ html{touch-action:manipulation}
       return true;
     }
     function plannerOccupied(items) {
-      return items.map(x=>{
-        const t=plannerTimes(x.time);if(t.length>=2 && t[1]>t[0])return [t[0],t[1]];
+      return items.filter(x=>!x.autoHotel).map(x=>{
+        const t=plannerTimes(x.time);
+        if(x.id==='auto-flight-out'&&t.length)return [0,t[t.length-1]];
+        if(x.id==='auto-flight-back'&&t.length)return [t[0],1440];if(t.length>=2 && t[1]>t[0])return [t[0],t[1]];
         if(t.length===1)return [t[0],Math.min(1440,t[0]+(plannerDuration(x.duration)||60))];
         return [0,1440]; // Existing activity with unknown time needs manual review.
       });
@@ -3315,6 +3317,12 @@ html{touch-action:manipulation}
         if(matches.length>1){a.scheduleReason='現有行程有多筆同名項目，請主辦人手動確認';continue;}
         const matching=matches[0];
         if(matching){previous.set(a.id,matching.item);data[matching.day].items=data[matching.day].items.filter(x=>x.id!==matching.item.id);}
+        if(a.dateRule==='specific'&&!a.manualOnly&&!a.time&&!a.sessions&&!String(a.openingHours||'').trim()){
+          const di=getTripDays().findIndex(d=>plannerAllowedDate(a,d));
+          if(di>=0){const dk=String(di+1);data[dk] ||= {items:[]};
+            data[dk].items.unshift({...fixedItineraryItem(a,null,previous.get(a.id)||a.pendingItem),time:'',noTimeWarn:true});
+            a.scheduleReason='未填時間，無法排入正確行程';delete a.pendingItem;continue;}
+        }
         for(const [i,date] of getTripDays().entries()){
           const day=String(i+1),items=getItineraryWithTransfers(data)[day]?.items||[],slot=plannerSlot(a,date,items);
           if(slot.start!==undefined){const score=items.length;if(!picked||score<picked.score)picked={day,slot,score};}
@@ -3322,7 +3330,7 @@ html{touch-action:manipulation}
         }
         if(picked){
           data[picked.day] ||= {items:[]};data[picked.day].items.push(fixedItineraryItem(a,picked.slot,previous.get(a.id)||a.pendingItem));
-          data[picked.day].items.sort((x,y)=>(plannerTimes(x.time)[0]??1440)-(plannerTimes(y.time)[0]??1440));a.scheduleReason='';delete a.pendingItem;
+          data[picked.day].items.sort((x,y)=>(x.noTimeWarn?-1:(plannerTimes(x.time)[0]??1440))-(y.noTimeWarn?-1:(plannerTimes(y.time)[0]??1440)));a.scheduleReason='';delete a.pendingItem;
         }else {a.scheduleReason=reason;if(previous.has(a.id))a.pendingItem=previous.get(a.id);}
       }
       pushStateToCloud('fixedActivities',list);pushStateToCloud('itinerary',data);renderFixedPlannerList();
@@ -4221,6 +4229,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
             </div>
           </div>
           <h3 class="fc45-itin-title">${item.title}</h3>
+          ${item.noTimeWarn?'<div class="text-[11px] text-amber-700 font-bold">⚠️ 未填時間，無法排入正確行程</div>':''}
           
           ${itineraryDescriptionForDisplay(item) ? `<div class="text-xs text-slate-600 leading-relaxed">${itineraryDescriptionForDisplay(item)}</div>` : ''}
 
