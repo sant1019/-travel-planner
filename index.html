@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72z</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72A</span>
         </div>
       </div>
     </header>
@@ -4217,7 +4217,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
               <button onclick="openEditItineraryModal('${item.id}')" class="hover:text-sky-600 p-1" title="編輯行程與註解"><i class="fa-solid fa-pen-to-square"></i></button>
               <button onclick="openMoveDayModal('${item.id}', '${item.title}')" class="hover:text-sky-600 p-1" title="轉移天數"><i class="fa-solid fa-calendar-day"></i></button>
               <button onclick="deleteItineraryItem('${item.id}')" class="hover:text-rose-600 p-1" title="刪除行程"><i class="fa-solid fa-trash-can"></i></button>
-              ` : (isOrganizer() && item.autoHotel ? `<button onclick="openInfoEdit('hotel')" class="text-sky-600 text-[10px] p-1">編輯住宿</button>` : isOrganizer() && item.autoTransfer ? `<button onclick="openAirportTransferModal()" class="text-sky-600 text-[10px] p-1">編輯接駁</button>` : '')}
+              ` : (isOrganizer() && item.autoFlight ? `<button onclick="openInfoEdit('flight')" class="text-sky-600 text-[10px] p-1">編輯班機</button>` : (isOrganizer() && item.autoHotel ? `<button onclick="openInfoEdit('hotel')" class="text-sky-600 text-[10px] p-1">編輯住宿</button>` : isOrganizer() && item.autoTransfer ? `<button onclick="openAirportTransferModal()" class="text-sky-600 text-[10px] p-1">編輯接駁</button>` : ''))}
             </div>
           </div>
           <h3 class="fc45-itin-title">${item.title}</h3>
@@ -5889,11 +5889,28 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       if(!requireRoom()||!isOrganizer()||!confirm('確定移除所有車次安排及行程中的接駁項目嗎？'))return;
       const c=getInfoConfig();delete c.shuttle.plan;pushStateToCloud('infoConfig',c);closeModal();
     }
+    function fc141AddFlights(data,days){
+      const header=getStoredData('headerInfo',defaultHeaderInfo);if(header.requiredInfo?.flight===false)return;
+      const f=getInfoConfig().flight||{},T=v=>{const m=String(v||'').match(/(\d{1,2}):(\d{2})/);return m?m[1].padStart(2,'0')+':'+m[2]:'';};
+      const dayOf=v=>{const m=String(v||'').match(/(\d{1,2})[\/-](\d{1,2})\s*$/);if(!m)return 0;const k=m[1].padStart(2,'0')+'-'+m[2].padStart(2,'0');return days.findIndex(d=>d.slice(5)===k)+1;};
+      const legs=[['out','去程',f.outboundNo,f.outboundDate,f.outboundTime,f.outboundArrivalTime],['back','回程',f.returnNo,f.returnDate,f.returnTime,f.returnArrivalTime]];
+      for(const [k,lb,no,date,dep,arr] of legs){
+        const day=dayOf(date),t=T(dep);if(!day||!t)continue;
+        const n=String(no||'').trim();
+        if(n)Object.values(data).forEach(x=>{if(Array.isArray(x?.items))x.items=x.items.filter(i=>i.autoTransfer||!(/✈️/.test(i.title||'')&&String(i.title+i.desc).includes(n)));});
+        if(!data[day])data[day]={items:[]};
+        const a=T(arr),item={id:'auto-flight-'+k,autoTransfer:true,autoFlight:true,title:'✈️ '+lb+'航班'+(n?' '+n:''),time:a?t+' - '+a:t,desc:'起飛 '+t+(a?' ➔ 抵達 '+a:''),map:''};
+        const its=data[day].items;let pos=its.length;
+        for(let i=0;i<its.length;i++){const m=T(its[i].time);if(m&&m>t){pos=i;break;}}
+        its.splice(pos,0,item);
+      }
+    }
     function getItineraryWithTransfers(source){
       const data=fc70BaseTransfers(source);
       try{
         const header=getStoredData('headerInfo',defaultHeaderInfo);if(header.requiredInfo?.hotel===false)return data;
         const days=getTripDays(),hl=fc70Hotels(getInfoConfig());
+        fc141AddFlights(data,days);
         for(const h of hl){
           if(!h.name)continue;
           const ci=days.indexOf(h.start)+1,co=days.indexOf(h.end)+1,map=String(h.map||'').trim()||buildAutoMapLink(h.name);
