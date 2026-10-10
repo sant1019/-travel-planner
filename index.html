@@ -563,7 +563,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72p</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72r</span>
         </div>
       </div>
     </header>
@@ -5241,6 +5241,16 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       `).join('');
     }
 
+    function fc134FillHotels(cur){
+      const sel=document.getElementById('input-room-hotel');if(!sel)return;
+      let list=[];try{list=fc70Hotels(getInfoConfig()).filter(h=>h&&String(h.name||'').trim());}catch(e){}
+      sel.innerHTML='';
+      const add=(v,t)=>{const o=document.createElement('option');o.value=v;o.textContent=t;sel.appendChild(o);};
+      list.forEach(h=>{const f=v=>v.slice(5).replace('-','/'),d=(h.start&&h.end)?' ('+f(h.start)+' - '+f(h.end)+')':'';add(String(h.name).trim(),String(h.name).trim()+d);});
+      add('其他飯店','其他飯店');
+      const names=list.map(h=>String(h.name).trim());
+      sel.value=cur?(names.includes(cur)||cur==='其他飯店'?cur:'其他飯店'):(names[0]||'其他飯店');
+    }
     function openRoomModal(roomId) {
       if (roomId) {
         const rooms = getStoredData('rooms', defaultRoomsData);
@@ -5248,7 +5258,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         if (room) {
           document.getElementById('edit-room-id').value = roomId;
           document.getElementById('room-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-500 mr-1.5"></i>編輯房間分配`;
-          document.getElementById('input-room-hotel').value = room.hotel || '會安 Little Residence';
+          fc134FillHotels(room.hotel);
           document.getElementById('input-room-guests').value = room.guests || '';
           document.getElementById('input-room-num').value = room.roomNum || '';
           document.getElementById('input-room-type').value = room.roomType || '';
@@ -5257,7 +5267,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       } else {
         document.getElementById('edit-room-id').value = '';
         document.getElementById('room-modal-title').innerHTML = `<i class="fa-solid fa-bed text-indigo-500 mr-1.5"></i>新增房間分配`;
-        document.getElementById('input-room-hotel').value = '會安 Little Residence';
+        fc134FillHotels('');
         document.getElementById('input-room-guests').value = '';
         document.getElementById('input-room-num').value = '';
         document.getElementById('input-room-type').value = '';
@@ -6964,10 +6974,27 @@ function fc62OpenCopy(fromSeed){
     const a=document.createElement('div');a.className='text-sm font-bold text-slate-800';a.textContent=r.room;
     const c=document.createElement('div');c.className='text-[11px] text-slate-500';c.textContent=(r.title||'未命名旅程')+(r.days?`｜${r.days} 天`:'');
     b.append(a,c);b.onclick=()=>fc62CopyFrom(r.room);list.append(b);}
+  fc135PruneDeleted(rooms,list);
   document.getElementById('modal-backdrop').classList.remove('hidden');
   document.getElementById('modal-backdrop').classList.remove('trip-login-overlay');
   for(const id of ['modal-member-settings'])document.getElementById(id)?.classList.add('hidden');
   document.getElementById('modal-fc62-seed').classList.remove('hidden');
+}
+async function fc135PruneDeleted(rooms,list){
+  if(!cloudClient||!rooms.length)return;
+  const btns=[...list.querySelectorAll('button')];
+  await Promise.all(rooms.map(async(r,i)=>{
+    try{
+      const res=await cloudClient.rpc('fc45_search_rooms',{p_prefix:r.room});
+      if(res.error||!Array.isArray(res.data))return;
+      if(res.data.some(x=>String(x.room_name).toLowerCase()===String(r.room).toLowerCase()))return;
+      btns[i]?.remove();
+      const pre='danang_'+r.room+'_',del=[];
+      for(let k=0;k<localStorage.length;k++){const key=localStorage.key(k);if(key&&key.startsWith(pre)&&/^[A-Za-z0-9]+$/.test(key.slice(pre.length)))del.push(key);}
+      del.forEach(key=>localStorage.removeItem(key));
+    }catch(e){}
+  }));
+  if(!list.querySelector('button')&&!list.querySelector('p')){const p=document.createElement('p');p.className='text-xs text-slate-500 bg-slate-50 rounded-xl p-3';p.textContent='這支手機沒有其他房間的資料。請先在這支手機登入想複製的房間，再回來操作。';list.append(p);}
 }
 function fc62CopyBack(){
   if(fc62CopyFromSeed){document.getElementById('fc62-copy-view').classList.add('hidden');document.getElementById('fc62-seed-main').classList.remove('hidden');}
