@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72f</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72g</span>
         </div>
       </div>
     </header>
@@ -7800,7 +7800,7 @@ function fc71View(v){fc34SwitchTab(v);}
       const r=await Promise.race([fetch(url,ctl?{signal:ctl.signal}:undefined),new Promise((_,rej)=>{tm=setTimeout(()=>{try{ctl&&ctl.abort()}catch(e){}rej(new Error('逾時，伺服器沒有回應'))},window.__fc128Timeout||9000)})]);
       if(!r.ok)throw new Error('伺服器回應 '+r.status);
       const arr=await r.json();
-      return (Array.isArray(arr)?arr:[]).map(p=>({lat:+p.lat,lon:+p.lon,name:String(p.display_name||q).slice(0,90)})).filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)&&(!d||km(p,d)<80));
+      return (Array.isArray(arr)?arr:[]).map(p=>({lat:+p.lat,lon:+p.lon,title:String(p.name||'').trim().slice(0,60),name:String(p.display_name||q).slice(0,90)})).filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)&&(!d||km(p,d)<80)).sort((a,b)=>(b.title?1:0)-(a.title?1:0));
     }finally{clearTimeout(tm);}};
   window.fc128Debug=()=>({cache,used,queue:queue.length});
 })();
@@ -7811,7 +7811,7 @@ function fc71View(v){fc34SwitchTab(v);}
   const S={add:{lat:null,lon:null,busy:0,cands:[],timer:0},edit:{lat:null,lon:null,busy:0,cands:[],timer:0}};
   const $=id=>document.getElementById(id);
   const fmt=(a,b)=>a.toFixed(5)+', '+b.toFixed(5);
-  const gm=(a,b)=>'https://www.google.com/maps/search/?api=1&query='+a+','+b;
+  const gm=(c,typed)=>{const q=(typed||c.title||String(c.name||'').split(',')[0]||'').trim();try{if(q&&typeof buildAutoMapLink==='function')return buildAutoMapLink(q);}catch(e){}return q?'https://maps.google.com/?q='+encodeURIComponent(q):'https://www.google.com/maps';};
   function st(p,t,bad){const el=$('fc129-st-'+p);if(el){el.textContent=t||'';el.className='text-[11px] leading-relaxed '+(bad?'text-amber-700':'text-slate-600');}
     const c=$('fc129-clr-'+p);if(c)c.classList.toggle('hidden',!(Number.isFinite(S[p].lat)||$('fc129-map-'+p).value.trim()));}
   const valid=u=>{try{return typeof fc49ValidMap==='function'&&fc49ValidMap(u)}catch(e){return false}};
@@ -7820,14 +7820,15 @@ function fc71View(v){fc34SwitchTab(v);}
     const box=$('fc129-cand-'+p);if(!box)return;box.replaceChildren();
     S[p].cands.forEach((c,i)=>{
       const d=document.createElement('div');d.className='p-2 rounded-xl border border-sky-200 bg-sky-50 space-y-1.5';
-      const t=document.createElement('p');t.className='text-[11px] font-bold text-slate-700 break-words';t.textContent=(i+1)+'. '+c.name;
+      const t=document.createElement('p');t.className='text-[11px] font-bold text-slate-700 break-words';t.textContent=(i+1)+'. '+(c.title||'（沒有店名，只有地址）');
+      const ad=document.createElement('p');ad.className='text-[10px] text-slate-500 break-words';ad.textContent=c.name;
       const m=document.createElement('p');m.className='text-[10px] text-slate-500';m.textContent='座標 '+fmt(c.lat,c.lon);
       const row=document.createElement('div');row.className='flex gap-2';
-      const a=document.createElement('a');a.href=gm(c.lat,c.lon);a.target='_blank';a.rel='noopener noreferrer';a.textContent='開啟地圖核對';a.className='flex-1 text-center px-2 py-2 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600';
+      const a=document.createElement('a');a.href=gm(c,nameOf(p));a.target='_blank';a.rel='noopener noreferrer';a.textContent='開啟地圖核對';a.className='flex-1 text-center px-2 py-2 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600';
       const b=document.createElement('button');b.type='button';b.textContent='確認是此地點';b.className='flex-1 px-2 py-2 rounded-lg bg-sky-600 text-white text-[11px] font-bold';b.onclick=()=>confirmCand(p,i);
-      row.append(a,b);d.append(t,m,row);box.append(d);});
+      row.append(a,b);d.append(t,ad,m);if(!c.title){const w=document.createElement('p');w.className='text-[10px] text-amber-700';w.textContent='⚠ 這筆沒有店名，可能不是你要的店；建議改貼 Google 地圖連結。';d.append(w);}d.append(row);box.append(d);});
   }
-  function confirmCand(p,i){const c=S[p].cands[i];if(!c)return;S[p].lat=c.lat;S[p].lon=c.lon;S[p].cands=[];S[p].busy++;cands(p);st(p,'✓ 座標已確認（'+fmt(c.lat,c.lon)+'）：'+c.name.slice(0,40));}
+  function confirmCand(p,i){const c=S[p].cands[i];if(!c)return;S[p].lat=c.lat;S[p].lon=c.lon;S[p].cands=[];S[p].busy++;cands(p);const mi=$('fc129-map-'+p);if(mi&&!mi.value.trim())mi.value=gm(c,nameOf(p));st(p,'✓ 座標已確認：'+(c.title||c.name.slice(0,30))+'（'+fmt(c.lat,c.lon)+'）');}
   window.fc129Load=function(p,item){
     const s=S[p];clearTimeout(s.timer);s.busy++;s.cands=[];cands(p);
     s.lat=Number.isFinite(item&&item.lat)?item.lat:null;s.lon=Number.isFinite(item&&item.lon)?item.lon:null;
