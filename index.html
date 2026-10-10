@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-71d</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-71f</span>
         </div>
       </div>
     </header>
@@ -7541,22 +7541,41 @@ function fc71View(v){fc34SwitchTab(v);}
       const card=document.createElement('div');card.className='border rounded-xl p-3 text-xs space-y-1';
       card.innerHTML=`<div class="flex justify-between gap-2"><b class="break-all">${esc(r.room_id)}</b><span class="text-slate-500 whitespace-nowrap">${esc(REASON[r.reason]||r.reason)}</span></div><div class="text-slate-500">${fmt(r.created_at)}・團員 ${esc(r.member_count)}・${r.room_exists?'房間仍存在':'房間已不存在'}・到期 ${fmt(r.expires_at)}</div>`;
       const row=document.createElement('div');row.className='flex gap-2 pt-1';
-      const rb=document.createElement('button');rb.type='button';rb.textContent='還原';rb.className='flex-1 rounded-lg border font-bold';rb.style.minHeight='40px';
+      const rb=document.createElement('button');rb.type='button';rb.textContent=r.room_exists?'房間仍存在':'還原';rb.className='flex-1 rounded-lg border font-bold';rb.style.minHeight='40px';
       rb.disabled=!!r.room_exists;if(r.room_exists)rb.title='同名房間已存在';
       rb.onclick=()=>restore(r);
       const db=document.createElement('button');db.type='button';db.textContent='刪除備份';db.className='rounded-lg border text-rose-700 font-bold px-3';db.style.minHeight='40px';db.onclick=()=>del(r);
       row.append(rb,db);card.append(row);box.append(card);
     }
   }
+  let busy=false;
   async function restore(r){
-    if(!confirm(`還原房間「${r.room_id}」（${fmt(r.created_at)} 的備份）？\n成員可用原本的個人密碼登入，但需要重新登入。`))return;
-    try{msg('還原中…');await call('restore',{id:r.id});showToast('已還原房間 '+r.room_id);if(typeof fc59Load==='function')await fc59Load();await fc124Load();}
-    catch(e){msg(err(e));}
+    if(busy)return;
+    msg('準備還原「'+r.room_id+'」…');
+    let okc=false;try{okc=confirm(`還原房間「${r.room_id}」（${fmt(r.created_at)} 的備份）？\n成員可用原本的個人密碼登入，但需要重新登入。`);}catch(e){okc=false;}
+    if(!okc){msg('已取消還原（若沒有跳出確認視窗，請改用手機瀏覽器開啟）');return;}
+    busy=true;
+    try{
+      msg('還原中…');await call('restore',{id:r.id});
+      showToast('已還原房間 '+r.room_id);msg('已還原「'+r.room_id+'」');
+      try{if(typeof fc59Load==='function')await fc59Load();}catch(e){}
+      await fc124Load();
+    }catch(e){const t=err(e);msg(t);try{showToast(t);}catch(_){}console.error('fc124 restore',e);}
+    finally{busy=false;}
   }
   async function del(r){
-    if(!confirm(`刪除這份備份（${r.room_id}，${fmt(r.created_at)}）？無法復原。`))return;
-    try{await call('delete',{id:r.id});await fc124Load();}catch(e){msg(err(e));}
+    let okc=false;try{okc=confirm(`刪除這份備份（${r.room_id}，${fmt(r.created_at)}）？無法復原。`);}catch(e){}
+    if(!okc){msg('已取消');return;}
+    try{await call('delete',{id:r.id});await fc124Load();}catch(e){const t=err(e);msg(t);try{showToast(t);}catch(_){}}
   }
+  // 房間清單重新載入（刪除、還原、改名…）後，備份區若是展開的就一起更新，避免顯示過時的狀態。
+  (function(){
+    const o=window.fc59Load;
+    if(typeof o==='function'&&!o.fc124){
+      const f=async function(){const r=await o.apply(this,arguments);try{if(document.getElementById('fc124-box')?.open)await fc124Load();}catch(e){}return r};
+      f.fc124=1;try{fc59Load=f}catch(e){window.fc59Load=f}
+    }
+  })();
   window.fc124Create=async function(){
     const room=document.getElementById('fc124-room')?.value;if(!room){msg('請先選擇房間');return;}
     try{msg('備份中…');await call('create',{room_id:room});showToast('已備份 '+room);await fc124Load();}catch(e){msg(err(e));}
