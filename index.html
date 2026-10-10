@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72a</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72c</span>
         </div>
       </div>
     </header>
@@ -1106,6 +1106,7 @@ html{touch-action:manipulation}
       <button type="button" id="trip-login-mode" onclick="setTripLoginMode(!tripLoginRegister)" class="trip-login-mode">尚未加入－註冊為新團員</button>
       <button type="button" id="fc62-force-new" onclick="fc62ForceNew()" class="trip-login-mode hidden">找不到房間？改為建立新房間</button>
       <button id="logout-room-button" onclick="logoutCloudRoom()" class="hidden trip-login-logout">登出目前房間</button>
+      <p style="text-align:center;font-size:11px;color:#94a3b8;margin-top:8px">使用即表示同意<a href="#terms" onclick="return fc126Open('terms')" style="text-decoration:underline">使用條款</a>與<a href="#privacy" onclick="return fc126Open('privacy')" style="text-decoration:underline">隱私權政策</a></p>
       <p id="cloud-sync-status" class="text-[10px] text-slate-400"></p>
     </div>
 
@@ -1191,6 +1192,7 @@ html{touch-action:manipulation}
         <button type="button" id="fc67-apply-btn" onclick="fc60OpenApply()" class="fc70-pri w-full mt-2">申辦正式會員</button>
       </div></div>
       <p id="member-settings-status" class="text-[10px] text-slate-400 mt-2"></p>
+      <p class="text-[10px] text-slate-400 mt-1 text-center"><a href="#terms" onclick="return fc126Open('terms')" class="underline">使用條款</a>　<a href="#privacy" onclick="return fc126Open('privacy')" class="underline">隱私權政策</a></p>
       <button type="button" onclick="closeModal()" class="fc70-mb mt-3">關閉</button>
     </div>
 
@@ -1632,7 +1634,7 @@ html{touch-action:manipulation}
           <input id="fc60-room" type="hidden">
           <div class="grid grid-cols-2 gap-2"><label class="block text-[11px] font-bold text-slate-600">需要人數<select id="fc60-people" class="w-full border border-slate-200 rounded-xl mt-1 p-2 bg-white"><option value="">請選擇</option><option>1–5 人</option><option>6–10 人</option><option>11–15 人</option><option>16–20 人</option><option>21–30 人</option><option>30 人以上</option></select></label><label class="block text-[11px] font-bold text-slate-600">使用天數<select id="fc60-days" onchange="document.getElementById('fc60-days-other').classList.toggle('hidden',this.value!=='其他')" class="w-full border border-slate-200 rounded-xl mt-1 p-2 bg-white"><option value="">請選擇</option><option>7 天</option><option>14 天</option><option>30 天</option><option>60 天</option><option>90 天</option><option>180 天</option><option>365 天</option><option>其他</option></select></label></div><input id="fc60-days-other" type="text" maxlength="40" placeholder="請填寫想用幾天" class="hidden w-full border border-slate-200 rounded-xl p-2"><label class="block text-[11px] font-bold text-slate-600">其他備註（選填）<textarea id="fc60-need" maxlength="400" rows="2" class="w-full border border-slate-200 rounded-xl mt-1 p-2 text-xs"></textarea></label>
           <div class="fc60-hp" aria-hidden="true"><label>不要填寫這一欄<input id="fc60-hp" type="text" tabindex="-1" autocomplete="off"></label></div>
-          <label class="flex items-start gap-2 text-[11px] text-slate-600 leading-relaxed"><input id="fc60-agree" type="checkbox" class="mt-0.5">我了解授權由管理者人工審核，並同意管理者使用以上資料與我聯絡。</label>
+          <label class="flex items-start gap-2 text-[11px] text-slate-600 leading-relaxed"><input id="fc60-agree" type="checkbox" class="mt-0.5">我了解授權由管理者人工審核，並同意管理者使用以上資料與我聯絡。我已閱讀<a href="#terms" onclick="return fc126Open('terms')" class="underline text-sky-700">使用條款</a>與<a href="#privacy" onclick="return fc126Open('privacy')" class="underline text-sky-700">隱私權政策</a>。</label>
           <p id="fc60-form-status" role="status" class="text-[11px] text-rose-600 min-h-[1rem]"></p>
         </div>
         <div id="fc60-done-box" class="hidden space-y-2.5">
@@ -7597,6 +7599,56 @@ function fc71View(v){fc34SwitchTab(v);}
     const room=document.getElementById('fc124-room')?.value;if(!room){msg('請先選擇房間');return;}
     try{msg('備份中…');await call('create',{room_id:room});showToast('已備份 '+room);await fc124Load();}catch(e){msg(err(e));}
   };
+})();
+</script>
+<script id="fc126-legal-js">
+(function(){
+  // ▼ 上線前請確認這三項 ▼
+  const L={provider:'旅遊小秘書服務提供者',email:'a2018718@gmail.com',date:'2026-10-10',ver:'1.0',billing:'依個別約定'};
+  const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const DOCS={
+    privacy:{title:'隱私權政策',secs:[
+      ['我們收集哪些資料',['房間內容：行程、地點、費用、備忘等你在房間裡輸入的資料。','成員資料：你設定的暱稱，以及登入用的個人密碼（不以明碼顯示給管理者）。','申請授權時填寫的姓名、Email、電話（選填）、房間名稱與需求說明。','為了讓房間離線也能看，部分資料會暫存在你的瀏覽器（localStorage、快取）。']],
+      ['資料用在哪裡',['提供旅程共編、同步與離線瀏覽功能。','審核授權申請、寄送申請與到期相關通知信。','維護服務安全與排除故障。','我們不販售你的資料，也不用於廣告。']],
+      ['資料存放與第三方服務',['資料儲存於 Supabase 雲端資料庫。','通知信透過 Resend 寄送（會傳送收件 Email 與信件內容）。','頁面載入時會向 CDN 取得字型與程式庫（jsDelivr、cdnjs、Google Fonts 等），這些服務可能取得你的 IP 位址。']],
+      ['保存期間',['房間資料在房間存在期間保存；房間被刪除後，系統備份最長保留 30 天後自動清除。','授權申請資料於服務關係存續期間保存，必要時可申請刪除。']],
+      ['你的權利',['你可以隨時請求查詢、更正或刪除你的個人資料；團員也可以向房間主辦人要求移除自己。','請來信 '+L.email+'，我們會盡快處理。']],
+      ['政策變更','本政策更新時會更新下方日期，重大變更會在服務內提示。']]},
+    terms:{title:'使用條款',secs:[
+      ['服務內容','「旅遊小秘書」提供多人旅程規劃、同步與離線瀏覽。服務由 '+L.provider+' 提供。'],
+      ['房間、帳號與密碼',['你需要自行保管房間密碼與個人密碼，因外洩造成的損失由使用者自行承擔。','請勿冒用他人身分，或用於違法、騷擾、散布惡意內容。']],
+      ['授權、試用與到期',['新房間可能有試用期；正式使用需申請授權，由管理者人工審核。','授權到期後房間會變成唯讀，資料不會因到期被刪除；續約後即可恢復編輯。','費用與退費：'+L.billing+'。']],
+      ['資料備份與責任限制',['我們會盡力維護資料安全並提供備份，但不保證服務不中斷或資料永不遺失，重要資料請自行另行保存。','在法律允許範圍內，因使用或無法使用本服務所生的間接損失，我們不負賠償責任。']],
+      ['停止服務',['違反本條款時，我們得暫停或終止你的使用。','你可以隨時停止使用，並依隱私權政策申請刪除資料。']],
+      ['條款變更與聯絡','我們可能修改本條款，修改後繼續使用視為同意。聯絡：'+L.email]]}
+  };
+  function html(k){const d=DOCS[k];let h='';
+    for(const [t,b] of d.secs){h+=`<h3 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:#0f172a">${esc(t)}</h3>`;
+      if(Array.isArray(b))h+='<ul style="margin:0;padding-left:18px">'+b.map(x=>`<li style="margin:3px 0">${esc(x)}</li>`).join('')+'</ul>';
+      else h+=`<p style="margin:0">${esc(b)}</p>`;}
+    return h+`<p style="margin-top:20px;font-size:11px;color:#94a3b8">版本 ${L.ver}・最後更新 ${L.date}</p>`;}
+  function ensure(){let el=document.getElementById('fc126-legal');if(el)return el;
+    el=document.createElement('div');el.id='fc126-legal';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');
+    el.style.cssText='position:fixed;inset:0;z-index:99995;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;padding:12px';
+    el.innerHTML='<div style="background:#fff;border-radius:16px;width:100%;max-width:520px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,.3)"><div style="display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid #e2e8f0"><b id="fc126-title" style="flex:1;font-size:16px"></b><button type="button" id="fc126-sw" style="font-size:12px;border:1px solid #cbd5e1;border-radius:8px;padding:6px 10px"></button><button type="button" id="fc126-x" aria-label="關閉" style="font-size:20px;line-height:1;width:36px;height:36px;border-radius:50%;background:#f1f5f9">×</button></div><div id="fc126-body" style="overflow:auto;padding:4px 16px 18px;font-size:13px;line-height:1.75;color:#334155;-webkit-overflow-scrolling:touch"></div></div>';
+    document.body.appendChild(el);
+    el.addEventListener('click',e=>{if(e.target===el)fc126Close()});
+    el.querySelector('#fc126-x').onclick=fc126Close;
+    return el;}
+  window.fc126Open=function(k){
+    if(!DOCS[k])return true;const el=ensure();
+    const other=k==='privacy'?'terms':'privacy';
+    el.querySelector('#fc126-title').textContent=DOCS[k].title;
+    const sw=el.querySelector('#fc126-sw');sw.textContent='看'+DOCS[other].title;sw.onclick=()=>fc126Open(other);
+    const body=el.querySelector('#fc126-body');body.innerHTML=html(k);body.scrollTop=0;
+    el.style.display='flex';
+    try{history.replaceState(null,'','#'+k)}catch(e){}
+    return false;};
+  window.fc126Close=function(){const el=document.getElementById('fc126-legal');if(el)el.style.display='none';
+    if(/^#(privacy|terms)$/.test(location.hash)){try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}}};
+  const route=()=>{const m=location.hash.match(/^#(privacy|terms)$/);if(m)fc126Open(m[1]);};
+  window.addEventListener('hashchange',route);
+  if(document.readyState!=='loading')setTimeout(route,300);else document.addEventListener('DOMContentLoaded',()=>setTimeout(route,300));
 })();
 </script>
 <script id="fc125-mail-js">
