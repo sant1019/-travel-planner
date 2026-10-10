@@ -563,7 +563,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72n</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72p</span>
         </div>
       </div>
     </header>
@@ -3813,11 +3813,33 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     function fc70HotelConfirm(i){const h=fc70HotelDraft[i];if(!h)return;const u=fc70HotelUrl(h);if(h.opened!==u)return showToast('請先開啟地圖，確認位置正確');h.confirmed=u;fc70RenderHotelEditor();showToast('已確認住宿位置');}
     function fc70HotelAdd(){const l=fc70HotelDraft,last=l[l.length-1],days=getTripDays();const st=(last&&last.end)||days[0]||'';l.push({name:'',start:st,end:st?fc70AddDay(st,1):''});fc70RenderHotelEditor();}
     function fc70HotelDel(i){fc70HotelDraft.splice(i,1);fc70RenderHotelEditor();}
+    let fc133Open=-1,fc133Month='';
+    function fc133Fmt(v){return v?v.replace(/-/g,'/'):'';}
+    function fc133DateField(h,i,first,last){
+      const txt=h.start?(fc133Fmt(h.start)+' ～ '+(h.end?fc133Fmt(h.end):'選擇退房日')):'點此選擇入住～退房日期';
+      let cal='';
+      if(fc133Open===i){
+        const base=(fc133Month||h.start||first||new Date().toISOString().slice(0,10)).slice(0,7),y=+base.slice(0,4),m=+base.slice(5,7)-1,fd=new Date(Date.UTC(y,m,1)).getUTCDay(),dim=new Date(Date.UTC(y,m+1,0)).getUTCDate();
+        let g='';for(let k=0;k<fd;k++)g+='<span></span>';
+        for(let d=1;d<=dim;d++){const v=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0'),ok=(!first||v>=first)&&(!last||v<=last),edge=v===h.start||v===h.end,inr=h.start&&h.end&&v>h.start&&v<h.end;
+          const cls=!ok?'bg-slate-100 text-slate-300':edge?'bg-sky-600 text-white':inr?'bg-sky-100 text-sky-700':'bg-white text-slate-600';
+          g+=`<button type="button" ${ok?`onclick="fc133Pick(${i},'${v}')"`:'disabled'} class="h-8 rounded-lg text-[10px] font-bold ${cls}">${d}</button>`;}
+        cal=`<div class="border border-slate-200 rounded-2xl p-3 bg-slate-50 mt-2"><div class="flex items-center justify-between mb-2"><button type="button" onclick="fc133Nav(${i},-1)" class="w-8 h-8 rounded-lg bg-white border border-slate-200">‹</button><div class="text-xs font-extrabold text-slate-700">${y} 年 ${m+1} 月</div><button type="button" onclick="fc133Nav(${i},1)" class="w-8 h-8 rounded-lg bg-white border border-slate-200">›</button></div><div class="grid grid-cols-7 text-center text-[9px] font-bold text-slate-400 mb-1"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div><div class="grid grid-cols-7 gap-1">${g}</div><p class="text-[10px] text-sky-600 font-bold mt-2">${h.start&&!h.end?'第二次點選：退房日':'第一次點選：入住日'}</p></div>`;
+      }
+      return `<div><label class="text-[11px] font-bold text-slate-600 block mb-1">入住～退房</label><button type="button" onclick="fc133Toggle(${i})" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white text-left ${h.start?'text-slate-800':'text-slate-400'}">${txt}</button>${cal}</div>`;
+    }
+    function fc133Toggle(i){fc133Open=fc133Open===i?-1:i;fc133Month='';fc70RenderHotelEditor();}
+    function fc133Nav(i,n){const h=fc70HotelDraft[i]||{},days=getTripDays(),b=(fc133Month||h.start||days[0]||'').slice(0,7);if(!b)return;const d=new Date(Date.UTC(+b.slice(0,4),+b.slice(5,7)-1+n,1));fc133Month=d.toISOString().slice(0,7);fc70RenderHotelEditor();}
+    function fc133Pick(i,v){const h=fc70HotelDraft[i];if(!h)return;
+      if(!h.start||h.end){h.start=v;h.end='';}
+      else if(v>h.start){h.end=v;fc133Open=-1;}
+      else{h.start=v;h.end='';}
+      fc133Month=v.slice(0,7);if(!h.end)fc133Month=v.slice(0,7);fc70RenderHotelEditor();}
     function fc70RenderHotelEditor(){
       const days=getTripDays(),first=days[0]||'',last=days[days.length-1]||'',box=document.getElementById('info-edit-fields'),ec=escapeHtml;
       const inp='w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white';
       box.innerHTML=(fc70HotelDraft.length?fc70HotelDraft.map((h,i)=>{const n=fc70Nights(h);
-        return `<div class="rounded-xl border border-slate-200 p-2.5 space-y-2"><div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-600">住宿 ${i+1}${n?`・${n} 晚`:''}</span><button type="button" onclick="fc70HotelDel(${i})" class="text-rose-500 text-xs font-bold px-1">刪除</button></div><input value="${ec(h.name)}" oninput="fc70HotelSync(${i},'name',this.value)" placeholder="飯店名稱" class="${inp}"><div class="grid grid-cols-2 gap-2"><label class="text-[11px] font-bold text-slate-600">入住<input type="date" value="${h.start||''}" min="${first}" max="${last?fc70AddDay(last,-1):''}" onchange="fc70HotelSync(${i},'start',this.value)" class="${inp} mt-1"></label><label class="text-[11px] font-bold text-slate-600">退房<input type="date" value="${h.end||''}" min="${h.start?fc70AddDay(h.start,1):first}" max="${last}" onchange="fc70HotelSync(${i},'end',this.value)" class="${inp} mt-1"></label></div><input value="${ec(h.map||'')}" oninput="fc70HotelSync(${i},'map',this.value.trim())" placeholder="Google Maps 連結（可留白，自動依飯店名稱搜尋）" class="${inp}"><div class="flex items-center gap-2"><button type="button" onclick="fc70HotelOpen(${i})" class="flex-1 py-2 rounded-lg bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold">📍 開啟地圖</button><button type="button" id="fc70-hc-${i}" ${h.opened&&h.opened===fc70HotelUrl(h)?'':'disabled'} onclick="fc70HotelConfirm(${i})" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-40">確認位置</button></div><p id="fc70-hm-${i}" class="${h.confirmed&&h.confirmed===fc70HotelUrl(h)?'text-[11px] font-bold text-emerald-700':'text-[11px] font-bold text-amber-700'}">${h.confirmed&&h.confirmed===fc70HotelUrl(h)?'✓ 地圖位置已確認':'尚未確認地圖'}</p></div>`;}).join(''):'<p class="text-xs text-slate-400 py-2">尚未設定住宿，請按下方新增。</p>')
+        return `<div class="rounded-xl border border-slate-200 p-2.5 space-y-2"><div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-600">住宿 ${i+1}${n?`・${n} 晚`:''}</span><button type="button" onclick="fc70HotelDel(${i})" class="text-rose-500 text-xs font-bold px-1">刪除</button></div><input value="${ec(h.name)}" oninput="fc70HotelSync(${i},'name',this.value)" placeholder="飯店名稱" class="${inp}">${fc133DateField(h,i,first,last)}<input value="${ec(h.map||'')}" oninput="fc70HotelSync(${i},'map',this.value.trim())" placeholder="Google Maps 連結（可留白，自動依飯店名稱搜尋）" class="${inp}"><div class="flex items-center gap-2"><button type="button" onclick="fc70HotelOpen(${i})" class="flex-1 py-2 rounded-lg bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold">📍 開啟地圖</button><button type="button" id="fc70-hc-${i}" ${h.opened&&h.opened===fc70HotelUrl(h)?'':'disabled'} onclick="fc70HotelConfirm(${i})" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-40">確認位置</button></div><p id="fc70-hm-${i}" class="${h.confirmed&&h.confirmed===fc70HotelUrl(h)?'text-[11px] font-bold text-emerald-700':'text-[11px] font-bold text-amber-700'}">${h.confirmed&&h.confirmed===fc70HotelUrl(h)?'✓ 地圖位置已確認':'尚未確認地圖'}</p></div>`;}).join(''):'<p class="text-xs text-slate-400 py-2">尚未設定住宿，請按下方新增。</p>')
         +`<button type="button" onclick="fc70HotelAdd()" class="w-full py-2 rounded-xl border border-dashed border-sky-400 text-sky-700 text-xs font-bold">＋ 新增住宿</button><p class="text-[10px] text-slate-400">日期須在旅程範圍內，退房晚於入住，各住宿不可重疊。</p>`;
     }
     function getInfoConfig(){
@@ -3937,7 +3959,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           `;
         setupInfoFlightDateHelpers();
       } else if(type==='hotel'){
-        window.fc70HotelDraft=fc70Hotels(c).map(x=>({...x,confirmed:x.mapConfirmed||'',opened:''}));fc70RenderHotelEditor();
+        window.fc70HotelDraft=fc70Hotels(c).map(x=>({...x,confirmed:x.mapConfirmed||'',opened:''}));fc133Open=-1;fc133Month='';fc70RenderHotelEditor();
       } else {
         fieldsBox.innerHTML=(defs[type]||[]).map(([k,l])=>`<div><label class="text-[11px] font-bold text-slate-600 block mb-1">${l}</label><input data-info-key="${k}" value="${escapeHtml(c[type][k]||'')}" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs"></div>`).join('');
       }
