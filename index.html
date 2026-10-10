@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-71f</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72a</span>
         </div>
       </div>
     </header>
@@ -1000,6 +1000,23 @@ html{touch-action:manipulation}
               <div class="flex gap-2"><select id="fc124-room" class="flex-1 min-w-0 border rounded-lg p-2 text-sm" style="min-height:40px"></select><button type="button" onclick="fc124Create()" class="px-3 rounded-lg border text-xs font-bold" style="min-height:40px;white-space:nowrap">立即備份</button></div>
               <p id="fc124-status" class="text-xs text-slate-500" role="status"></p>
               <div id="fc124-list" class="space-y-2"></div>
+            </div>
+          </details>
+          <details id="fc125-box" class="fc125-box border rounded-xl p-3 bg-white" ontoggle="if(this.open)fc125Load()">
+            <summary class="text-sm font-bold cursor-pointer" style="min-height:40px;display:flex;align-items:center">✉️ 通知信與到期提醒</summary>
+            <div class="space-y-2 mt-2">
+              <p class="text-[11px] text-slate-500">申請送出、審核通過會自動寄信；授權到期前 14／7／1 天與到期後各提醒一次（每天台灣 09:00 掃描）。</p>
+              <label class="block text-xs font-bold">收「新申請」通知的信箱<input id="fc125-admin" type="email" class="w-full border rounded-lg p-2 text-sm mt-1" placeholder="you@example.com"></label>
+              <label class="block text-xs font-bold">網站網址（信件按鈕用，選填）<input id="fc125-site" type="url" class="w-full border rounded-lg p-2 text-sm mt-1" placeholder="https://帳號.github.io/倉庫/"></label>
+              <div class="grid grid-cols-1 gap-1 text-xs">
+                <label class="flex items-center gap-2"><input type="checkbox" id="fc125-on_req_customer">申請送出 → 寄給申請人</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="fc125-on_req_admin">申請送出 → 寄給管理員</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="fc125-on_approved">審核通過 → 寄給申請人</label>
+                <label class="flex items-center gap-2"><input type="checkbox" id="fc125-on_expiry">授權到期提醒</label>
+              </div>
+              <div class="flex gap-2"><button type="button" onclick="fc125Save()" class="flex-1 rounded-lg bg-emerald-600 text-white text-sm font-bold" style="min-height:40px">儲存設定</button><button type="button" onclick="fc125Test()" class="px-3 rounded-lg border text-xs font-bold" style="min-height:40px;white-space:nowrap">寄測試信</button></div>
+              <p id="fc125-status" class="text-xs text-slate-500" role="status"></p>
+              <div id="fc125-list" class="space-y-1"></div>
             </div>
           </details>
           <div id="fc59-filters" class="flex gap-2 flex-wrap"></div>
@@ -7579,6 +7596,54 @@ function fc71View(v){fc34SwitchTab(v);}
   window.fc124Create=async function(){
     const room=document.getElementById('fc124-room')?.value;if(!room){msg('請先選擇房間');return;}
     try{msg('備份中…');await call('create',{room_id:room});showToast('已備份 '+room);await fc124Load();}catch(e){msg(err(e));}
+  };
+})();
+</script>
+<script id="fc125-mail-js">
+(function(){
+  const esc=t=>typeof escapeHtml==='function'?escapeHtml(String(t??'')):String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  async function call(action,payload){
+    const token=fc32Token;if(!token||fc31AdminIdentity!==token)throw new Error('platform_login_required');
+    const d=await fc32Rpc('fc125_admin',{p_token:token,p_action:action,p_payload:payload||{}});
+    if(token!==fc32Token)throw new Error('platform_session_expired');return d;
+  }
+  const msg=t=>{const el=document.getElementById('fc125-status');if(el)el.textContent=t||''};
+  function err(e){const m=String(e?.message||e);
+    if(/PGRST202|Could not find/.test(m))return '資料庫尚未安裝通知功能，請先執行 FC72a_mail.sql。';
+    if(/platform_/.test(m))return '平台登入已失效，請重新登入。';
+    return '操作失敗：'+m.slice(0,120);}
+  const KIND={req_customer:'申請收到',req_admin:'新申請(管理員)',approved:'核准',exp14:'到期前14天',exp7:'到期前7天',exp1:'到期前1天',expired:'已到期',test:'測試'};
+  const ST={pending:'待寄',sending:'寄送中',sent:'已寄出',failed:'失敗',skipped:'略過'};
+  const FLAGS=['on_req_customer','on_req_admin','on_approved','on_expiry'];
+  function fmt(t){const d=new Date(t),p=n=>String(n).padStart(2,'0');return `${d.getMonth()+1}/${d.getDate()} ${p(d.getHours())}:${p(d.getMinutes())}`}
+  window.fc125Load=async function(){
+    try{
+      msg('讀取中…');const d=await call('list');const s=d.settings||{};
+      document.getElementById('fc125-admin').value=s.admin_email||'';
+      document.getElementById('fc125-site').value=s.site_url||'';
+      FLAGS.forEach(k=>{const el=document.getElementById('fc125-'+k);if(el)el.checked=(s[k]||'true')==='true'});
+      render(d.log||[]);msg((d.log||[]).length?`最近 ${d.log.length} 封`:'尚無寄信紀錄');
+    }catch(e){msg(err(e));}
+  };
+  function render(rows){
+    const box=document.getElementById('fc125-list');if(!box)return;box.replaceChildren();
+    for(const r of rows){
+      const row=document.createElement('div');row.className='border rounded-lg p-2 text-[11px] flex items-center gap-2';
+      const bad=r.status==='failed'||(r.status==='pending'&&r.error);
+      row.innerHTML=`<div class="flex-1 min-w-0"><div class="font-bold">${esc(KIND[r.kind]||r.kind)} → <span class="break-all font-normal">${esc(r.to_email)}</span></div><div class="${bad?'text-rose-700':'text-slate-500'}">${esc(ST[r.status]||r.status)}・${fmt(r.created_at)}${r.error?'・'+esc(r.error):''}</div></div>`;
+      if(r.status==='failed'){const b=document.createElement('button');b.type='button';b.textContent='重寄';b.className='px-3 rounded-lg border font-bold';b.style.minHeight='36px';b.onclick=async()=>{try{await call('retry',{id:r.id});setTimeout(fc125Load,2500);msg('已排入重寄');}catch(e){msg(err(e))}};row.append(b);}
+      box.append(row);
+    }
+  }
+  window.fc125Save=async function(){
+    const p={admin_email:document.getElementById('fc125-admin').value.trim(),site_url:document.getElementById('fc125-site').value.trim()};
+    if(p.admin_email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(p.admin_email)){msg('管理員信箱格式不正確');return;}
+    FLAGS.forEach(k=>p[k]=document.getElementById('fc125-'+k).checked?'true':'false');
+    try{await call('set',p);showToast('已儲存通知設定');msg('已儲存');}catch(e){msg(err(e));}
+  };
+  window.fc125Test=async function(){
+    try{await call('set',{admin_email:document.getElementById('fc125-admin').value.trim(),site_url:document.getElementById('fc125-site').value.trim()});
+      await call('test');msg('已排入測試信，約 10 秒後更新紀錄…');setTimeout(fc125Load,8000);}catch(e){msg(err(e));}
   };
 })();
 </script>
