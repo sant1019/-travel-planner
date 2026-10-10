@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-73d</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-73e</span>
         </div>
       </div>
     </header>
@@ -5912,6 +5912,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         for(let i=0;i<its.length;i++){const m=T(its[i].time);if(m&&m>t){pos=i;break;}}
         its.splice(pos,0,item);
       }
+      Object.values(data).forEach(x=>{const its=x?.items;if(!Array.isArray(its))return;const fi=its.findIndex(i=>i.id==='auto-flight-out');if(fi<0)return;
+        const nt=its.filter(i=>i.noTimeWarn);if(!nt.length)return;const rest=its.filter(i=>!i.noTimeWarn),at=rest.findIndex(i=>i.id==='auto-flight-out');rest.splice(at+1,0,...nt);x.items=rest;});
     }
     function getItineraryWithTransfers(source){
       const data=fc70BaseTransfers(source);
