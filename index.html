@@ -207,6 +207,7 @@ main .bg-sky-50,main .bg-sky-100{background-color:var(--fc45-tint)!important}
 .fc46-time-field{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:32px;background:#fff;border:1px solid #cbd5e1;border-radius:8px;font-size:12px;box-sizing:border-box}
 .fc46-time-field>span{pointer-events:none;text-align:center}
 .fc46-time-field>input[type=time]{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.fc138-time{width:9rem;height:40px;font-size:14px;color:#334155}.fc138-time.fc138-off{background:#f1f5f9;color:#94a3b8}
 .fc46-time-field:focus-within{outline:2px solid var(--fc45-accent);outline-offset:2px}
 #travel-book-generate,#scenic-pdf-download{display:block;width:100%;min-height:44px;padding:12px;border-radius:12px;font-size:14px;font-weight:700;background:var(--fc45-accent);color:#fff}
 #fc37-local-pdf>div.bg-emerald-50{background:var(--fc45-tint)}
@@ -562,7 +563,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72m</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72n</span>
         </div>
       </div>
     </header>
@@ -4801,7 +4802,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
                 ${idx === 0 && item.voteInfo.total > 0 ? '<span class="text-[9px] bg-amber-400 text-slate-900 font-extrabold px-1.5 py-0.2 rounded-full">🥇 人氣第一</span>' : ''}
                 ${item.voteInfo.total > 0 ? `<span class="text-[9px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded-full">${item.voteInfo.summaryStr} 想去</span>` : ''}
               </div>
-              <p class="text-[10px] text-slate-500 mt-0.5">${item.note || '無備註'}</p><label class="block text-xs mt-2">開始時間（選填）<input type="time" data-fc38-start="${escapeHtml(item.id)}" class="block border rounded-lg p-2 mt-1" ${getFavoriteDays(item.id).length?'disabled':''}></label>
+              <p class="text-[10px] text-slate-500 mt-0.5">${item.note || '無備註'}</p><div class="block text-xs mt-2"><span class="text-slate-600">開始時間（選填）</span><span class="fc46-time-field fc138-time mt-1${getFavoriteDays(item.id).length?' fc138-off':''}"><input type="time" step="60" data-fc38-start="${escapeHtml(item.id)}" oninput="this.nextElementSibling.textContent=this.value||'選填 --:--'" ${getFavoriteDays(item.id).length?'disabled':''}><span aria-hidden="true">選填 --:--</span></span></div>
               <span class="text-[10px] text-sky-600 font-bold mt-0.5 block">${getFavoriteDays(item.id).length ? '✅ 已安排至 Day '+getFavoriteDays(item.id).join('、') : (fc52MyFavDays(item.id).length ? '✅ 我已安排 Day '+fc52MyFavDays(item.id).join('、') : '📍 推薦排入 Day '+item.prox.day+' (近 '+item.prox.nearbyPoint+')')}</span>
             </div>
           </label>
