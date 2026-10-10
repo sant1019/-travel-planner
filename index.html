@@ -562,7 +562,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-72e</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-72f</span>
         </div>
       </div>
     </header>
@@ -1697,8 +1697,9 @@ html{touch-action:manipulation}
       <div class="fc129-box space-y-1.5" id="fc129-box-add">
         <label class="text-[11px] font-bold text-slate-600 block">Google 地圖連結（選填，用來算「建議 Day」）</label>
         <input type="url" id="fc129-map-add" oninput="fc129Input('add')" placeholder="貼上地圖分享連結 https://maps.app.goo.gl/…" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs">
-        <div class="flex gap-2 items-center"><button type="button" onclick="fc129Find('add')" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600">用店名查座標</button><button type="button" id="fc129-clr-add" onclick="fc129Clear('add')" class="hidden px-2 py-1.5 text-[11px] text-slate-400 underline">清除座標</button></div>
-        <p id="fc129-st-add" role="status" class="text-[10px] text-slate-500 leading-relaxed"></p>
+        <div class="flex gap-2 items-center"><button type="button" onclick="fc129Find('add',false)" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600">用店名查座標</button><button type="button" id="fc129-clr-add" onclick="fc129Clear('add')" class="hidden px-2 py-1.5 text-[11px] text-slate-400 underline">清除座標</button></div>
+        <p id="fc129-st-add" role="status" class="text-[11px] text-slate-600 leading-relaxed"></p>
+        <div id="fc129-cand-add" class="space-y-1.5"></div>
       </div>
 <div><label class="text-[11px] font-bold block mb-1">影音連結</label><input id="input-fitem-video" type="url" placeholder="https://…" class="w-full p-2.5 border rounded-xl text-xs"></div>
       <div id="fav-search-preview" class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1.5 hidden">
@@ -1727,8 +1728,9 @@ html{touch-action:manipulation}
       <div class="fc129-box space-y-1.5" id="fc129-box-edit">
         <label class="text-[11px] font-bold text-slate-600 block">Google 地圖連結（選填，用來算「建議 Day」）</label>
         <input type="url" id="fc129-map-edit" oninput="fc129Input('edit')" placeholder="貼上地圖分享連結 https://maps.app.goo.gl/…" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs">
-        <div class="flex gap-2 items-center"><button type="button" onclick="fc129Find('edit')" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600">用店名查座標</button><button type="button" id="fc129-clr-edit" onclick="fc129Clear('edit')" class="hidden px-2 py-1.5 text-[11px] text-slate-400 underline">清除座標</button></div>
-        <p id="fc129-st-edit" role="status" class="text-[10px] text-slate-500 leading-relaxed"></p>
+        <div class="flex gap-2 items-center"><button type="button" onclick="fc129Find('edit',false)" class="px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600">用店名查座標</button><button type="button" id="fc129-clr-edit" onclick="fc129Clear('edit')" class="hidden px-2 py-1.5 text-[11px] text-slate-400 underline">清除座標</button></div>
+        <p id="fc129-st-edit" role="status" class="text-[11px] text-slate-600 leading-relaxed"></p>
+        <div id="fc129-cand-edit" class="space-y-1.5"></div>
       </div>
 <div><label class="text-[11px] font-bold block mb-1">影音連結</label><input id="input-edit-fitem-video" type="url" placeholder="https://…" class="w-full p-2.5 border rounded-xl text-xs"></div>
       <div class="flex space-x-2 pt-1">
@@ -7787,33 +7789,54 @@ function fc71View(v){fc34SwitchTab(v);}
     try{const tab=document.querySelector('#page-favorites:not(.hidden)');if(tab&&typeof renderFavorites==='function')renderFavorites();}catch(e){}}
   window.fc128CoordFromUrl=coordFromUrl;
   window.fc128HasCoord=it=>!!coordOf({map:it.map,name:it.name,lat:it.lat,lon:it.lon});
-  // 以店名查座標（供收藏編輯使用；有設定目的地時限定範圍）
+  // 以店名查座標（最多 3 筆候選；有設定目的地時限定範圍；每秒最多 1 次；9 秒逾時）
+  let lastReq=0;
   window.fc128Lookup=async function(q){
-    const d=dest(),v=0.6;
-    const url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&accept-language=zh-TW,en'+(d?'&bounded=1&viewbox='+[d.lon-v,d.lat+v,d.lon+v,d.lat-v].join(','):'')+'&q='+encodeURIComponent(q);
-    const r=await fetch(url,{signal:AbortSignal.timeout?AbortSignal.timeout(8000):undefined});if(!r.ok)throw new Error('http '+r.status);
-    const p=(await r.json())[0];if(!p)return null;const pt={lat:+p.lat,lon:+p.lon};if(!Number.isFinite(pt.lat)||!Number.isFinite(pt.lon))return null;
-    if(d&&km(pt,d)>=80)return null;return {lat:pt.lat,lon:pt.lon,name:String(p.display_name||'').slice(0,80)};};
+    const d=dest(),v=0.6,gap=window.__fc128Gap!==undefined?window.__fc128Gap:GAP,wait=lastReq+gap-Date.now();
+    if(wait>0)await new Promise(r=>setTimeout(r,wait));lastReq=Date.now();
+    const url='https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&accept-language=zh-TW,en'+(d?'&bounded=1&viewbox='+[d.lon-v,d.lat+v,d.lon+v,d.lat-v].join(','):'')+'&q='+encodeURIComponent(q);
+    const ctl=typeof AbortController!=='undefined'?new AbortController():null;let tm;
+    try{
+      const r=await Promise.race([fetch(url,ctl?{signal:ctl.signal}:undefined),new Promise((_,rej)=>{tm=setTimeout(()=>{try{ctl&&ctl.abort()}catch(e){}rej(new Error('逾時，伺服器沒有回應'))},window.__fc128Timeout||9000)})]);
+      if(!r.ok)throw new Error('伺服器回應 '+r.status);
+      const arr=await r.json();
+      return (Array.isArray(arr)?arr:[]).map(p=>({lat:+p.lat,lon:+p.lon,name:String(p.display_name||q).slice(0,90)})).filter(p=>Number.isFinite(p.lat)&&Number.isFinite(p.lon)&&(!d||km(p,d)<80));
+    }finally{clearTimeout(tm);}};
   window.fc128Debug=()=>({cache,used,queue:queue.length});
 })();
 </script>
 <script id="fc129-fav-coord-js">
 (function(){
-  // 收藏地點：地圖連結＋座標（新增／編輯共用）
-  const S={add:{lat:null,lon:null,busy:0},edit:{lat:null,lon:null,busy:0}};
+  // 收藏地點：地圖連結／座標（新增、編輯共用）。店名自動比對 → 使用者確認後才存入座標
+  const S={add:{lat:null,lon:null,busy:0,cands:[],timer:0},edit:{lat:null,lon:null,busy:0,cands:[],timer:0}};
   const $=id=>document.getElementById(id);
   const fmt=(a,b)=>a.toFixed(5)+', '+b.toFixed(5);
-  function st(p,t,bad){const el=$('fc129-st-'+p);if(el){el.textContent=t||'';el.className='text-[10px] leading-relaxed '+(bad?'text-amber-700':'text-slate-500');}
+  const gm=(a,b)=>'https://www.google.com/maps/search/?api=1&query='+a+','+b;
+  function st(p,t,bad){const el=$('fc129-st-'+p);if(el){el.textContent=t||'';el.className='text-[11px] leading-relaxed '+(bad?'text-amber-700':'text-slate-600');}
     const c=$('fc129-clr-'+p);if(c)c.classList.toggle('hidden',!(Number.isFinite(S[p].lat)||$('fc129-map-'+p).value.trim()));}
   const valid=u=>{try{return typeof fc49ValidMap==='function'&&fc49ValidMap(u)}catch(e){return false}};
+  const nameOf=p=>p==='add'?($('input-fitem-name')?.value||'').trim():($('edit-fitem-name-display')?.textContent||'').trim();
+  function cands(p){
+    const box=$('fc129-cand-'+p);if(!box)return;box.replaceChildren();
+    S[p].cands.forEach((c,i)=>{
+      const d=document.createElement('div');d.className='p-2 rounded-xl border border-sky-200 bg-sky-50 space-y-1.5';
+      const t=document.createElement('p');t.className='text-[11px] font-bold text-slate-700 break-words';t.textContent=(i+1)+'. '+c.name;
+      const m=document.createElement('p');m.className='text-[10px] text-slate-500';m.textContent='座標 '+fmt(c.lat,c.lon);
+      const row=document.createElement('div');row.className='flex gap-2';
+      const a=document.createElement('a');a.href=gm(c.lat,c.lon);a.target='_blank';a.rel='noopener noreferrer';a.textContent='開啟地圖核對';a.className='flex-1 text-center px-2 py-2 rounded-lg border border-slate-200 bg-white text-[11px] font-bold text-slate-600';
+      const b=document.createElement('button');b.type='button';b.textContent='確認是此地點';b.className='flex-1 px-2 py-2 rounded-lg bg-sky-600 text-white text-[11px] font-bold';b.onclick=()=>confirmCand(p,i);
+      row.append(a,b);d.append(t,m,row);box.append(d);});
+  }
+  function confirmCand(p,i){const c=S[p].cands[i];if(!c)return;S[p].lat=c.lat;S[p].lon=c.lon;S[p].cands=[];S[p].busy++;cands(p);st(p,'✓ 座標已確認（'+fmt(c.lat,c.lon)+'）：'+c.name.slice(0,40));}
   window.fc129Load=function(p,item){
-    const s=S[p];s.lat=Number.isFinite(item&&item.lat)?item.lat:null;s.lon=Number.isFinite(item&&item.lon)?item.lon:null;s.busy++;
+    const s=S[p];clearTimeout(s.timer);s.busy++;s.cands=[];cands(p);
+    s.lat=Number.isFinite(item&&item.lat)?item.lat:null;s.lon=Number.isFinite(item&&item.lon)?item.lon:null;
     $('fc129-map-'+p).value=(item&&item.map)||'';
     if(s.lat!==null)st(p,'✓ 已有座標（'+fmt(s.lat,s.lon)+'）');
-    else st(p,'貼上 Google 地圖的分享連結，或按「用店名查座標」。沒有座標時，「建議 Day」會用店名估算。');
+    else{st(p,p==='add'?'輸入店名後會自動比對地點，由你確認；也可以貼 Google 地圖連結。':'正在準備比對…');if(p==='edit')s.timer=setTimeout(()=>fc129Find('edit',true),400);}
   };
   window.fc129Input=async function(p){
-    const el=$('fc129-map-'+p),u=el.value.trim(),s=S[p],my=++s.busy;
+    const el=$('fc129-map-'+p),u=el.value.trim(),s=S[p],my=++s.busy;s.cands=[];cands(p);
     if(!u){s.lat=s.lon=null;st(p,'');return;}
     if(!valid(u)){s.lat=s.lon=null;st(p,'只接受 Google 地圖連結（maps.app.goo.gl 或 google.com/maps…）',true);return;}
     let c=window.fc128CoordFromUrl(u);
@@ -7824,29 +7847,36 @@ function fc71View(v){fc34SwitchTab(v);}
         if(my!==s.busy)return;
         if(error||!data||!data.url)throw new Error('unresolved');
         el.value=data.url;c=window.fc128CoordFromUrl(data.url);
-      }catch(e){if(my!==s.busy)return;st(p,'無法自動展開這個連結（需先登入房間且連網）。可改貼完整連結，或按「用店名查座標」。',true);return;}
+      }catch(e){if(my!==s.busy)return;st(p,'無法自動展開這個連結（需先登入房間且連網）。可改貼完整連結，或用店名比對。',true);return;}
     }
-    if(c){s.lat=c.lat;s.lon=c.lon;st(p,'✓ 已取得座標（'+fmt(c.lat,c.lon)+'）');}
-    else{s.lat=s.lon=null;st(p,'這個連結沒有座標。請改貼「分享」按鈕複製的連結，或按「用店名查座標」。',true);}
+    if(c){s.lat=c.lat;s.lon=c.lon;st(p,'✓ 已取得座標（'+fmt(c.lat,c.lon)+'）。可點連結旁的地圖再核對一次。');}
+    else{s.lat=s.lon=null;st(p,'這個連結沒有座標。請改貼「分享」按鈕複製的連結，或用店名比對。',true);}
   };
-  window.fc129Find=async function(p){
-    const s=S[p];const name=p==='add'?$('input-fitem-name').value.trim():($('edit-fitem-name-display').textContent||'').trim();
-    if(!name){st(p,'請先輸入店名',true);return;}
-    const my=++s.busy;st(p,'查詢中…');
+  // 店名自動比對（auto=true 為自動觸發，不覆蓋已確認的座標）
+  window.fc129Find=async function(p,auto){
+    const s=S[p],name=nameOf(p);
+    if(auto&&(Number.isFinite(s.lat)||$('fc129-map-'+p).value.trim()))return;
+    if(name.length<2){st(p,'請先輸入店名（至少 2 個字）',true);return;}
+    const my=++s.busy;s.cands=[];cands(p);st(p,'⏳ 正在比對「'+name.slice(0,30)+'」…');
     try{
-      const q=(typeof window.fc128Lookup==='function')&&await window.fc128Lookup(name.replace(/\s*[（(].*$/,''));
+      const tries=[name.replace(/\s*[（(].*$/,'').trim()],lat=(name.match(/[A-Za-zÀ-ỹ][A-Za-zÀ-ỹ0-9'’.\- ]{2,}/g)||[]).join(' ').trim();
+      if(lat&&!tries.includes(lat))tries.push(lat);
+      let found=[];
+      for(const q of tries){if(!q)continue;found=await window.fc128Lookup(q);if(my!==s.busy)return;if(found.length)break;}
       if(my!==s.busy)return;
-      if(!q){st(p,'查不到這個店名的座標。請改貼 Google 地圖連結。',true);return;}
-      s.lat=q.lat;s.lon=q.lon;st(p,'找到：'+q.name+'（'+fmt(q.lat,q.lon)+'）。位置不對的話請按「清除座標」，改貼地圖連結。');
-    }catch(e){if(my!==s.busy)return;st(p,'查詢失敗（網路或服務忙碌），請稍後再試。',true);}
+      if(!found.length){st(p,'查不到「'+name.slice(0,20)+'」。請改貼 Google 地圖連結，或把店名改成英文／越南文再按「用店名查座標」。',true);return;}
+      s.cands=found;cands(p);st(p,'找到 '+found.length+' 個可能的地點，請「開啟地圖核對」後按「確認是此地點」（確認後才會存入座標）。');
+    }catch(e){if(my!==s.busy)return;st(p,'查詢失敗：'+String(e&&e.message||e).slice(0,60)+'。請檢查網路後按「用店名查座標」重試，或改貼地圖連結。',true);}
   };
-  window.fc129Clear=function(p){S[p].lat=S[p].lon=null;S[p].busy++;$('fc129-map-'+p).value='';st(p,'已清除座標');};
+  window.fc129Clear=function(p){const s=S[p];s.lat=s.lon=null;s.busy++;s.cands=[];cands(p);$('fc129-map-'+p).value='';st(p,'已清除座標');};
   window.fc129Read=function(p){
     const u=$('fc129-map-'+p).value.trim(),s=S[p],out={};
     if(u&&valid(u)){try{out.map=new URL(u).href}catch(e){}}
     if(Number.isFinite(s.lat)&&Number.isFinite(s.lon)){out.lat=s.lat;out.lon=s.lon;}
     return out;};
   window.fc129Pin=function(it){try{return window.fc128HasCoord&&fc128HasCoord(it)?' <span title="已有座標" style="font-size:10px">📍</span>':''}catch(e){return ''}};
+  // 新增視窗：停止輸入店名約 1 秒後自動比對
+  (function(){const el=$('input-fitem-name');if(el&&!el.dataset.fc129){el.dataset.fc129=1;el.addEventListener('input',()=>{const s=S.add;clearTimeout(s.timer);if(nameOf('add').length<2)return;s.timer=setTimeout(()=>fc129Find('add',true),1000);});}})();
 })();
 </script>
 <script id="fc125-mail-js">
