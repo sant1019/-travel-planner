@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-76</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-77</span>
         </div>
       </div>
     </header>
@@ -3876,7 +3876,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       let h='';
       {
         const e=c.emergency||{};
-        const rows=[['🏛️ 使館 / 代表處',e.embassy],['🛡️ 保險理賠專線',e.insuranceHotline],['🏨 住宿一地址',e.hotelAddr1],['🏨 住宿二地址',e.hotelAddr2],['📝 備註',e.note]].filter(([,val])=>val);
+        const rows=[['🏛️ 使館 / 代表處',e.embassy],['🛡️ 保險理賠專線',e.insuranceHotline],['📝 備註',e.note]].filter(([,val])=>val);
         h+=`<div class="bg-gradient-to-br from-rose-50 to-orange-50 border border-rose-200 p-4 rounded-2xl shadow-sm text-xs">
           <div class="flex justify-between"><h3 class="font-bold text-rose-800"><i class="fa-solid fa-kit-medical mr-1"></i>緊急聯絡卡</h3>${infoEditButton('emergency')}</div>
           <div class="mt-2 space-y-1.5 text-rose-900">
@@ -3915,7 +3915,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     function openInfoEdit(type){
       if(!requireRoom() || !canEditInfo(type))return showToast('只有主辦人可以編輯旅程資訊'); const c=getInfoConfig();
       if(type==='shuttle')return openAirportTransferModal();
-      const defs={hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']],emergency:[['embassy','駐外使館 / 代表處電話'],['insuranceHotline','保險公司 24 小時理賠專線'],['hotelAddr1','住宿一地址（可直接給司機看）'],['hotelAddr2','住宿二地址（可直接給司機看）'],['note','其他緊急備註']]};
+      const defs={hotel:[['h1Dates','住宿一日期'],['h1Name','住宿一飯店'],['h2Dates','住宿二日期'],['h2Name','住宿二飯店']],shuttle:[['company','交通接駁公司'],['driver','司機'],['phone1','電話 1'],['phone2','電話 2'],['line','Line ID']],emergency:[['embassy','駐外使館 / 代表處電話'],['insuranceHotline','保險公司 24 小時理賠專線'],['note','其他緊急備註']]};
       document.getElementById('info-edit-type').value=type;
       document.getElementById('info-edit-title').textContent={flight:'✈️ 編輯班機資訊',hotel:'🏨 編輯住宿資訊',shuttle:'🚐 編輯交通接駁資訊',emergency:'🆘 編輯緊急聯絡卡'}[type]||'編輯資訊';
 
