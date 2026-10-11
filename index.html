@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-74</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-74b</span>
         </div>
       </div>
     </header>
@@ -6603,7 +6603,6 @@ function fc51RefreshIndicators(){
   const me=fc51Me(),on=!!me&&cloudConnected,pend=on?fc51Pending(me.id):[];
   document.getElementById('fc51-tab-dot')?.classList.toggle('hidden',!pend.length);
   fc51RenderBanner(pend);
-  if(banner){if(pend.length){const p=pend[0];banner.classList.remove('hidden');banner.className='fc51-banner';banner.innerHTML=`<div class="min-w-0 text-xs font-bold truncate">🔔 ${escapeHtml(p.ownerName)} 邀請你跟隨 Day ${p.day}${pend.length>1?`（共 ${pend.length} 個待回覆）`:''}</div><button type="button" class="fc51-btn" onclick="fc51Goto(${p.day})">查看</button>`;}else{banner.className='hidden';banner.replaceChildren();}}
   document.querySelectorAll('.fc51-day-dot').forEach(e=>e.remove());
   for(const p of pend){const b=document.getElementById('day-btn-'+p.day);if(b){const d=document.createElement('i');d.className='fc51-day-dot';b.append(d);}}
   if(!on)return;
@@ -7581,8 +7580,8 @@ function fc71View(v){fc34SwitchTab(v);}
 .fc139-btn.p{background:#0e7490;color:#fff;border-color:#0e7490}.fc139-btn.d{color:#be123c;border-color:#fecdd3;background:#fff1f2}
 .fc139-ghost{opacity:.6;background:#f8fafc}
 .fc139-n{font-weight:600;color:#64748b;font-size:12px}
-article[data-f139]{display:flex;flex-direction:column}
-article[data-f139] .fc71-rooms{order:1}article[data-f139] .fc139-lic{order:2}article[data-f139] .fc139-del{order:3}
+article[data-f139fold]{display:flex;flex-direction:column}
+article[data-f139fold] .fc71-rooms{order:1}article[data-f139fold] .fc139-lic{order:2}article[data-f139fold] .fc139-del{order:3}
 .fc139-lic{margin-top:8px;border:1px dashed #cbd5e1;border-radius:12px;padding:8px 10px}
 .fc139-lic>summary{font-size:12px;font-weight:700;color:#64748b;cursor:pointer}
 .fc139-lic>*:not(summary){margin-top:8px}
@@ -7687,8 +7686,8 @@ article[data-f139] .fc71-rooms{order:1}article[data-f139] .fc139-lic{order:2}art
   function fold(){
     const box=document.getElementById('fc34-customer-list');if(!box)return;
     for(const art of box.querySelectorAll('article')){
-      if(!art.dataset.f139){
-        art.dataset.f139='1';
+      if(!art.dataset.f139fold){
+        art.dataset.f139fold='1';
         const lic=[...art.children].filter(x=>(x.matches&&x.matches('.p-3.bg-slate-50'))||(x.tagName==='P'&&/尚未建立授權/.test(x.textContent)));
         const n=lic.filter(x=>x.tagName==='DIV').length;
         const det=document.createElement('details');det.className='fc139-lic';
