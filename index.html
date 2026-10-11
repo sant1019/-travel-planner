@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-77</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-78</span>
         </div>
       </div>
     </header>
@@ -1538,8 +1538,8 @@ html{touch-action:manipulation}
 
     <!-- Add Packing Item Modal -->
     <div id="modal-packing-item" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden">
-      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-square-plus text-sky-600 mr-1.5"></i>新增物品</h3>
-      <input type="hidden" id="target-pcat-id">
+      <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-square-plus text-sky-600 mr-1.5"></i><span id="pitem-modal-title">新增物品</span></h3>
+      <input type="hidden" id="target-pcat-id"><input type="hidden" id="target-pitem-id">
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">物品名稱：</label>
         <input type="text" id="input-pitem-name" placeholder="例如：防蚊液、護照正本" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
@@ -4440,8 +4440,11 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       container.innerHTML = globalPacking.map(cat => `
         <div class="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
           <div class="flex justify-between items-center border-b border-slate-100 pb-1.5">
-            <h3 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-folder text-sky-500 mr-1.5"></i>${cat.title}</h3>
-            <button onclick="openAddPackingItemModal('${cat.id}')" class="text-[11px] text-sky-600 font-bold hover:underline">+ 新增物品</button>
+            <h3 class="text-xs font-bold text-slate-800 min-w-0 break-words"><i class="fa-solid fa-folder text-sky-500 mr-1.5"></i>${escapeHtml(cat.title)}</h3>
+            <div class="flex items-center gap-2 shrink-0">
+              ${isOrganizer() ? `<button onclick="renamePackingCat('${cat.id}')" class="text-slate-400 hover:text-sky-600 text-xs px-1" title="修改分類名稱"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deletePackingCat('${cat.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1" title="刪除分類（含底下全部物品）"><i class="fa-regular fa-trash-can"></i></button>` : ''}
+              <button onclick="openAddPackingItemModal('${cat.id}')" class="text-[11px] text-sky-600 font-bold hover:underline">+ 新增物品</button>
+            </div>
           </div>
           <div class="space-y-1.5 text-xs">
             ${cat.items.filter(item => !personalHiddenState[item.id]).map(item => {
@@ -4451,17 +4454,56 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
                   <label class="flex items-start space-x-2 cursor-pointer flex-1">
                     <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="togglePersonalPackingItem('${item.id}')" class="mt-0.5 text-sky-600 rounded">
                     <div>
-                      <span class="font-medium ${isChecked ? 'completed-item text-slate-400' : 'text-slate-800'}">${item.name}</span>
-                      ${item.note ? `<p class="text-[10px] text-slate-400 mt-0.2">${item.note}</p>` : ''}
+                      <span class="font-medium ${isChecked ? 'completed-item text-slate-400' : 'text-slate-800'}">${escapeHtml(item.name)}</span>
+                      ${item.note ? `<p class="text-[10px] text-slate-400 mt-0.2">${escapeHtml(item.note)}</p>` : ''}
                     </div>
                   </label>
-                  <button onclick="deletePersonalPackingItem('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1" title="個人隱藏此項目"><i class="fa-regular fa-trash-can"></i></button>
+                  ${fc151CanManage(item) ? `<span class="flex items-center shrink-0"><button onclick="openEditPackingItem('${cat.id}', '${item.id}')" class="text-slate-400 hover:text-sky-600 text-xs px-1.5" title="修改物品"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deletePackingItemForAll('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1.5" title="刪除（全團都會刪除）"><i class="fa-regular fa-trash-can"></i></button></span>` : `<button onclick="deletePersonalPackingItem('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1" title="只從我的清單移除"><i class="fa-regular fa-trash-can"></i></button>`}
                 </div>
               `;
             }).join('')}
           </div>
         </div>
       `).join('');
+    }
+
+    function fc151CanManage(item){
+      try{if(isOrganizer())return true;}catch(e){}
+      return !!(item&&item.addedBy&&currentMember&&String(item.addedBy)===String(currentMember.id));
+    }
+    function openEditPackingItem(catId,itemId){
+      const cat=getStoredData('packing',defaultPackingData).find(c=>c.id===catId),item=cat&&cat.items.find(i=>i.id===itemId);
+      if(!item)return;
+      document.getElementById('target-pcat-id').value=catId;
+      document.getElementById('target-pitem-id').value=itemId;
+      document.getElementById('input-pitem-name').value=item.name||'';
+      document.getElementById('input-pitem-note').value=item.note||'';
+      document.getElementById('pitem-modal-title').textContent='修改物品';
+      closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');
+      document.getElementById('modal-packing-item').classList.remove('hidden');
+    }
+    function deletePackingItemForAll(catId,itemId){
+      if(!requireRoom())return;
+      const data=getStoredData('packing',defaultPackingData),cat=data.find(c=>c.id===catId),item=cat&&cat.items.find(i=>i.id===itemId);
+      if(!item||!fc151CanManage(item))return;
+      if(!confirm('刪除「'+item.name+'」？\n全團都會刪除，無法復原。'))return;
+      cat.items=cat.items.filter(i=>i.id!==itemId);
+      pushStateToCloud('packing',data);renderPackingList();showToast('已刪除（全團）');
+    }
+    function renamePackingCat(catId){
+      if(!requireRoom()||!isOrganizer())return;
+      const data=getStoredData('packing',defaultPackingData),cat=data.find(c=>c.id===catId);if(!cat)return;
+      const t=prompt('修改分類名稱：',cat.title);if(t===null)return;
+      const v=t.trim();if(!v)return showToast('分類名稱不能空白');
+      cat.title=v;pushStateToCloud('packing',data);renderPackingList();
+    }
+    function deletePackingCat(catId){
+      if(!requireRoom()||!isOrganizer())return;
+      const data=getStoredData('packing',defaultPackingData),cat=data.find(c=>c.id===catId);if(!cat)return;
+      const n=cat.items.length;
+      if(!confirm('刪除分類「'+cat.title+'」？\n底下 '+n+' 個物品會一起刪除，全團都會刪除，無法復原。'))return;
+      pushStateToCloud('packing',data.filter(c=>c.id!==catId));renderPackingList();showToast('已刪除分類（全團）');
     }
 
     function togglePersonalPackingItem(itemId) {
@@ -5670,6 +5712,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       document.getElementById('target-pcat-id').value = catId;
       document.getElementById('input-pitem-name').value = '';
       document.getElementById('input-pitem-note').value = '';
+      document.getElementById('target-pitem-id').value = '';
+      document.getElementById('pitem-modal-title').textContent = '新增物品';
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
       document.getElementById('modal-packing-item').classList.remove('hidden');
@@ -5684,8 +5728,12 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       if (name) {
         const data = getStoredData('packing', defaultPackingData);
         const cat = data.find(c => c.id === catId);
-        if (cat) {
-          cat.items.push({ id: `pitem-${Date.now()}`, name, note });
+        const editId = (document.getElementById('target-pitem-id') || {}).value || '';
+        if (cat && editId) {
+          const it = cat.items.find(i => i.id === editId);
+          if (it && fc151CanManage(it)) { it.name = name; it.note = note; pushStateToCloud('packing', data); }
+        } else if (cat) {
+          cat.items.push({ id: `pitem-${Date.now()}`, name, note, addedBy: currentMember ? currentMember.id : '' });
           pushStateToCloud('packing', data);
         }
         closeModal();
