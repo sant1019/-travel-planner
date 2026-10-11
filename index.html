@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
   <title>旅遊小秘書</title>
   <meta name="apple-mobile-web-app-title" content="旅遊小秘書">
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
   <style>
@@ -537,6 +536,7 @@ html{touch-action:manipulation}
 .fc90-kv{display:grid;grid-template-columns:64px 1fr;gap:4px 8px;font-size:13px;color:#334}.fc90-kv i{font-style:normal;color:#94a3b8}.fc90-kv span{word-break:break-all}
 #fc60-adm-list input:not([type=checkbox]),#fc59-room-list input:not([type=checkbox]),#fc59-room-list select,#fc34-customer-list input{min-height:42px;padding:8px 12px!important;font-size:14px!important;border-radius:12px!important}
 </style>
+  <link rel="stylesheet" href="tailwind.css">
 </head>
 <body class="text-slate-800 antialiased pb-20 select-none">
 <div id="fc46-owner-banner" role="status" class="hidden p-3 border rounded-xl bg-sky-50 m-3"></div>
@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-73e</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-74</span>
         </div>
       </div>
     </header>
