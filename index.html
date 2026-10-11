@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-78a</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-78d</span>
         </div>
       </div>
     </header>
@@ -1203,7 +1203,7 @@ html{touch-action:manipulation}
       <h3 id="info-edit-title" class="text-sm font-bold text-slate-800">編輯資訊</h3>
       <input type="hidden" id="info-edit-type">
       <div id="info-edit-fields" class="space-y-2"></div>
-      <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveInfoEdit()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
+      <div class="flex gap-2 fc154-sticky" style="position:sticky;bottom:0;z-index:5;background:#fff;margin:0 -20px -20px;padding:10px 20px 20px;border-top:1px solid #e2e8f0"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveInfoEdit()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
     </div>
 
     <div id="modal-airport-transfer" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
@@ -1227,7 +1227,7 @@ html{touch-action:manipulation}
       </div>
       <div><label class="text-[10px] font-bold text-slate-600">預計抵達目的地時間</label><input id="transfer-target-datetime" oninput="document.querySelectorAll('.transfer-vehicle').forEach(fc41UpdateVehicle)" type="datetime-local" class="w-full p-2 border rounded-xl text-[11px]"><p id="transfer-target-hint" class="text-[9px] text-sky-600 mt-1">搭機時建議需提前2小時抵達機場</p></div>
       <div><label class="text-[10px] font-bold text-slate-600">回程集合出發日期與時間（可自行指定）</label><input id="transfer-return-datetime" type="datetime-local" class="w-full p-2 border rounded-xl text-[11px]"><p class="text-[9px] text-sky-600 mt-1">未指定時，搭機依回程抵達後 30 分鐘估算；未搭機請自行填寫。</p></div>
-      <details class="text-xs text-slate-500"><summary>新增站點預設與舊資料車程</summary>
+      <details id="transfer-defaults" class="text-xs text-slate-500" style="display:none" aria-hidden="true"><summary>新增站點預設與舊資料車程</summary>
       <div class="grid grid-cols-2 gap-2">
         <div><label class="text-[10px] font-bold text-slate-600">新增站點預留（預設）</label><div class="flex"><input id="transfer-stop-min" type="number" value="15" min="0" step="5" class="w-full p-2 border rounded-xl text-[11px]"><span class="text-[10px] ml-1 self-center">分</span></div></div>
         <div><label class="text-[10px] font-bold text-slate-600">舊資料最後一段車程</label><div class="flex"><input id="transfer-drive-min" type="number" value="150" min="0" step="5" class="w-full p-2 border rounded-xl text-[11px]"><span class="text-[10px] ml-1 self-center">分</span></div></div>
@@ -1239,7 +1239,7 @@ html{touch-action:manipulation}
         <div id="transfer-vehicle-editors" class="space-y-3"></div>
         <button type="button" onclick="addTransferVehicleEditor()" class="w-full border-2 border-dashed border-sky-200 bg-sky-50 text-sky-700 py-2.5 rounded-xl text-[11px] font-extrabold">＋ 新增車次</button>
       </div>
-      <div class="flex gap-2"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs">取消</button><button type="button" onclick="deleteAirportTransferPlan()" class="text-rose-600 text-xs px-2">移除安排</button><button onclick="saveAirportTransferPlan()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存並加入行程</button></div>
+      <div class="flex gap-2 fc154-sticky" style="position:sticky;bottom:0;z-index:5;background:#fff;margin:0 -20px -20px;padding:10px 20px 20px;border-top:1px solid #e2e8f0"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs">取消</button><button type="button" onclick="deleteAirportTransferPlan()" class="text-rose-600 text-xs px-2">移除安排</button><button onclick="saveAirportTransferPlan()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存並加入行程</button></div>
     </div>
 
     <div id="modal-reminder-edit" class="hidden bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl max-h-[85vh] overflow-y-auto">
@@ -1270,7 +1270,7 @@ html{touch-action:manipulation}
         <label class="text-[11px] font-bold text-slate-600 block mb-1">嬰兒金額 (NT$)：</label>
         <input type="number" id="input-fe-infant" placeholder="0" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-amber-500 focus:outline-none">
       </div>
-      <div class="flex space-x-2 pt-1">
+      <div class="flex space-x-2 pt-1 fc154-sticky" style="position:sticky;bottom:0;z-index:5;background:#fff;margin:0 -20px -20px;padding:10px 20px 20px;border-top:1px solid #e2e8f0">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
         <button onclick="saveFixedExpense()" class="flex-1 bg-amber-500 text-white py-2 rounded-xl text-xs font-semibold">儲存開銷</button>
       </div>
@@ -1411,7 +1411,7 @@ html{touch-action:manipulation}
         <label class="text-[11px] font-bold text-slate-600 block mb-1">購票 / 預約連結：</label>
         <input type="text" id="input-itin-ticket" placeholder="例如：https://www.klook.com/..." class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-sky-500 focus:outline-none">
       </div>
-      <div class="flex space-x-2 pt-1">
+      <div class="flex space-x-2 pt-1 fc154-sticky" style="position:sticky;bottom:0;z-index:5;background:#fff;margin:0 -20px -20px;padding:10px 20px 20px;border-top:1px solid #e2e8f0">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
         <button onclick="saveItineraryItem()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-semibold">儲存</button>
       </div>
@@ -5830,10 +5830,11 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         {id:'veh-b',name:'B車',mode:'包車店家',contact:'阿得',people:'',stops:['嘉義市東區義教街708號（千香漢堡）','嘉義市鎮北路50巷25號','嘉義縣梅山鄉南興街19號','南投市新光路5號']}
       ]
     };
+    const blankAirportTransferData = {type:'both',airportOut:'',airportBack:'',advanceMin:120,stopMin:15,driveMin:150,provider:{name:'',contact:'',phone:'',line:'',note:''},vehicles:[{id:'veh-a',name:'A車',mode:'包車店家',contact:'',people:'',stops:[]}]};
     function normalizeTransferData(d){
       d=d||{}; if(!Array.isArray(d.vehicles)){ d.vehicles=[]; if((d.stopsA||[]).length)d.vehicles.push({id:'veh-a',name:'A車',mode:'包車店家',contact:'阿得',people:'',stops:d.stopsA}); if((d.stopsB||[]).length)d.vehicles.push({id:'veh-b',name:'B車',mode:'包車店家',contact:'阿得',people:'',stops:d.stopsB}); }
-      if(!d.vehicles.length)d.vehicles=JSON.parse(JSON.stringify(defaultAirportTransferData.vehicles));
-      d.provider=d.provider||{name:'得佳富租賃有限公司',contact:'阿得',phone:'0972-922097',line:'0972922097',note:''}; return {...defaultAirportTransferData,...d};
+      if(!d.vehicles.length)d.vehicles=JSON.parse(JSON.stringify(blankAirportTransferData.vehicles));
+      d.provider=d.provider||{name:'',contact:'',phone:'',line:'',note:''}; return {...blankAirportTransferData,...d};
     }
     function addTransferVehicleEditor(v={}){
       const c=document.getElementById('transfer-vehicle-editors'); if(!c)return; const id=v.id||`veh-${Date.now()}-${Math.random().toString(36).slice(2,5)}`;
@@ -5913,7 +5914,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     function getTransferReturnAuto(){const f=getInfoConfig().flight;const d=transferDate(f.returnArrivalDate,f.returnArrivalTime);return d?transferDateInput(addMinutes(d,30)):'';}
     function openAirportTransferModal(){
       if(!requireRoom()||!isOrganizer())return showToast('只有主辦人可以編輯接駁');
-      const c=getInfoConfig(),d=normalizeTransferData(c.shuttle.plan?JSON.parse(JSON.stringify(c.shuttle.plan)):JSON.parse(JSON.stringify(defaultAirportTransferData)));
+      const c=getInfoConfig(),d=normalizeTransferData(c.shuttle.plan?JSON.parse(JSON.stringify(c.shuttle.plan)):JSON.parse(JSON.stringify(c.shuttle.company==='得佳富租賃有限公司'?defaultAirportTransferData:blankAirportTransferData)));
       const header=getStoredData('headerInfo',defaultHeaderInfo),useFlight=header.requiredInfo?.flight!==false;
       document.querySelectorAll('input[name="transfer-type"]').forEach(r=>r.checked=r.value===(d.type||'both'));
       document.getElementById('transfer-airport-out').value=d.airportOut||'';document.getElementById('transfer-airport-back').value=d.airportBack||'';
