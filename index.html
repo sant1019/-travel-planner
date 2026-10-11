@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-78</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-78a</span>
         </div>
       </div>
     </header>
@@ -8241,12 +8241,12 @@ article[data-f139fold] .fc71-rooms{order:1}article[data-f139fold] .fc139-lic{ord
     ].filter(s=>vis($(s.sel)));
     return [nav,me,{sel:'.fc32-room-link',t:'同步狀態',x:'雲端圖示代表同步狀態；資料會自動與團員同步。'}].filter(s=>vis($(s.sel)));
   }
-  function close(){document.getElementById('fc91-ov')?.remove();['fc91-spot','fc91-hand','fc91-bub'].forEach(i=>document.getElementById(i)?.remove());running=false;window.removeEventListener('resize',rel)}
-  let cur=null;function rel(){if(cur)show(cur.list,cur.i,cur.done)}
-  function show(list,i,done){
+  function close(){clearInterval(poll);document.getElementById('fc91-ov')?.remove();['fc91-spot','fc91-hand','fc91-bub'].forEach(i=>document.getElementById(i)?.remove());running=false;window.removeEventListener('resize',rel)}
+  let cur=null,poll=0;function rel(){if(cur)show(cur.list,cur.i,cur.done,true)}
+  function show(list,i,done,keep){
     cur={list,i,done};const s=list[i];let el=$(s.sel);
     if(!el){return next()}
-    el.scrollIntoView({block:'center',behavior:'instant'});
+    if(!keep)el.scrollIntoView({block:'center',behavior:'instant'});
     const r0=el.getBoundingClientRect(),p=6;
     let r={left:r0.left,width:r0.width,top:r0.top,bottom:r0.bottom};
     if(r0.height>innerHeight*0.4){const hb=document.getElementById('fc65-header');const hbot=hb?hb.getBoundingClientRect().bottom:0;const t=Math.max(r0.top,hbot+8);r.top=t;r.bottom=t+Math.min(90,Math.max(40,Math.min(r0.bottom,innerHeight)-t));}
@@ -8269,7 +8269,15 @@ article[data-f139fold] .fc71-rooms{order:1}article[data-f139fold] .fc139-lic{ord
     h.style.left=hx+'px';h.style.top=(below?r.bottom+p+2:r.top-p-42)+'px';
     const bw=Math.min(300,innerWidth-24);b.style.left=Math.min(Math.max(r.left+r.width/2-bw/2,12),innerWidth-bw-12)+'px';
     let bt=below?r.bottom+p+46:r.top-p-46-bh;bt=Math.min(Math.max(bt,8),innerHeight-bh-8);b.style.top=bt+'px';b.style.bottom='auto';
-    nx.focus();
+    if(!keep)nx.focus();
+    // 持續追蹤目標位置：捲動尚未結束、版面延後變動（字型／圖片載入）、手機網址列收合時，黃框都會跟著目標，不會歪掉。
+    clearInterval(poll);
+    poll=setInterval(()=>{
+      if(!cur||cur.list!==list||cur.i!==i){clearInterval(poll);return;}
+      const e=$(list[i].sel);if(!e)return;
+      const q=e.getBoundingClientRect();
+      if(Math.abs(q.top-r0.top)>1||Math.abs(q.left-r0.left)>1||Math.abs(q.height-r0.height)>1||Math.abs(q.width-r0.width)>1)show(list,i,done,true);
+    },120);
   }
   function next(){if(!cur)return;const{list,i,done}=cur;if(i+1>=list.length)return finish(false);show(list,i+1,done)}
   function finish(skipped){const d=cur&&cur.done;cur=null;close();if(d)d(skipped)}
