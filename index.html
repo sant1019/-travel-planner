@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-82</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-82a</span>
         </div>
       </div>
     </header>
@@ -1332,7 +1332,8 @@ html{touch-action:manipulation}
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">所屬活動（選填，同活動會收成一組）：</label>
-        <input type="text" id="input-ticket-group" list="ticket-group-list" maxlength="20" placeholder="例如：巴拿山" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"><datalist id="ticket-group-list"></datalist>
+        <select id="input-ticket-group-sel" onchange="fc169GroupChanged()" class="hidden w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+        <input type="text" id="input-ticket-group" maxlength="20" placeholder="例如：巴拿山" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none mt-1.5">
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">金額 (NT$)：</label>
@@ -5143,13 +5144,28 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         document.getElementById('input-ticket-link').value = '';
         document.getElementById('input-ticket-group').value = '';
       }
-      document.getElementById('ticket-group-list').innerHTML=[...new Set(getStoredData('tickets',defaultTicketsData).map(i=>String(i.group||'').trim()).filter(Boolean))].map(g=>`<option value="${escapeHtml(g)}">`).join('');
+      fc169FillGroups(document.getElementById('input-ticket-group').value);
 
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
       document.getElementById('modal-ticket-item').classList.remove('hidden');
     }
 
+    // 所屬活動：已有活動時用下拉選單，沒有時直接輸入；選「＋新增活動」才出現輸入框
+    function fc169FillGroups(cur){
+      const gs=[...new Set(getStoredData('tickets',defaultTicketsData).map(i=>String(i.group||'').trim()).filter(Boolean))];
+      const sel=document.getElementById('input-ticket-group-sel'),txt=document.getElementById('input-ticket-group');
+      cur=String(cur||'').trim();
+      if(!gs.length&&!cur){sel.classList.add('hidden');sel.innerHTML='';txt.classList.remove('hidden');txt.classList.remove('mt-1.5');return;}
+      const list=cur&&!gs.includes(cur)?gs.concat([cur]):gs;
+      sel.innerHTML='<option value="">不分組</option>'+list.map(g=>`<option value="${escapeHtml(g)}"${g===cur?' selected':''}>${escapeHtml(g)}</option>`).join('')+'<option value="__new__">＋新增活動…</option>';
+      sel.classList.remove('hidden');txt.value=cur;txt.classList.add('hidden');txt.classList.add('mt-1.5');
+    }
+    function fc169GroupChanged(){
+      const sel=document.getElementById('input-ticket-group-sel'),txt=document.getElementById('input-ticket-group');
+      if(sel.value==='__new__'){txt.value='';txt.classList.remove('hidden');txt.focus();}
+      else{txt.value=sel.value;txt.classList.add('hidden');}
+    }
     function saveTicketItem() {
       if (!requireRoom()) return;
       const editId = document.getElementById('edit-ticket-id').value;
