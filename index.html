@@ -430,6 +430,16 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
 </style>
 <style id="fc70-style">
 html{touch-action:manipulation}
+html.fc174-1 body{zoom:1.15}
+html.fc174-2 body{zoom:1.3}
+html.fc174-1 [id^="modal-"]{max-height:calc(88vh / 1.15) !important}
+html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
+.fc174-size{display:flex;border:1.5px solid var(--fc45-accent,#0284a8);border-radius:10px;overflow:hidden}
+.fc174-size button{flex:1;padding:9px 0;font-weight:700;color:var(--fc45-accent,#0284a8);background:#fff;min-height:44px}
+.fc174-size button:nth-child(1){font-size:14px}.fc174-size button:nth-child(2){font-size:17px}.fc174-size button:nth-child(3){font-size:20px}
+.fc174-size button[aria-pressed="true"]{background:var(--fc45-accent,#0284a8);color:#fff}
+.fc174-note{font-size:11px;color:#64748b;margin-top:5px}
+
 .fc70-st{top:-1.25rem!important;box-shadow:none!important}
 #page-itinerary{margin-top:-8px}
 #page-itinerary.space-y-3>*+*{margin-top:8px!important}
@@ -564,7 +574,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-82b</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-84</span>
         </div>
       </div>
     </header>
@@ -698,9 +708,12 @@ html{touch-action:manipulation}
             <h2 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-coins text-amber-500 mr-1.5"></i>每人固定開銷統計 (台幣)</h2>
             <p class="text-[10px] text-slate-400 font-normal mt-0.5">＊金額為概略估算</p>
           </div>
-          <button onclick="openFixedExpenseModal()" class="text-xs bg-amber-500 text-white font-bold px-2.5 py-1 rounded-xl shadow-sm hover:bg-amber-600 active:scale-95 transition shrink-0">
-            + 新增項目
-          </button>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <button id="fc172-btn-fixed" onclick="fc172Toggle('fixed')" class="text-xs bg-white text-amber-700 border border-amber-300 font-bold px-2.5 py-1 rounded-xl active:scale-95 transition">整理</button>
+            <button onclick="openFixedExpenseModal()" class="text-xs bg-amber-500 text-white font-bold px-2.5 py-1 rounded-xl shadow-sm hover:bg-amber-600 active:scale-95 transition">
+              + 新增項目
+            </button>
+          </div>
         </div>
 
         <div class="overflow-x-auto text-xs">
@@ -708,10 +721,10 @@ html{touch-action:manipulation}
             <thead>
               <tr class="text-slate-400 border-b border-slate-100">
                 <th class="py-1.5">項目</th>
-                <th class="py-1.5 text-right">大人</th>
-                <th class="py-1.5 text-right">兒童</th>
-                <th class="py-1.5 text-right">嬰兒</th>
-                <th class="py-1.5 text-center w-16">操作</th>
+                <th class="py-1.5 pl-2 text-right">大人</th>
+                <th class="py-1.5 pl-2 text-right">兒童</th>
+                <th class="py-1.5 pl-2 text-right">嬰兒</th>
+                <th id="fc172-th-ops" class="py-1.5 text-center w-16 hidden">操作</th>
               </tr>
             </thead>
             <tbody id="fixed-expenses-tbody" class="divide-y divide-slate-50 text-slate-700"></tbody>
@@ -730,7 +743,10 @@ html{touch-action:manipulation}
         <div class="px-4 pb-4 space-y-3">
           <div class="flex justify-between items-center border-t border-slate-100 pt-3">
             <p class="text-[10px] text-slate-400 font-normal">勾選併入總額計算</p>
-            <button onclick="openTicketModal()" class="text-xs bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-95 transition shrink-0">+ 新增門票</button>
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button id="fc172-btn-tickets" onclick="fc172Toggle('tickets')" class="text-xs bg-white text-indigo-700 border border-indigo-300 font-bold px-2.5 py-1 rounded-xl active:scale-95 transition hidden">整理</button>
+              <button onclick="openTicketModal()" class="text-xs bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-95 transition">+ 新增門票</button>
+            </div>
           </div>
         <div id="fc165-suggest" class="hidden"></div>
         <div id="ticket-checklist" class="space-y-2 text-xs divide-y divide-slate-50"></div>
@@ -799,7 +815,7 @@ html{touch-action:manipulation}
 <label><input id="toggle-info-flight" type="checkbox" onchange="saveInfoVisibility()">航班</label>
 <label><input id="toggle-info-shuttle" type="checkbox" onchange="saveInfoVisibility()">交通接駁</label>
 <label><input id="toggle-info-hotel" type="checkbox" onchange="saveInfoVisibility()">住宿</label></div>
-        <div class="fc45-theme-section"><h3>主題色</h3><div class="fc45-theme-colors"><button type="button" data-fc45-theme="teal" aria-label="藍綠主題" aria-pressed="false" onclick="fc45ChooseTheme('teal')"><span class="fc45-swatch" style="background:#087E8B"></span><span>藍綠</span></button><button type="button" data-fc45-theme="purple" aria-label="紫色主題" aria-pressed="false" onclick="fc45ChooseTheme('purple')"><span class="fc45-swatch" style="background:#7752B8"></span><span>紫色</span></button><button type="button" data-fc45-theme="orange" aria-label="暖橘主題" aria-pressed="false" onclick="fc45ChooseTheme('orange')"><span class="fc45-swatch" style="background:#C87532"></span><span>暖橘</span></button><button type="button" data-fc45-theme="rose" aria-label="玫瑰粉主題" aria-pressed="false" onclick="fc45ChooseTheme('rose')"><span class="fc45-swatch" style="background:#B9577F"></span><span>玫瑰粉</span></button><button type="button" data-fc45-theme="coffee" aria-label="深咖啡主題" aria-pressed="false" onclick="fc45ChooseTheme('coffee')"><span class="fc45-swatch" style="background:#593922"></span><span>深咖啡</span></button></div></div></div>
+        <div class="fc45-theme-section"><h3>主題色</h3><div class="fc45-theme-colors"><button type="button" data-fc45-theme="teal" aria-label="藍綠主題" aria-pressed="false" onclick="fc45ChooseTheme('teal')"><span class="fc45-swatch" style="background:#087E8B"></span><span>藍綠</span></button><button type="button" data-fc45-theme="purple" aria-label="紫色主題" aria-pressed="false" onclick="fc45ChooseTheme('purple')"><span class="fc45-swatch" style="background:#7752B8"></span><span>紫色</span></button><button type="button" data-fc45-theme="orange" aria-label="暖橘主題" aria-pressed="false" onclick="fc45ChooseTheme('orange')"><span class="fc45-swatch" style="background:#C87532"></span><span>暖橘</span></button><button type="button" data-fc45-theme="rose" aria-label="玫瑰粉主題" aria-pressed="false" onclick="fc45ChooseTheme('rose')"><span class="fc45-swatch" style="background:#B9577F"></span><span>玫瑰粉</span></button><button type="button" data-fc45-theme="coffee" aria-label="深咖啡主題" aria-pressed="false" onclick="fc45ChooseTheme('coffee')"><span class="fc45-swatch" style="background:#593922"></span><span>深咖啡</span></button></div></div><div class="fc45-theme-section"><h3>字體大小</h3><div id="fc174-size" class="fc174-size"><button type="button" data-fc174="0" onclick="fc174Set(0)">標準</button><button type="button" data-fc174="1" onclick="fc174Set(1)">大</button><button type="button" data-fc174="2" onclick="fc174Set(2)">特大</button></div><p class="fc174-note">只改這支手機，下次開啟仍保留</p></div></div>
       </details>
       <details id="fc70-weather" class="fc45-settings"><summary><span>🌤️ 每日天氣</span><i class="fa-solid fa-chevron-down" aria-hidden="true"></i></summary><div id="fc70-weather-body" class="fc45-settings-body"></div></details>
       <div id="info-translation-section" class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
@@ -5057,6 +5073,16 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       `).join('');
     }
 
+    // ---- FC-83 預算頁「整理」模式：平常只看項目與金額，按「整理」才顯示上下移／編輯／刪除 ----
+    const fc172Mode = { fixed: false, tickets: false };
+    function fc172Toggle(k){ fc172Mode[k] = !fc172Mode[k]; renderBudget(); }
+    function fc172Sync(){
+      const bf=document.getElementById('fc172-btn-fixed');
+      if(bf){bf.textContent=fc172Mode.fixed?'完成':'整理';bf.className='text-xs font-bold px-2.5 py-1 rounded-xl active:scale-95 transition '+(fc172Mode.fixed?'bg-amber-500 text-white border border-amber-500':'bg-white text-amber-700 border border-amber-300');}
+      const th=document.getElementById('fc172-th-ops');if(th)th.classList.toggle('hidden',!fc172Mode.fixed);
+      const bt=document.getElementById('fc172-btn-tickets');
+      if(bt){bt.classList.toggle('hidden',!isOrganizer());bt.textContent=fc172Mode.tickets?'完成':'整理';bt.className='text-xs font-bold px-2.5 py-1 rounded-xl active:scale-95 transition '+(fc172Mode.tickets?'bg-indigo-600 text-white border border-indigo-600':'bg-white text-indigo-700 border border-indigo-300')+(isOrganizer()?'':' hidden');}
+    }
     function renderBudget() {
       const fixedExpenses = getStoredData('fixedExpenses', defaultFixedExpensesData);
       const tbody = document.getElementById('fixed-expenses-tbody');
@@ -5074,10 +5100,10 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           return `
             <tr>
               <td class="py-1.5 font-medium text-slate-800">${item.name}</td>
-              <td class="py-1.5 text-right">$${Number(item.adult).toLocaleString()}</td>
-              <td class="py-1.5 text-right">$${Number(item.kid).toLocaleString()}</td>
-              <td class="py-1.5 text-right">$${Number(item.infant).toLocaleString()}</td>
-              <td class="py-1.5 text-center">
+              <td class="py-1.5 pl-2 text-right whitespace-nowrap">$${Number(item.adult).toLocaleString()}</td>
+              <td class="py-1.5 pl-2 text-right whitespace-nowrap">$${Number(item.kid).toLocaleString()}</td>
+              <td class="py-1.5 pl-2 text-right whitespace-nowrap">$${Number(item.infant).toLocaleString()}</td>
+              <td class="py-1.5 text-center ${fc172Mode.fixed ? '' : 'hidden'}">
                 <div class="flex items-center justify-center space-x-1">
                   <div class="flex flex-col leading-none fc162-mv">${idx>0?`<button onclick="moveFixedExpense('${item.id}',-1)" class="text-slate-400 hover:text-amber-600 text-[10px] px-0.5" title="上移" aria-label="上移"><i class="fa-solid fa-chevron-up"></i></button>`:''}${idx<fixedExpenses.length-1?`<button onclick="moveFixedExpense('${item.id}',1)" class="text-slate-400 hover:text-amber-600 text-[10px] px-0.5" title="下移" aria-label="下移"><i class="fa-solid fa-chevron-down"></i></button>`:''}</div>
                   <button onclick="openFixedExpenseModal('${item.id}')" class="text-slate-400 hover:text-amber-600 p-0.5" title="編輯"><i class="fa-solid fa-pen-to-square"></i></button>
@@ -5091,10 +5117,10 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         rowsHtml += `
           <tr class="font-bold text-sky-700 bg-sky-50/50">
             <td class="py-2 pl-1">小計 (固定開銷)</td>
-            <td class="py-2 text-right">$${adultSubtotal.toLocaleString()}</td>
-            <td class="py-2 text-right">$${kidSubtotal.toLocaleString()}</td>
-            <td class="py-2 text-right">$${infantSubtotal.toLocaleString()}</td>
-            <td></td>
+            <td class="py-2 pl-2 text-right whitespace-nowrap">$${adultSubtotal.toLocaleString()}</td>
+            <td class="py-2 pl-2 text-right whitespace-nowrap">$${kidSubtotal.toLocaleString()}</td>
+            <td class="py-2 pl-2 text-right whitespace-nowrap">$${infantSubtotal.toLocaleString()}</td>
+            <td class="${fc172Mode.fixed ? '' : 'hidden'}"></td>
           </tr>
         `;
 
@@ -5104,9 +5130,10 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const ticketSelection=getPersonalTicketSelection();
       const ticketsData = getStoredData('tickets', defaultTicketsData).map(item=>({...item,checked:ticketSelection[item.id]===true}));
       const container = document.getElementById('ticket-checklist');
+      fc172Sync();
 
       container.innerHTML = fc165TicketsHtml(ticketsData);
-      {const sg=document.getElementById('fc165-suggest');if(sg){const org=isOrganizer()&&ticketsData.length>1;sg.classList.toggle('hidden',!org);sg.innerHTML=org?`<button type="button" onclick="fc167Open()" class="w-full text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl py-2">🗂️ 整理分組</button>`:'';}}
+      {const sg=document.getElementById('fc165-suggest');if(sg){const org=isOrganizer()&&fc172Mode.tickets&&ticketsData.length>1;sg.classList.toggle('hidden',!org);sg.innerHTML=org?`<button type="button" onclick="fc167Open()" class="w-full text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl py-2">🗂️ 整理分組</button>`:'';}}
 
       const ticketsTotal = ticketsData.filter(i => i.checked).reduce((sum, i) => sum + Number(i.price || 0), 0);
       const grandTotal = adultSubtotal + ticketsTotal;
@@ -5312,7 +5339,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     const fc165Open = {};
     function fc165TicketRow(item, idx, n) {
       const e = escapeHtml, link = item.link ? safeExternalUrl(item.link) : '';
-      const tools = isOrganizer() ? `<div class="flex items-center space-x-0.5 text-slate-400">
+      const tools = (isOrganizer() && fc172Mode.tickets) ? `<div class="flex items-center space-x-0.5 text-slate-400">
           <div class="flex flex-col leading-none fc162-mv">${idx>0?`<button onclick="moveTicket('${item.id}',-1)" class="hover:text-indigo-600 text-[10px] px-0.5" title="上移" aria-label="上移"><i class="fa-solid fa-chevron-up"></i></button>`:''}${idx<n-1?`<button onclick="moveTicket('${item.id}',1)" class="hover:text-indigo-600 text-[10px] px-0.5" title="下移" aria-label="下移"><i class="fa-solid fa-chevron-down"></i></button>`:''}</div>
           <button onclick="openTicketModal('${item.id}')" class="hover:text-indigo-600 p-0.5" title="編輯門票"><i class="fa-solid fa-pen-to-square"></i></button>
           <button onclick="deleteTicketItem('${item.id}')" class="hover:text-rose-600 p-0.5" title="刪除門票"><i class="fa-solid fa-trash-can"></i></button>
@@ -5334,7 +5361,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const ungrouped = items.filter(i => !key(i));
       items.forEach(it => {
         const g = key(it);
-        if (!g) { out.push(fc165TicketRow(it, ungrouped.indexOf(it), ungrouped.length)); return; }
+        if (!g) return;
         if (seen.has(g)) return; seen.add(g);
         const members = items.filter(x => key(x) === g);
         const picked = members.filter(x => x.checked), sum = picked.reduce((t, x) => t + Number(x.price || 0), 0);
@@ -5349,6 +5376,11 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         if (open) h += `<div class="px-3 pb-2">${members.map((m, i) => fc165TicketRow(m, i, members.length)).join('')}</div>`;
         out.push(h + '</div>');
       });
+      if (ungrouped.length) {
+        const rowsHtml = ungrouped.map((m, i) => fc165TicketRow(m, i, ungrouped.length)).join('');
+        // 有分組時，單張票收進與分組同樣縮排的「其他單張票」區塊，避免對不齊
+        out.push(seen.size ? `<div class="fc165-solo rounded-xl border border-slate-100 my-1.5"><div class="px-3 py-2 font-bold text-slate-500 text-[11px]">其他單張票 <span class="font-normal text-slate-400">${ungrouped.length} 項</span></div><div class="px-3 pb-2">${rowsHtml}</div></div>` : rowsHtml);
+      }
       return out.join('');
     }
     function fc165Toggle(g){fc165Open[g]=fc165Open[g]!==true;renderBudget();}
@@ -7807,6 +7839,14 @@ article[data-f139fold] .fc71-rooms{order:1}article[data-f139fold] .fc139-lic{ord
       showToast(/license_bound/.test(m)?'這筆授權已綁定房間，請先處理房間。':/invalid_action/.test(m)?'資料庫還沒執行 FC148 SQL，請先到 Supabase 執行。':/license_not_found/.test(m)?'找不到這筆授權（可能已刪除），請按重新整理。':'刪除失敗：'+m);}
   },true);
 })();
+</script>
+<script id="fc174-js">
+var FC174_KEY='fc174-font';
+function fc174Get(){try{var v=parseInt(localStorage.getItem(FC174_KEY),10);return v===1||v===2?v:0;}catch(e){return 0;}}
+function fc174Apply(){var v=fc174Get(),h=document.documentElement;h.classList.remove('fc174-1','fc174-2');if(v)h.classList.add('fc174-'+v);
+ document.querySelectorAll('#fc174-size button').forEach(function(b){b.setAttribute('aria-pressed',String(+b.dataset.fc174===v));});}
+function fc174Set(v){try{localStorage.setItem(FC174_KEY,String(v));}catch(e){if(typeof showToast==='function')showToast('無法儲存字體大小');}fc174Apply();}
+fc174Apply();document.addEventListener('DOMContentLoaded',fc174Apply);
 </script>
 <script id="fc160-js">
 (function(){
