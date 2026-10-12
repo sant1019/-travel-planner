@@ -564,7 +564,7 @@ html{touch-action:manipulation}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-79a</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-82</span>
         </div>
       </div>
     </header>
@@ -711,7 +711,7 @@ html{touch-action:manipulation}
                 <th class="py-1.5 text-right">大人</th>
                 <th class="py-1.5 text-right">兒童</th>
                 <th class="py-1.5 text-right">嬰兒</th>
-                <th class="py-1.5 text-center w-12">操作</th>
+                <th class="py-1.5 text-center w-16">操作</th>
               </tr>
             </thead>
             <tbody id="fixed-expenses-tbody" class="divide-y divide-slate-50 text-slate-700"></tbody>
@@ -732,6 +732,7 @@ html{touch-action:manipulation}
             <p class="text-[10px] text-slate-400 font-normal">勾選併入總額計算</p>
             <button onclick="openTicketModal()" class="text-xs bg-indigo-600 text-white font-bold px-2.5 py-1 rounded-xl shadow-sm hover:bg-indigo-700 active:scale-95 transition shrink-0">+ 新增門票</button>
           </div>
+        <div id="fc165-suggest" class="hidden"></div>
         <div id="ticket-checklist" class="space-y-2 text-xs divide-y divide-slate-50"></div>
 
         <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1.5 text-xs mt-2">
@@ -749,6 +750,7 @@ html{touch-action:manipulation}
           </div>
 
         </div>
+          <button type="button" onclick="fc166Open()" class="w-full text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 rounded-xl py-2"><i class="fa-solid fa-book mr-1"></i>把已選門票加入我的記帳</button>
         </div>
       </details>
 
@@ -1291,15 +1293,33 @@ html{touch-action:manipulation}
     <div id="modal-fc160-entry" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
       <h3 id="fc160-title" class="text-sm font-bold text-slate-800">記一筆</h3>
       <input type="hidden" id="fc160-id">
-      <div><label class="text-[10px] font-bold text-slate-600">日期</label><input id="fc160-date" type="date" class="w-full p-2 border rounded-xl text-[11px]"></div>
+      <div><label class="text-[10px] font-bold text-slate-600">日期</label><input id="fc160-date" type="date" class="w-full p-2 border rounded-xl text-[11px]" style="display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;text-align:left;height:38px;background:#fff"></div>
       <div class="grid grid-cols-2 gap-2">
         <div><label class="text-[10px] font-bold text-slate-600">金額</label><input id="fc160-amount" type="number" inputmode="decimal" min="0" step="any" placeholder="0" class="w-full p-2 border rounded-xl text-[11px]"></div>
         <div><label class="text-[10px] font-bold text-slate-600">幣別（可自訂）</label><input id="fc160-cur" list="fc160-curlist" maxlength="8" placeholder="TWD" class="w-full p-2 border rounded-xl text-[11px] uppercase" oninput="fc160CurChanged()"><datalist id="fc160-curlist"></datalist></div>
       </div>
-      <div id="fc160-rate-row" class="hidden"><label class="text-[10px] font-bold text-slate-600">匯率：1 <span id="fc160-rate-cur">外幣</span> ＝ 幾元台幣</label><input id="fc160-rate" type="number" inputmode="decimal" min="0" step="any" placeholder="例如 0.00125" class="w-full p-2 border rounded-xl text-[11px]" oninput="fc160Preview()"><p id="fc160-preview" class="text-[10px] text-emerald-700 mt-1"></p></div>
-      <div><label class="text-[10px] font-bold text-slate-600">分類</label><select id="fc160-cat" class="w-full p-2 border rounded-xl text-[11px] bg-white"></select></div>
+      <div id="fc160-rate-row" class="hidden"><div class="flex justify-between items-center"><label class="text-[10px] font-bold text-slate-600">匯率：1 <span id="fc160-rate-cur">外幣</span> ＝ 幾元台幣</label><button type="button" onclick="fc160FetchRate(true)" class="text-[10px] font-bold text-emerald-700 underline">用最新匯率</button></div><input id="fc160-rate" type="number" inputmode="decimal" min="0" step="any" placeholder="例如 0.00125" class="w-full p-2 border rounded-xl text-[11px]" oninput="fc160Preview()"><p id="fc160-rate-hint" class="text-[10px] text-slate-400 mt-1"></p><p id="fc160-preview" class="text-[10px] text-emerald-700 mt-1"></p></div>
+      <div><label class="text-[10px] font-bold text-slate-600">分類</label><select id="fc160-cat" class="w-full p-2 border rounded-xl text-[11px] bg-white" onchange="fc160CatChanged()"></select><input id="fc160-cat-new" maxlength="8" placeholder="輸入新分類名稱（最多 8 字）" class="hidden w-full p-2 border rounded-xl text-[11px] mt-1.5"></div>
       <div><label class="text-[10px] font-bold text-slate-600">備註（選填）</label><input id="fc160-note" maxlength="60" placeholder="例如：河粉＋咖啡" class="w-full p-2 border rounded-xl text-[11px]"></div>
       <div class="flex gap-2 fc154-sticky" style="position:sticky;bottom:-20px;z-index:5;background:#fff;margin:0 -20px -20px;padding:10px 20px 20px;border-top:1px solid #e2e8f0"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-bold">取消</button><button id="fc160-save" onclick="fc160Save()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
+    </div>
+
+    <div id="modal-fc167-groups" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-slate-800">🗂️ 整理門票分組</h3>
+      <p class="text-[10px] text-slate-500">同一個活動的門票會收成一組。每張票選擇所屬活動，按「儲存」才會套用並同步全團。</p>
+      <button type="button" onclick="fc167Suggest()" class="w-full text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl py-2">✨ 套用建議（依名稱前綴預填）</button>
+      <div id="fc167-groups" class="space-y-1.5"></div>
+      <div id="fc167-list"></div>
+      <div class="flex gap-2 fc154-sticky" style="position:sticky;bottom:-20px;z-index:5;background:#fff;margin:0 -20px -20px;padding:10px 20px 20px;border-top:1px solid #e2e8f0"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="fc167Save()" class="flex-1 bg-indigo-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
+    </div>
+
+    <div id="modal-fc166-tickets" class="bg-white rounded-2xl p-5 w-full max-w-xs space-y-3 shadow-xl hidden max-h-[90vh] overflow-y-auto">
+      <h3 class="text-sm font-bold text-slate-800">加入我的記帳</h3>
+      <p class="text-[10px] text-slate-500">勾選要記帳的門票，分類會記成「門票」，金額為票價（台幣）。</p>
+      <div><label class="text-[10px] font-bold text-slate-600">日期</label><input id="fc166-date" type="date" class="w-full p-2 border rounded-xl text-[11px]" style="display:block;width:100%;min-width:0;max-width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;text-align:left;height:38px;background:#fff"></div>
+      <div id="fc166-list" class="space-y-1"></div>
+      <div id="fc166-total" class="text-[11px] font-bold text-emerald-700 text-right"></div>
+      <div class="flex gap-2 fc154-sticky" style="position:sticky;bottom:-20px;z-index:5;background:#fff;margin:0 -20px -20px;padding:10px 20px 20px;border-top:1px solid #e2e8f0"><button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-bold">取消</button><button id="fc166-save" onclick="fc166Save()" class="flex-1 bg-emerald-600 text-white py-2 rounded-xl text-xs font-bold">加入記帳</button></div>
     </div>
 
     <!-- Edit/Add Ticket Item Modal -->
@@ -1309,6 +1329,10 @@ html{touch-action:manipulation}
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">門票 / 活動名稱：</label>
         <input type="text" id="input-ticket-name" placeholder="例如：印象會安表演門票" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      </div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">所屬活動（選填，同活動會收成一組）：</label>
+        <input type="text" id="input-ticket-group" list="ticket-group-list" maxlength="20" placeholder="例如：巴拿山" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none"><datalist id="ticket-group-list"></datalist>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">金額 (NT$)：</label>
@@ -5041,7 +5065,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       let infantSubtotal = 0;
 
       if (tbody) {
-        let rowsHtml = fixedExpenses.map(item => {
+        let rowsHtml = fixedExpenses.map((item, idx) => {
           adultSubtotal += Number(item.adult) || 0;
           kidSubtotal += Number(item.kid) || 0;
           infantSubtotal += Number(item.infant) || 0;
@@ -5054,6 +5078,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
               <td class="py-1.5 text-right">$${Number(item.infant).toLocaleString()}</td>
               <td class="py-1.5 text-center">
                 <div class="flex items-center justify-center space-x-1">
+                  <div class="flex flex-col leading-none fc162-mv">${idx>0?`<button onclick="moveFixedExpense('${item.id}',-1)" class="text-slate-400 hover:text-amber-600 text-[10px] px-0.5" title="上移" aria-label="上移"><i class="fa-solid fa-chevron-up"></i></button>`:''}${idx<fixedExpenses.length-1?`<button onclick="moveFixedExpense('${item.id}',1)" class="text-slate-400 hover:text-amber-600 text-[10px] px-0.5" title="下移" aria-label="下移"><i class="fa-solid fa-chevron-down"></i></button>`:''}</div>
                   <button onclick="openFixedExpenseModal('${item.id}')" class="text-slate-400 hover:text-amber-600 p-0.5" title="編輯"><i class="fa-solid fa-pen-to-square"></i></button>
                   <button onclick="deleteFixedExpense('${item.id}')" class="text-slate-400 hover:text-rose-600 p-0.5" title="刪除"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
@@ -5079,29 +5104,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const ticketsData = getStoredData('tickets', defaultTicketsData).map(item=>({...item,checked:ticketSelection[item.id]===true}));
       const container = document.getElementById('ticket-checklist');
 
-      container.innerHTML = ticketsData.map(item => `
-        <div class="py-1.5 border-b border-slate-50 last:border-0">
-          <div class="flex items-center justify-between">
-            <label class="flex items-center space-x-2 cursor-pointer flex-1">
-              <input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleTicketCheck('${item.id}')" class="text-indigo-600 rounded">
-              <span class="font-medium text-slate-700">${item.name}</span>
-            </label>
-            <div class="flex items-center space-x-2">
-              <span class="font-bold text-slate-900">$${Number(item.price).toLocaleString()}</span>
-              ${isOrganizer()?`<div class="flex items-center space-x-0.5 text-slate-400">
-                <button onclick="openTicketModal('${item.id}')" class="hover:text-indigo-600 p-0.5" title="編輯門票"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button onclick="deleteTicketItem('${item.id}')" class="hover:text-rose-600 p-0.5" title="刪除門票"><i class="fa-solid fa-trash-can"></i></button>
-              </div>`:''}
-            </div>
-          </div>
-          ${(item.note || item.link) ? `
-            <div class="pl-6 pt-0.5 flex items-center justify-between text-[10px] text-slate-500 gap-2 flex-wrap">
-              ${item.note ? `<span><i class="fa-regular fa-comment-dots mr-1 text-indigo-400"></i>${item.note}</span>` : '<span></span>'}
-              ${item.link ? `<a href="${item.link}" target="_blank" class="text-indigo-600 font-bold hover:underline"><i class="fa-solid fa-ticket mr-0.5"></i>開啟購票連結</a>` : ''}
-            </div>
-          ` : ''}
-        </div>
-      `).join('');
+      container.innerHTML = fc165TicketsHtml(ticketsData);
+      {const sg=document.getElementById('fc165-suggest');if(sg){const org=isOrganizer()&&ticketsData.length>1;sg.classList.toggle('hidden',!org);sg.innerHTML=org?`<button type="button" onclick="fc167Open()" class="w-full text-[11px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-xl py-2">🗂️ 整理分組</button>`:'';}}
 
       const ticketsTotal = ticketsData.filter(i => i.checked).reduce((sum, i) => sum + Number(i.price || 0), 0);
       const grandTotal = adultSubtotal + ticketsTotal;
@@ -5128,6 +5132,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           document.getElementById('input-ticket-price').value = item.price !== undefined ? item.price : 0;
           document.getElementById('input-ticket-note').value = item.note || '';
           document.getElementById('input-ticket-link').value = item.link || '';
+          document.getElementById('input-ticket-group').value = item.group || '';
         }
       } else {
         document.getElementById('edit-ticket-id').value = '';
@@ -5136,7 +5141,9 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         document.getElementById('input-ticket-price').value = '';
         document.getElementById('input-ticket-note').value = '';
         document.getElementById('input-ticket-link').value = '';
+        document.getElementById('input-ticket-group').value = '';
       }
+      document.getElementById('ticket-group-list').innerHTML=[...new Set(getStoredData('tickets',defaultTicketsData).map(i=>String(i.group||'').trim()).filter(Boolean))].map(g=>`<option value="${escapeHtml(g)}">`).join('');
 
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -5151,6 +5158,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const price = Number(document.getElementById('input-ticket-price').value) || 0;
       const note = document.getElementById('input-ticket-note').value.trim();
       const link = document.getElementById('input-ticket-link').value.trim();
+      const group = document.getElementById('input-ticket-group').value.trim().slice(0,20);
 
       if (!name) {
         showToast("請輸入門票名稱");
@@ -5166,6 +5174,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           item.price = price;
           item.note = note;
           item.link = link;
+          item.group = group;
         }
       } else {
         list.push({
@@ -5174,6 +5183,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           price,
           note,
           link,
+          group,
         });
       }
 
@@ -5257,6 +5267,21 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       showToast(editId ? "固定開銷已修改！" : "已新增固定開銷！");
     }
 
+    function fc162Move(list,id,dir){const i=list.findIndex(x=>x.id===id),j=i+dir;if(i<0||j<0||j>=list.length)return null;const a=list.slice();[a[i],a[j]]=[a[j],a[i]];return a;}
+    function moveTicket(id,dir){
+      if(!requireRoom())return;
+      if(!isOrganizer())return showToast('只有主辦人可以調整門票順序');
+      const list=getStoredData('tickets',defaultTicketsData),i=list.findIndex(x=>x.id===id);if(i<0)return;
+      const g=String(list[i].group||'').trim();let j=i+dir;while(j>=0&&j<list.length&&String(list[j].group||'').trim()!==g)j+=dir;
+      if(j<0||j>=list.length)return;const next=list.slice();[next[i],next[j]]=[next[j],next[i]];
+      pushStateToCloud('tickets',next);
+    }
+    function moveFixedExpense(id,dir){
+      if(!requireRoom())return;
+      const next=fc162Move(getStoredData('fixedExpenses',defaultFixedExpensesData),id,dir);if(!next)return;
+      pushStateToCloud('fixedExpenses',next);
+    }
+
     function deleteFixedExpense(expenseId) {
       if (!requireRoom()) return;
       let list = getStoredData('fixedExpenses', defaultFixedExpensesData);
@@ -5267,6 +5292,94 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
 
     function personalTicketKey(){return `perfect_ticket_selection_${roomId}_${currentMember?.id || currentMember?.nickname || 'member'}`;}
     function getPersonalTicketSelection(){try{return JSON.parse(localStorage.getItem(personalTicketKey())||'{}')||{};}catch(_){return {};}}
+
+    // ---- FC-82 門票分組：同活動收成一組（一律複選），主辦人自行整理分組 ----
+    const fc165Open = {};
+    function fc165TicketRow(item, idx, n) {
+      const e = escapeHtml, link = item.link ? safeExternalUrl(item.link) : '';
+      const tools = isOrganizer() ? `<div class="flex items-center space-x-0.5 text-slate-400">
+          <div class="flex flex-col leading-none fc162-mv">${idx>0?`<button onclick="moveTicket('${item.id}',-1)" class="hover:text-indigo-600 text-[10px] px-0.5" title="上移" aria-label="上移"><i class="fa-solid fa-chevron-up"></i></button>`:''}${idx<n-1?`<button onclick="moveTicket('${item.id}',1)" class="hover:text-indigo-600 text-[10px] px-0.5" title="下移" aria-label="下移"><i class="fa-solid fa-chevron-down"></i></button>`:''}</div>
+          <button onclick="openTicketModal('${item.id}')" class="hover:text-indigo-600 p-0.5" title="編輯門票"><i class="fa-solid fa-pen-to-square"></i></button>
+          <button onclick="deleteTicketItem('${item.id}')" class="hover:text-rose-600 p-0.5" title="刪除門票"><i class="fa-solid fa-trash-can"></i></button>
+        </div>` : '';
+      return `<div class="fc165-row py-1.5 border-b border-slate-50 last:border-0">
+          <div class="flex items-center justify-between gap-2">
+            <label class="flex items-center space-x-2 cursor-pointer flex-1 min-w-0"><input type="checkbox" ${item.checked ? 'checked' : ''} onchange="toggleTicketCheck('${item.id}')" class="text-indigo-600 rounded shrink-0"><span class="font-medium text-slate-700">${e(item.name)}</span></label>
+            <div class="flex items-center space-x-2 shrink-0"><span class="font-bold text-slate-900">$${Number(item.price).toLocaleString()}</span>${tools}</div>
+          </div>
+          ${(item.note || link) ? `<div class="pl-6 pt-0.5 flex items-center justify-between text-[10px] text-slate-500 gap-2 flex-wrap">
+              ${item.note ? `<span><i class="fa-regular fa-comment-dots mr-1 text-indigo-400"></i>${e(item.note)}</span>` : '<span></span>'}
+              ${link ? `<a href="${e(link)}" target="_blank" rel="noopener" class="text-indigo-600 font-bold hover:underline"><i class="fa-solid fa-ticket mr-0.5"></i>開啟購票連結</a>` : ''}
+            </div>` : ''}
+        </div>`;
+    }
+    function fc165TicketsHtml(items) {
+      const e = escapeHtml, seen = new Set(), out = [];
+      const key = i => String(i.group || '').trim();
+      const ungrouped = items.filter(i => !key(i));
+      items.forEach(it => {
+        const g = key(it);
+        if (!g) { out.push(fc165TicketRow(it, ungrouped.indexOf(it), ungrouped.length)); return; }
+        if (seen.has(g)) return; seen.add(g);
+        const members = items.filter(x => key(x) === g);
+        const picked = members.filter(x => x.checked), sum = picked.reduce((t, x) => t + Number(x.price || 0), 0);
+        const open = fc165Open[g] === true;
+        const summary = picked.length ? `已選 ${picked.length} 項 $${sum.toLocaleString()}` : '<span class="text-slate-400">未選</span>';
+        const gid = encodeURIComponent(g);
+        let h = `<div class="fc165-group rounded-xl ${open ? 'border border-indigo-200' : 'bg-slate-50'} my-1.5" data-g="${e(g)}">
+          <div class="fc165-head flex items-center justify-between gap-2 px-3 py-2 cursor-pointer select-none" onclick="fc165Toggle(decodeURIComponent('${gid}'))">
+            <span class="font-bold text-slate-700 shrink-0">${e(g)} <span class="text-slate-400">${open ? '▾' : '▸'}</span> <span class="text-[10px] font-normal text-slate-400">${members.length} 項</span></span>
+            <span class="text-[11px] text-indigo-600 font-bold truncate text-right">${summary}</span>
+          </div>`;
+        if (open) h += `<div class="px-3 pb-2">${members.map((m, i) => fc165TicketRow(m, i, members.length)).join('')}</div>`;
+        out.push(h + '</div>');
+      });
+      return out.join('');
+    }
+    function fc165Toggle(g){fc165Open[g]=fc165Open[g]!==true;renderBudget();}
+    // 依名稱前綴建議分組（只當整理視窗的預填，不會自動套用）
+    function fc165Suggest(list){
+      const map={};
+      (list||getStoredData('tickets',defaultTicketsData)).filter(i=>!String(i.group||'').trim()).forEach(i=>{const k=String(i.name||'').trim().slice(0,3);if(k.length>=2)(map[k]=map[k]||[]).push(i);});
+      const out=[];
+      Object.values(map).forEach(ms=>{if(ms.length<2)return;let p=String(ms[0].name).trim();ms.forEach(m=>{const n=String(m.name).trim();let j=0;while(j<p.length&&j<n.length&&p[j]===n[j])j++;p=p.slice(0,j);});p=p.replace(/[\s（(+＋\-—]+$/,'');if(p.length>=2)out.push({name:p,items:ms});});
+      return out;
+    }
+    // ---- 主辦人整理分組視窗 ----
+    let fc167Draft = {};
+    function fc167Groups(){return [...new Set(Object.values(fc167Draft).map(v=>String(v||'').trim()).filter(Boolean))];}
+    function fc167Open(){
+      if(!requireRoom())return;
+      if(!isOrganizer())return showToast('只有主辦人可以整理分組');
+      fc167Draft={};getStoredData('tickets',defaultTicketsData).forEach(t=>{fc167Draft[t.id]=String(t.group||'').trim();});
+      fc167Render();closeModal();
+      document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-fc167-groups').classList.remove('hidden');
+    }
+    function fc167Render(){
+      const e=escapeHtml,tickets=getStoredData('tickets',defaultTicketsData),gs=fc167Groups();
+      document.getElementById('fc167-groups').innerHTML=gs.length?gs.map(g=>`<div class="flex items-center justify-between gap-2 bg-indigo-50 rounded-lg px-2.5 py-1.5"><span class="font-bold text-indigo-700 text-[11px] truncate">${e(g)}（${tickets.filter(t=>fc167Draft[t.id]===g).length}）</span><span class="shrink-0 space-x-1"><button type="button" data-g="${e(g)}" onclick="fc167Rename(this.dataset.g)" class="text-[10px] px-2 py-0.5 rounded-full bg-white border border-indigo-200 text-indigo-600 font-bold">改名</button><button type="button" data-g="${e(g)}" onclick="fc167Dissolve(this.dataset.g)" class="text-[10px] px-2 py-0.5 rounded-full bg-white border border-rose-200 text-rose-600 font-bold">解散</button></span></div>`).join(''):'<p class="text-[10px] text-slate-400">還沒有分組，在下面每張票選擇所屬活動。</p>';
+      document.getElementById('fc167-list').innerHTML=tickets.map(t=>{const cur=fc167Draft[t.id]||'';return `<div class="fc167-row flex items-center justify-between gap-2 py-1.5 border-b border-slate-50"><span class="text-[11px] text-slate-700 min-w-0 flex-1 break-words">${e(t.name)}</span><select data-id="${e(t.id)}" onchange="fc167Set(this.dataset.id,this.value)" class="shrink-0 max-w-[45%] p-1.5 border rounded-lg text-[11px] bg-white"><option value=""${cur?'':' selected'}>未分組</option>${gs.map(g=>`<option value="${e(g)}"${g===cur?' selected':''}>${e(g)}</option>`).join('')}<option value="__new__">＋新增活動…</option></select></div>`;}).join('');
+    }
+    function fc167Set(id,v){
+      if(v==='__new__'){const n=(window.prompt('新活動名稱（最多 20 字）')||'').trim().slice(0,20);v=n;}
+      fc167Draft[id]=v;fc167Render();
+    }
+    function fc167Rename(g){
+      const n=(window.prompt('活動改名為',g)||'').trim().slice(0,20);if(!n||n===g)return;
+      Object.keys(fc167Draft).forEach(k=>{if(fc167Draft[k]===g)fc167Draft[k]=n;});fc167Render();
+    }
+    function fc167Dissolve(g){Object.keys(fc167Draft).forEach(k=>{if(fc167Draft[k]===g)fc167Draft[k]='';});fc167Render();}
+    function fc167Suggest(){
+      const tickets=getStoredData('tickets',defaultTicketsData).map(t=>({...t,group:fc167Draft[t.id]||''})),sug=fc165Suggest(tickets);
+      if(!sug.length)return showToast('沒有可建議的分組');
+      sug.forEach(g=>g.items.forEach(m=>{fc167Draft[m.id]=g.name;}));fc167Render();showToast('已預填建議，按「儲存」才會套用');
+    }
+    function fc167Save(){
+      if(!requireRoom())return;if(!isOrganizer())return showToast('只有主辦人可以整理分組');
+      const list=getStoredData('tickets',defaultTicketsData).map(t=>({...t,group:String(fc167Draft[t.id]||'').trim()}));
+      pushStateToCloud('tickets',list);closeModal();showToast('分組已儲存');
+    }
+
     function toggleTicketCheck(id) {
       if (!requireRoom()) return;
       const selection=getPersonalTicketSelection();selection[id]=selection[id]!==true;
@@ -5521,7 +5634,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       document.getElementById('modal-backdrop').classList.remove('trip-login-overlay');
       document.getElementById('modal-backdrop').classList.add('hidden');
       const modalIds = [
-        'modal-place-library', 'modal-member-guide', 'modal-place-admin', 'modal-scenic-pdf', 'modal-room-session', 'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-room-members', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-fc160-entry', 'modal-itinerary-item', 'modal-move-day',
+        'modal-place-library', 'modal-member-guide', 'modal-place-admin', 'modal-scenic-pdf', 'modal-room-session', 'modal-reminder-edit', 'modal-airport-transfer', 'modal-fixed-planner', 'modal-header-edit', 'modal-sync-room', 'modal-member-identity', 'modal-member-settings', 'modal-room-members', 'modal-info-edit', 'modal-fixed-expense', 'modal-ticket-item', 'modal-fc160-entry', 'modal-fc167-groups', 'modal-fc166-tickets', 'modal-itinerary-item', 'modal-move-day',
         'modal-smart-match', 'modal-nearby-shops', 'modal-add-souvenir',
         'modal-room-assignment', 'modal-packing-cat', 'modal-packing-item',
         'modal-fav-cat', 'modal-edit-fav-cat', 'modal-fav-item',
@@ -7683,7 +7796,9 @@ article[data-f139fold] .fc71-rooms{order:1}article[data-f139fold] .fc139-lic{ord
 <script id="fc160-js">
 (function(){
 var CATS=[['food','🍜 餐飲'],['transport','🚕 交通'],['shop','🛍️ 購物'],['ticket','🎫 門票'],['hotel','🏨 住宿'],['other','📝 其他']];
-var state={key:'',entries:[],loaded:false,loading:false,err:false};
+var state={key:'',entries:[],loaded:false,loading:false,err:false,filter:'all',catsOpen:false,days:{}};
+function catInfo(c){var b=CATS.find(function(x){return x[0]===c;});if(b)return b;if(String(c).indexOf('c:')===0)return [c,'🏷️ '+String(c).slice(2)];return CATS[5];}
+function usedCats(){var seen={},out=[];state.entries.forEach(function(e){if(!seen[e.cat]){seen[e.cat]=1;out.push(e.cat);}});var order=CATS.map(function(c){return c[0];});out.sort(function(a,b){var i=order.indexOf(a),j=order.indexOf(b);if(i<0&&j<0)return String(a).localeCompare(String(b));if(i<0)return 1;if(j<0)return -1;return i-j;});return out;}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function sess(){try{return roomId+'|'+(currentMember&&currentMember.id||'')+'|'+getMemberToken();}catch(e){return '';}}
 function ready(){try{return !!(roomId&&cloudClient&&currentMember&&getMemberToken());}catch(e){return false;}}
@@ -7704,21 +7819,32 @@ async function load(){
 function render(){
   var box=document.getElementById('fc160-body');if(!box)return;
   if(!ready()){box.innerHTML='<p class="text-slate-400 text-[11px]">登入房間後即可記帳。</p>';return;}
-  var list=state.entries.slice().sort(function(a,b){return (b.date||'').localeCompare(a.date||'')||String(b.id).localeCompare(String(a.id));});
-  var total=0,byCat={};list.forEach(function(e){var t=twdOf(e);total+=t;byCat[e.cat]=(byCat[e.cat]||0)+t;});
   var h='';
   if(state.err&&!state.loaded)h+='<p class="text-[10px] text-amber-600 bg-amber-50 rounded-lg p-2">雲端暫時連不上，先顯示這台手機上次看到的內容。<button class="underline font-bold ml-1" onclick="fc160Retry()">重試</button></p>';
-  if(!list.length){box.innerHTML=h+'<p class="text-slate-400 text-[11px]">還沒有記錄，按右上「記一筆」開始。</p>';return;}
-  h+='<div class="bg-emerald-50 rounded-xl p-3"><div class="flex justify-between font-bold text-emerald-800 text-sm"><span>總花費</span><span id="fc160-total">NT$'+total.toLocaleString()+'</span></div><div class="flex flex-wrap gap-1.5 mt-2">'+CATS.filter(function(c){return byCat[c[0]];}).map(function(c){return '<span class="bg-white text-slate-600 rounded-full px-2 py-0.5 text-[10px]">'+c[1]+' '+byCat[c[0]].toLocaleString()+'</span>';}).join('')+'</div></div>';
-  var day='';
-  list.forEach(function(e){
-    if(e.date!==day){day=e.date;var dsum=list.filter(function(x){return x.date===day;}).reduce(function(a,x){return a+twdOf(x);},0);h+='<div class="flex justify-between text-[10px] font-bold text-slate-400 pt-2"><span>'+esc(day)+'</span><span>NT$'+dsum.toLocaleString()+'</span></div>';}
-    var c=CATS.find(function(c){return c[0]===e.cat;})||CATS[5];
-    var orig=e.cur==='TWD'?'':'<div class="text-[10px] text-slate-400">'+esc(e.amount)+' '+esc(e.cur)+'</div>';
-    h+='<div class="fc160-row flex items-center justify-between gap-2 border-b border-slate-50 pb-1.5" data-id="'+esc(e.id)+'"><div class="min-w-0"><div class="font-medium text-slate-700 truncate">'+c[1]+(e.note?'　'+esc(e.note):'')+'</div>'+orig+'</div><div class="flex items-center gap-1.5 shrink-0"><span class="font-bold text-slate-800">NT$'+twdOf(e).toLocaleString()+'</span><button class="text-slate-400 p-0.5" onclick="fc160Open(\''+esc(e.id)+'\')" title="編輯"><i class="fa-solid fa-pen-to-square"></i></button><button class="text-slate-400 p-0.5" onclick="fc160Del(\''+esc(e.id)+'\')" title="刪除"><i class="fa-solid fa-trash-can"></i></button></div></div>';
+  if(!state.entries.length){box.innerHTML=h+'<p class="text-slate-400 text-[11px]">還沒有記錄，按右上「記一筆」開始。</p>';return;}
+  var cats=usedCats();if(state.filter!=='all'&&cats.indexOf(state.filter)<0)state.filter='all';
+  var list=state.entries.filter(function(e){return state.filter==='all'||e.cat===state.filter;}).sort(function(a,b){return (b.date||'').localeCompare(a.date||'')||String(b.id).localeCompare(String(a.id));});
+  var total=0,byCat={};state.entries.forEach(function(e){byCat[e.cat]=(byCat[e.cat]||0)+twdOf(e);});
+  list.forEach(function(e){total+=twdOf(e);});
+  h+='<div class="bg-emerald-50 rounded-xl p-3"><div class="fc160-sumhead flex justify-between items-center font-bold text-emerald-800 text-sm cursor-pointer select-none" onclick="fc160ToggleCats()"><span>'+(state.filter==='all'?'總花費':esc(catInfo(state.filter)[1])+' 小計')+'</span><span><span id="fc160-total">NT$'+total.toLocaleString()+'</span> <span class="text-[11px] font-medium text-emerald-700">分類 '+(state.catsOpen?'▴':'▾')+'</span></span></div>';
+  if(state.catsOpen)h+='<div class="grid grid-cols-3 gap-1.5 mt-2">'+cats.map(function(c){return '<div class="bg-white rounded-xl py-1.5 px-1 text-center"><div class="text-[10px] text-slate-500">'+esc(catInfo(c)[1])+'</div><div class="text-[11px] font-bold text-slate-700">'+byCat[c].toLocaleString()+'</div></div>';}).join('')+'</div>';
+  h+='</div>';
+  h+='<div class="fc160-chips flex gap-1.5 overflow-x-auto py-1" style="-webkit-overflow-scrolling:touch">'+['all'].concat(cats).map(function(c){var on=state.filter===c;return '<button type="button" class="fc160-chip shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold '+(on?'bg-emerald-600 text-white':'bg-slate-100 text-slate-600')+'" data-c="'+esc(c)+'" onclick="fc160Filter(this.dataset.c)">'+(c==='all'?'全部':esc(catInfo(c)[1]))+'</button>';}).join('')+'</div>';
+  var groups=[],gi={};list.forEach(function(e){if(!(e.date in gi)){gi[e.date]=groups.length;groups.push({date:e.date,items:[]});}groups[gi[e.date]].items.push(e);});
+  groups.forEach(function(g,idx){
+    var open=g.date in state.days?state.days[g.date]:idx===0;var sum=g.items.reduce(function(a,x){return a+twdOf(x);},0);
+    h+='<div class="fc160-day rounded-xl '+(open?'border border-emerald-200 bg-white':'bg-slate-50')+'" data-d="'+esc(g.date)+'"><div class="fc160-dayhead flex justify-between items-center px-3 py-2 cursor-pointer select-none" data-d="'+esc(g.date)+'" onclick="fc160Day(this.dataset.d)"><span class="font-bold text-slate-700">'+esc(g.date.slice(5).replace('-','/'))+' <span class="text-slate-400">'+(open?'▾':'▸')+'</span></span><span class="text-slate-500"><b class="text-slate-800">NT$'+sum.toLocaleString()+'</b> <span class="text-[10px]">'+g.items.length+' 筆</span></span></div>';
+    if(open)h+='<div class="px-3 pb-1">'+g.items.map(function(e){
+      var c=catInfo(e.cat),icon=c[1].split(' ')[0],name=e.note?esc(e.note):esc(c[1].split(' ').slice(1).join(' '));
+      var orig=e.cur==='TWD'?'':' <span class="text-[10px] text-slate-400">'+esc(e.amount)+' '+esc(e.cur)+'</span>';
+      return '<div class="fc160-row flex items-center justify-between gap-2 border-t border-slate-100 py-1.5" data-id="'+esc(e.id)+'"><div class="min-w-0 truncate text-slate-700">'+icon+' '+name+orig+(e.src?' <span class="fc160-src text-[9px] text-indigo-500 bg-indigo-50 rounded px-1">來自門票</span>':'')+'</div><div class="flex items-center gap-1.5 shrink-0"><span class="font-bold text-slate-800">NT$'+twdOf(e).toLocaleString()+'</span><button class="text-slate-400 p-0.5" onclick="fc160Open(\''+esc(e.id)+'\')" title="編輯"><i class="fa-solid fa-pen-to-square"></i></button><button class="text-slate-400 p-0.5" onclick="fc160Del(\''+esc(e.id)+'\')" title="刪除"><i class="fa-solid fa-trash-can"></i></button></div></div>';}).join('')+'</div>';
+    h+='</div>';
   });
   box.innerHTML=h;
 }
+window.fc160Filter=function(c){state.filter=c;render();};
+window.fc160ToggleCats=function(){state.catsOpen=!state.catsOpen;render();};
+window.fc160Day=function(d){var cur=d in state.days?state.days[d]:null;if(cur===null){var first=state.entries.filter(function(e){return state.filter==='all'||e.cat===state.filter;}).map(function(e){return e.date;}).sort().pop();cur=(d===first);}state.days[d]=!cur;render();};
 window.fc160Render=function(){load();render();};
 window.fc160Retry=function(){state.loaded=false;state.err=false;load();};
 function lastCur(){try{return JSON.parse(localStorage.getItem('fc160_cur')||'{}');}catch(e){return {};}}
@@ -7732,17 +7858,18 @@ window.fc160Open=function(id){
   document.getElementById('fc160-date').value=e?e.date:ymdLocal(new Date());
   document.getElementById('fc160-amount').value=e?e.amount:'';
   document.getElementById('fc160-cur').value=e?e.cur:(l.__last||'TWD');
-  document.getElementById('fc160-rate').value=e&&e.cur!=='TWD'?e.rate:'';
+  document.getElementById('fc160-rate').value=e&&e.cur!=='TWD'?e.rate:'';document.getElementById('fc160-rate').dataset.auto='0';document.getElementById('fc160-rate-hint').textContent='';
   document.getElementById('fc160-note').value=e?e.note||'':'';
-  var sel=document.getElementById('fc160-cat');sel.innerHTML=CATS.map(function(c){return '<option value="'+c[0]+'">'+c[1]+'</option>';}).join('');sel.value=e?e.cat:'food';
+  var sel=document.getElementById('fc160-cat');var customs=usedCats().filter(function(c){return String(c).indexOf('c:')===0;});sel.innerHTML=CATS.map(function(c){return '<option value="'+c[0]+'">'+c[1]+'</option>';}).concat(customs.map(function(c){return '<option value="'+esc(c)+'">'+esc(catInfo(c)[1])+'</option>';})).join('')+'<option value="__new__">＋自訂分類…</option>';sel.value=e?e.cat:(state.filter!=='all'?state.filter:'food');if(!sel.value)sel.value='food';document.getElementById('fc160-cat-new').value='';document.getElementById('fc160-cat-new').classList.add('hidden');
   document.getElementById('fc160-curlist').innerHTML=['TWD'].concat(Object.keys(usedCurs())).map(function(c){return '<option value="'+esc(c)+'">';}).join('');
   closeModal();document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-fc160-entry').classList.remove('hidden');
   fc160CurChanged(!e);
 };
+window.fc160CatChanged=function(){var n=document.getElementById('fc160-cat-new');var on=document.getElementById('fc160-cat').value==='__new__';n.classList.toggle('hidden',!on);if(on)n.focus();};
 window.fc160CurChanged=function(fill){
   var cur=(document.getElementById('fc160-cur').value||'').trim().toUpperCase();var row=document.getElementById('fc160-rate-row');
   var foreign=cur&&cur!=='TWD';row.classList.toggle('hidden',!foreign);document.getElementById('fc160-rate-cur').textContent=cur||'外幣';
-  var r=document.getElementById('fc160-rate');if(foreign&&!r.value){var m=usedCurs();if(m[cur])r.value=m[cur];}
+  var r=document.getElementById('fc160-rate');if(!foreign){document.getElementById('fc160-rate-hint').textContent='';}else if(!r.value||r.dataset.auto==='1'){fc160FetchRate(false);}
   fc160Preview();
 };
 window.fc160Preview=function(){
@@ -7750,7 +7877,36 @@ window.fc160Preview=function(){
   var a=Number(document.getElementById('fc160-amount').value),r=Number(document.getElementById('fc160-rate').value);
   p.textContent=(cur&&cur!=='TWD'&&a>0&&r>0)?'約 NT$'+Math.round(a*r).toLocaleString():'';
 };
-document.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='fc160-amount')fc160Preview();});
+document.addEventListener('input',function(ev){if(ev.target&&ev.target.id==='fc160-amount')fc160Preview();if(ev.target&&ev.target.id==='fc160-rate')ev.target.dataset.auto='0';});
+var rateCache={t:0,rates:null};
+async function liveRate(cur){
+  var src='';
+  try{
+    if(!rateCache.rates||Date.now()-rateCache.t>6*3600e3){
+      var r=await fetch('https://open.er-api.com/v6/latest/TWD');var j=await r.json();
+      if(j&&j.rates){rateCache={t:Date.now(),rates:j.rates};try{localStorage.setItem('fc160_rates',JSON.stringify(rateCache));}catch(e){}}
+    }
+    src='live';
+  }catch(e){try{var c=JSON.parse(localStorage.getItem('fc160_rates')||'null');if(c&&c.rates){rateCache=c;src='cached';}}catch(x){}}
+  var v=rateCache.rates&&rateCache.rates[cur];
+  if(v>0)return {rate:Number((1/v).toPrecision(5)),src:src||'cached'};
+  try{if(typeof exchangeRates!=='undefined'&&exchangeRates[cur]>0&&exchangeRates.TWD>0)return {rate:Number((exchangeRates.TWD/exchangeRates[cur]).toPrecision(5)),src:'builtin'};}catch(e){}
+  var m=usedCurs();if(m[cur])return {rate:Number(m[cur]),src:'remembered'};
+  return null;
+}
+window.fc160FetchRate=async function(force){
+  var cur=(document.getElementById('fc160-cur').value||'').trim().toUpperCase();if(!cur||cur==='TWD')return;
+  var r=document.getElementById('fc160-rate'),hint=document.getElementById('fc160-rate-hint');
+  if(!force&&r.value&&r.dataset.auto!=='1')return;
+  hint.textContent='抓取最新匯率中…';
+  var res=await liveRate(cur);
+  if((document.getElementById('fc160-cur').value||'').trim().toUpperCase()!==cur)return;
+  if(!force&&r.value&&r.dataset.auto!=='1')return;
+  if(!res){hint.textContent='查不到 '+cur+' 的匯率，請手動輸入';return;}
+  r.value=res.rate;r.dataset.auto='1';
+  hint.textContent={live:'已帶入最新匯率（國際參考匯率，可修改）',cached:'目前連不上網，帶入上次抓到的匯率（可修改）',builtin:'目前連不上網，帶入內建參考匯率（可修改）',remembered:'目前連不上網，帶入你上次用的匯率（可修改）'}[res.src];
+  fc160Preview();
+};
 function uid(){return 'e'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 window.fc160Save=async function(){
   if(!ready())return;
@@ -7761,11 +7917,14 @@ window.fc160Save=async function(){
   if(!(amount>0))return showToast('請輸入金額');
   if(!/^[A-Z0-9$.]{1,8}$/.test(cur))return showToast('幣別請用英文或數字，例如 VND');
   if(cur!=='TWD'&&!(rate>0))return showToast('請輸入匯率（1 '+cur+' 約幾元台幣）');
+  var catv=document.getElementById('fc160-cat').value;
+  if(catv==='__new__'){var nm=document.getElementById('fc160-cat-new').value.trim().slice(0,8);if(!nm)return showToast('請輸入新分類名稱');var hit=CATS.find(function(c){return c[1].split(' ').slice(1).join(' ')===nm;});catv=hit?hit[0]:'c:'+nm;}
   var id=document.getElementById('fc160-id').value||uid();
-  var e={id:id,date:date,amount:amount,cur:cur,rate:cur==='TWD'?1:rate,cat:document.getElementById('fc160-cat').value,note:document.getElementById('fc160-note').value.trim().slice(0,60)};
+  var e={id:id,date:date,amount:amount,cur:cur,rate:cur==='TWD'?1:rate,cat:catv,note:document.getElementById('fc160-note').value.trim().slice(0,60)};
   var btn=document.getElementById('fc160-save');btn.disabled=true;
   try{
-    var data={date:e.date,amount:e.amount,cur:e.cur,rate:e.rate,cat:e.cat,note:e.note};
+    var old=state.entries.find(function(x){return x.id===id;});
+    var data={date:e.date,amount:e.amount,cur:e.cur,rate:e.rate,cat:e.cat,note:e.note};if(old&&old.src){data.src=old.src;data.srcPrice=old.srcPrice;e.src=old.src;e.srcPrice=old.srcPrice;}
     await rpc('fc160_save',{p_entry_id:id,p_data:data});
     var i=state.entries.findIndex(function(x){return x.id===id;});if(i<0)state.entries.push(e);else state.entries[i]=e;writeCache();
     if(cur!=='TWD'){var l=lastCur();l[cur]=rate;l.__last=cur;try{localStorage.setItem('fc160_cur',JSON.stringify(l));}catch(x){}}else{var l2=lastCur();l2.__last='TWD';try{localStorage.setItem('fc160_cur',JSON.stringify(l2));}catch(x){}}
@@ -7777,6 +7936,42 @@ window.fc160Del=async function(id){
   if(!ready()||!confirm('確定刪除這筆記帳嗎？'))return;
   try{await rpc('fc160_delete',{p_entry_id:id});state.entries=state.entries.filter(function(x){return x.id!==id;});writeCache();render();showToast('已刪除');}
   catch(err){showToast('刪除失敗，請確認網路後再試');}
+};
+
+function pickedTickets(){
+  var sel={};try{sel=getPersonalTicketSelection()||{};}catch(e){}
+  return getStoredData('tickets',defaultTicketsData).filter(function(t){return sel[t.id]===true;});
+}
+var f166=[];
+window.fc166Open=function(){
+  if(!ready())return showToast('請先登入房間');
+  var ts=pickedTickets();if(!ts.length)return showToast('請先在上面勾選要記帳的門票');
+  f166=ts.map(function(t){var price=Number(t.price)||0;var ex=state.entries.filter(function(e){return e.src===t.id;}).pop();
+    var st=!ex?'new':(Number(ex.srcPrice)===price?'done':'changed');return {id:t.id,name:t.name,price:price,st:st};});
+  document.getElementById('fc166-date').value=ymdLocal(new Date());
+  document.getElementById('fc166-list').innerHTML=f166.map(function(x,i){return '<label class="flex items-center justify-between gap-2 py-1.5 border-b border-slate-50 text-[11px]"><span class="flex items-center gap-2 min-w-0"><input type="checkbox" class="fc166-ck" data-i="'+i+'" '+(x.st==='done'?'':'checked')+' onchange="fc166Sum()"><span class="truncate text-slate-700">'+esc(x.name)+(x.st==='done'?' <span class="text-emerald-600">（已加入）</span>':(x.st==='changed'?' <span class="text-amber-600">（票價已更新）</span>':''))+'</span></span><b class="shrink-0">$'+x.price.toLocaleString()+'</b></label>';}).join('');
+  closeModal();document.getElementById('modal-backdrop').classList.remove('hidden');document.getElementById('modal-fc166-tickets').classList.remove('hidden');fc166Sum();
+};
+window.fc166Sum=function(){var t=0;document.querySelectorAll('.fc166-ck:checked').forEach(function(c){t+=f166[Number(c.dataset.i)].price;});document.getElementById('fc166-total').textContent='合計 NT$'+t.toLocaleString();};
+window.fc166Save=async function(){
+  if(!ready())return;var date=document.getElementById('fc166-date').value;if(!date)return showToast('請選日期');
+  var chosen=[];document.querySelectorAll('.fc166-ck:checked').forEach(function(c){chosen.push(f166[Number(c.dataset.i)]);});
+  if(!chosen.length)return showToast('請至少勾選一張門票');
+  var todo=[];
+  for(var k=0;k<chosen.length;k++){var x=chosen[k];
+    if(x.st==='done'&&!confirm('「'+x.name+'」已加入過記帳，要再加一筆嗎？'))continue;
+    if(x.st==='changed'&&!confirm('「'+x.name+'」票價已更新為 $'+x.price.toLocaleString()+'，要再加一筆嗎？'))continue;
+    todo.push(x);}
+  if(!todo.length){closeModal();return showToast('沒有新增任何記帳');}
+  var btn=document.getElementById('fc166-save');btn.disabled=true;var n=0;
+  try{
+    for(var m=0;m<todo.length;m++){var t=todo[m];var id=uid();
+      var data={date:date,amount:t.price,cur:'TWD',rate:1,cat:'ticket',note:String(t.name).slice(0,60),src:t.id,srcPrice:t.price};
+      await rpc('fc160_save',{p_entry_id:id,p_data:data});
+      state.entries.push(Object.assign({id:id},data));n++;}
+    writeCache();closeModal();render();showToast('已加入 '+n+' 筆記帳');
+  }catch(err){writeCache();render();showToast(n?('已加入 '+n+' 筆，其餘失敗，請再試一次'):'加入失敗，請確認網路後再試');}
+  finally{btn.disabled=false;}
 };
 })();
 </script>
