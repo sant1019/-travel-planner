@@ -430,6 +430,8 @@ body.fc65-nologin #fc65-header,body.fc65-nologin main,body.fc65-nologin #room-lo
 </style>
 <style id="fc70-style">
 html{touch-action:manipulation}
+.fc181-tag{display:inline-block;background:#fee2e2;color:#b91c1c;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;line-height:1.4;margin-top:2px}
+.fc181-nc{display:flex;align-items:flex-start;gap:8px;font-size:11px;font-weight:700;color:#92400e;margin-top:6px}
 html.fc174-1 body{zoom:1.15}
 html.fc174-2 body{zoom:1.3}
 html.fc174-1 [id^="modal-"]{max-height:calc(88vh / 1.15) !important}
@@ -574,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-85</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-87</span>
         </div>
       </div>
     </header>
@@ -1440,7 +1442,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <details class="fc70-sec"><summary>營業時間與公休</summary><div class="space-y-2.5 pt-2"><div class="space-y-2"><label class="text-[11px] font-bold text-slate-600 block">營業時間</label><div id="fixed-hours-rows" class="space-y-2"></div><button type="button" onclick="addFixedHours()" class="text-sky-700 text-xs">＋新增營業時段</button><p class="text-[10px] text-slate-400">午休可分成兩段；全天營業請選 00:00 至 24:00。未設定採 09:00 至 21:00。</p></div>
         <div><label class="text-[11px] font-bold text-slate-600 block mb-1">每週公休日（可複選）</label><div id="fixed-closed-days" class="flex flex-wrap gap-2 text-[11px]"></div></div></div></details>
         <details class="fc70-sec"><summary>表演場次</summary><div class="pt-2"><div class="space-y-2"><label class="text-[11px] font-bold text-slate-600 block">表演場次</label><div id="fixed-session-rows" class="space-y-2"></div><button type="button" onclick="addFixedSession()" class="text-sky-700 text-xs">＋新增表演場次</button></div></div></details>
-        <div class="fc70-sec space-y-1"><label class="block text-xs font-bold">地圖確認（行程表上的地圖圖示會開啟這裡）</label><input id="fixed-guide-map" type="url" class="w-full p-2 border rounded-lg text-xs" placeholder="貼上 Google Maps 分享連結；可自動辨識" oninput="fc49MapChanged('fixed')"><div id="fc49-map-fixed" class="fc49-map"></div><p class="text-[10px] text-slate-500">請貼上 Google Maps 地點連結並按「確認是此地點」；景點介紹會以確認過的地圖比對產製。</p></div><div><label class="text-[11px] font-bold text-slate-600 block mb-1">補充（會顯示在 PDF 景點卡最下方）</label><textarea id="fixed-supp" maxlength="3000" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：記得帶泳衣、先預約座位"></textarea></div><div id="fc70-fixed-guide" class="hidden"><div class="space-y-2 pt-2"><div class="fc49-guide-fields"><label class="block text-xs font-bold">搜尋現有介紹<input id="fc49-query-fixed" autocomplete="off" placeholder="輸入一個字即可搜尋" class="w-full p-2 border rounded-lg mt-1" oninput="fc49ScheduleSearch('fixed',event)" oncompositionend="fc49ScheduleSearch('fixed',event)"></label><div id="fixed-guide-results" class="space-y-2" aria-live="polite"></div><label class="block text-xs font-bold mt-2">簡介（建議 1–2 句）<textarea id="fixed-guide" maxlength="12000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm"></textarea></label><label class="block text-xs font-bold mt-2">介紹重點（建議 3–5 項）<textarea id="fc49-highlights-fixed" maxlength="12000" rows="4" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行填寫一項特色、必看重點或推薦菜色"></textarea></label></div><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。共享前請開啟地圖確認位置；可貼上 Google Maps 分享連結。</p><div class="flex gap-2"><button type="button" onclick="fc70SearchBtn('fixed')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button></div><label class="flex gap-2 items-center text-xs font-bold"><input type="checkbox" id="fc48-fixed-shared">共享景點介紹</label><p class="text-[10px] text-slate-500">勾選後，其他使用者安排同一地點時，也能查看並採用你填寫的介紹，不用再自行搜尋資料。</p></div></div><div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="自由填寫提醒；日期、時間與公休日請使用上方選項設定"></textarea></div>
+        <div class="fc70-sec space-y-1"><label class="block text-xs font-bold">地圖確認（行程表上的地圖圖示會開啟這裡）</label><input id="fixed-guide-map" type="url" class="w-full p-2 border rounded-lg text-xs" placeholder="貼上 Google Maps 分享連結；可自動辨識" oninput="fc49MapChanged('fixed')"><div id="fc49-map-fixed" class="fc49-map"></div><label class="fc181-nc"><input type="checkbox" id="fc181-nc-fixed" style="margin-top:2px"><span>無座標，改手動排入（日期規則選「指定日期」並勾選指定時間，儲存後直接插入並鎖定）</span></label><p class="text-[10px] text-slate-500">請貼上 Google Maps 地點連結並按「確認是此地點」；景點介紹會以確認過的地圖比對產製。</p></div><div><label class="text-[11px] font-bold text-slate-600 block mb-1">補充（會顯示在 PDF 景點卡最下方）</label><textarea id="fixed-supp" maxlength="3000" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="例如：記得帶泳衣、先預約座位"></textarea></div><div id="fc70-fixed-guide" class="hidden"><div class="space-y-2 pt-2"><div class="fc49-guide-fields"><label class="block text-xs font-bold">搜尋現有介紹<input id="fc49-query-fixed" autocomplete="off" placeholder="輸入一個字即可搜尋" class="w-full p-2 border rounded-lg mt-1" oninput="fc49ScheduleSearch('fixed',event)" oncompositionend="fc49ScheduleSearch('fixed',event)"></label><div id="fixed-guide-results" class="space-y-2" aria-live="polite"></div><label class="block text-xs font-bold mt-2">簡介（建議 1–2 句）<textarea id="fixed-guide" maxlength="12000" rows="3" class="w-full p-2 border rounded-lg mt-1 text-sm"></textarea></label><label class="block text-xs font-bold mt-2">介紹重點（建議 3–5 項）<textarea id="fc49-highlights-fixed" maxlength="12000" rows="4" class="w-full p-2 border rounded-lg mt-1 text-sm" placeholder="每行填寫一項特色、必看重點或推薦菜色"></textarea></label></div><p class="text-[10px] text-slate-500">介紹會儲存在此房間。可搜尋介紹庫，確認地圖後採用；主動分享的內容才會公開給其他房間。共享前請開啟地圖確認位置；可貼上 Google Maps 分享連結。</p><div class="flex gap-2"><button type="button" onclick="fc70SearchBtn('fixed')" class="p-2 bg-sky-50 text-sky-700 rounded text-xs">搜尋介紹庫</button></div><label class="flex gap-2 items-center text-xs font-bold"><input type="checkbox" id="fc48-fixed-shared">共享景點介紹</label><p class="text-[10px] text-slate-500">勾選後，其他使用者安排同一地點時，也能查看並採用你填寫的介紹，不用再自行搜尋資料。</p></div></div><div><label class="text-[11px] font-bold text-slate-600 block mb-1">備註／已知限制</label><textarea id="fixed-note" class="w-full h-16 p-2 border border-slate-200 rounded-xl text-xs" placeholder="自由填寫提醒；日期、時間與公休日請使用上方選項設定"></textarea></div>
         <div class="flex gap-2"><button onclick="cancelFixedActivityEditor()" class="flex-1 bg-white border border-slate-200 py-2 rounded-xl text-xs font-bold">取消</button><button onclick="saveFixedActivity()" class="flex-1 bg-sky-600 text-white py-2 rounded-xl text-xs font-bold">儲存</button></div>
       </div>
 
@@ -1763,7 +1765,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <label class="text-[11px] font-bold text-slate-600 block mb-1">備註說明：</label>
         <input type="text" id="input-fitem-note" placeholder="例如：必點烤龍蝦、營業至22:00" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
       </div>
-      <div class="fc70-sec space-y-1"><label class="block text-xs font-bold">地圖確認（地圖圖示會開啟這裡，也用來算「建議 Day」）</label><input id="fav-guide-map" type="url" class="w-full p-2 border rounded-lg text-xs" placeholder="貼上 Google Maps 分享連結；可自動辨識" oninput="fc49MapChanged('fav')"><div id="fc49-map-fav" class="fc49-map"></div><p class="text-[10px] text-slate-500">請貼上 Google Maps 地點連結並按「確認是此地點」；沒貼也可以儲存，之後再補。</p></div>
+      <div class="fc70-sec space-y-1"><label class="block text-xs font-bold">地圖確認（地圖圖示會開啟這裡，也用來算「建議 Day」）</label><input id="fav-guide-map" type="url" class="w-full p-2 border rounded-lg text-xs" placeholder="貼上 Google Maps 分享連結；可自動辨識" oninput="fc49MapChanged('fav')"><div id="fc49-map-fav" class="fc49-map"></div><label class="fc181-nc"><input type="checkbox" id="fc181-nc-fav" style="margin-top:2px"><span>無座標（之後需自行設定日期時間排入行程，不提供建議 Day）</span></label><p class="text-[10px] text-slate-500">請貼上 Google Maps 地點連結並按「確認是此地點」；也可以勾「無座標」儲存。</p></div>
       <div><label class="text-[11px] font-bold block mb-1">影音連結</label><input id="input-fitem-video" type="url" placeholder="https://…" class="w-full p-2.5 border rounded-xl text-xs"></div>
       <div id="fav-search-preview" class="bg-slate-50 p-2.5 rounded-xl border border-slate-100 space-y-1.5 hidden">
         <p class="text-[10px] font-bold text-slate-500">自動生成比對連結：</p>
@@ -1788,7 +1790,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <label class="text-[11px] font-bold text-slate-600 block mb-1">備註事項：</label>
         <input type="text" id="input-edit-fitem-note" placeholder="例如：招牌烤龍蝦、營業至22:00" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
       </div>
-      <div class="fc70-sec space-y-1"><label class="block text-xs font-bold">地圖確認（地圖圖示會開啟這裡，也用來算「建議 Day」）</label><input id="fav-edit-guide-map" type="url" class="w-full p-2 border rounded-lg text-xs" placeholder="貼上 Google Maps 分享連結；可自動辨識" oninput="fc49MapChanged('favedit')"><div id="fc49-map-favedit" class="fc49-map"></div><p class="text-[10px] text-slate-500">請貼上 Google Maps 地點連結並按「確認是此地點」；沒貼也可以儲存，之後再補。</p></div>
+      <div class="fc70-sec space-y-1"><label class="block text-xs font-bold">地圖確認（地圖圖示會開啟這裡，也用來算「建議 Day」）</label><input id="fav-edit-guide-map" type="url" class="w-full p-2 border rounded-lg text-xs" placeholder="貼上 Google Maps 分享連結；可自動辨識" oninput="fc49MapChanged('favedit')"><div id="fc49-map-favedit" class="fc49-map"></div><label class="fc181-nc"><input type="checkbox" id="fc181-nc-favedit" style="margin-top:2px"><span>無座標（之後需自行設定日期時間排入行程，不提供建議 Day）</span></label><p class="text-[10px] text-slate-500">請貼上 Google Maps 地點連結並按「確認是此地點」；也可以勾「無座標」儲存。</p></div>
       <div><label class="text-[11px] font-bold block mb-1">影音連結</label><input id="input-edit-fitem-video" type="url" placeholder="https://…" class="w-full p-2.5 border rounded-xl text-xs"></div>
       <div class="flex space-x-2 pt-1">
         <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-xl text-xs font-medium">取消</button>
@@ -3173,9 +3175,9 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
       if(editor&&home)home.appendChild(editor);
       box.innerHTML=list.length?list.map(x=>{
         const days=fixedAssignments(x.id),status=days.length?'已安排至 '+days.map(d=>'Day '+d).join('、')+(x.nearNote&&!x.forced?'（'+x.nearNote+'）':''):'待安排',open=(fc70OpenFixed===x.id)||(editing&&String(editing)===String(x.id)),unl=days.length&&!x.forced;
-        const chip=!days.length?'<span class="fc70-lk fc70-lk-wait">待安排</span>':x.forced?'<span class="fc70-lk fc70-lk-on">🔒 已鎖定</span>':'<span class="fc70-lk fc70-lk-off">🔓 未鎖定</span>';
+        const nct=(!fc181HasCoord(x))?`<span class="fc181-tag">${FC181_TAG}</span>`:'';const chip=(!days.length?'<span class="fc70-lk fc70-lk-wait">待安排</span>':x.forced?'<span class="fc70-lk fc70-lk-on">🔒 已鎖定</span>':'<span class="fc70-lk fc70-lk-off">🔓 未鎖定</span>');
         const lockBtn=days.length?`<button type="button" onclick="fc70ToggleLock('${x.id}')" class="fc70-lkbtn ${x.forced?'fc70-lkbtn-on':'fc70-lkbtn-off'}">${x.forced?'🔒 已鎖定（點此解除）':'🔓 未鎖定（點此鎖定）'}</button>`:'';
-        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl ${unl?'fc70-fx-unl':''}"><button type="button" onclick="fc70ToggleFixedCard('${x.id}')" class="w-full flex items-center gap-2 p-3 text-left" aria-expanded="${open}"><span class="min-w-0 flex-1"><span class="block font-bold text-xs truncate">${escapeHtml(x.name)}</span><span class="block text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${unl?'・重新規劃會移動':''}</span></span>${chip}<span class="text-slate-400 text-sm shrink-0">${open?'▾':'▸'}</span></button><div class="fc70-fx-body ${open?'':'hidden'} px-3 pb-3 space-y-2"><div class="text-[10px] text-slate-500 leading-relaxed">${fixedActivityDescription(x)}</div>${days.length&&x.scheduleReason==='未填時間，無法排入正確行程'?`<p class="text-[10px] text-amber-700"><b>⚠️ ${escapeHtml(x.scheduleReason)}</b>，已先排在當天第一項，請補上時間。</p>`:''}${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}${lockBtn}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div></div>`;
+        return `<div data-fixed-id="${escapeHtml(x.id)}" class="bg-white border border-slate-200 rounded-xl ${unl?'fc70-fx-unl':''}"><button type="button" onclick="fc70ToggleFixedCard('${x.id}')" class="w-full flex items-center gap-2 p-3 text-left" aria-expanded="${open}"><span class="min-w-0 flex-1"><span class="block font-bold text-xs truncate">${escapeHtml(x.name)}</span><span class="block text-[11px] font-bold ${days.length?'text-emerald-700':'text-amber-700'}">${status}${unl?'・重新規劃會移動':''}</span>${nct}</span>${chip}<span class="text-slate-400 text-sm shrink-0">${open?'▾':'▸'}</span></button><div class="fc70-fx-body ${open?'':'hidden'} px-3 pb-3 space-y-2"><div class="text-[10px] text-slate-500 leading-relaxed">${fixedActivityDescription(x)}</div>${days.length&&x.scheduleReason==='未填時間，無法排入正確行程'?`<p class="text-[10px] text-amber-700"><b>⚠️ ${escapeHtml(x.scheduleReason)}</b>，已先排在當天第一項，請補上時間。</p>`:''}${!days.length?`<p class="text-[10px] text-amber-700"><b>無法排入原因：</b>${escapeHtml(x.scheduleReason||'尚未自動安排，請儲存並自動安排，或由主辦人指定日期。')}</p>`:''}${lockBtn}<div class="flex gap-3 text-[11px]"><button onclick="scheduleFixedActivity('${x.id}')" class="text-indigo-600">${days.length?'手動改排日期':'主辦人強制安排'}</button><button onclick="openFixedActivityEditor('${x.id}',this)" class="text-sky-600">編輯</button><button onclick="deleteFixedActivity('${x.id}')" class="text-rose-500">刪除設定</button></div><div class="fixed-editor-slot"></div></div></div>`;
       }).join(''):'<div class="text-xs text-slate-400 text-center py-4">尚未建立固定活動</div>';
       if(editor&&!editor.classList.contains('hidden')&&editing){const card=[...box.querySelectorAll('[data-fixed-id]')].find(el=>el.dataset.fixedId===editing);if(card)card.querySelector('.fixed-editor-slot').appendChild(editor);}
       fc70RenderItinPlaces();
@@ -3255,7 +3257,10 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
       if(rule==='weekday'&&!['星期日','星期一','星期二','星期三','星期四','星期五','星期六'].includes(dateValue))return showToast('請選擇有效星期');
       if(rule==='specific'&&!getTripDays().includes(dateValue))return showToast('請選擇旅遊期程內的日期');
       let structured;try{structured=readFixedStructuredFields();}catch(e){return showToast(e.message);}
-      const data={...old,forced:old?.forced||false,id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),...structured,...fc49GuideData('fixed'),note:document.getElementById('fixed-note').value.trim(),map:document.getElementById('fixed-guide-map').value.trim()||buildAutoMapLink(name)};
+      const nc181=!!document.getElementById('fc181-nc-fixed')?.checked;
+      if(!nc181&&!fc49GuideData('fixed').guideMapConfirmed)return showToast('請先確認地圖位置或勾選無座標儲存');
+      if(nc181&&(rule!=='specific'||!document.getElementById('fixed-has-time').checked))return showToast('無座標需自行設定日期時間：日期規則選「指定日期」並勾選指定時間');
+      const data={...old,forced:old?.forced||false,id:id||`fixed-${Date.now()}`,name,dateRule:document.getElementById('fixed-date-rule').value,dateValue:document.getElementById('fixed-date-value').value.trim(),...structured,...fc49GuideData('fixed'),noCoord:nc181,note:document.getElementById('fixed-note').value.trim(),map:document.getElementById('fixed-guide-map').value.trim()||buildAutoMapLink(name)};
       if(!await fc48ShareFromEditor('fixed'))return;
       const idx=list.findIndex(x=>String(x.id)===id); if(idx>=0)list[idx]=data;else list.push(data);
       cancelFixedActivityEditor();arrangeFixedActivities(list);renderFixedPlannerList();const days=fixedAssignments(data.id);showToast(days.length?'已儲存，已安排至 Day '+days.join('、'):'已儲存，待安排');
@@ -3374,11 +3379,12 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
     function arrangeFixedActivities(list=getFixedActivities()) {
       if(!requireRoom()||!isOrganizer())return;
       const data=JSON.parse(JSON.stringify(getStoredData('itinerary',defaultItineraryData))),previous=new Map();
-      const ids=new Set(list.filter(a=>!a.forced).map(a=>a.id));
+      const ids=new Set(list.filter(a=>!a.forced&&(a.noCoord||fc181HasCoord(a))).map(a=>a.id));
       Object.values(data).forEach(d=>{d.items=(d.items||[]).filter(x=>{if(ids.has(x.fixedActivityId)){previous.set(x.fixedActivityId,x);return false;}return true;});});
       const ordered=[...list].sort((a,b)=>((b.dateRule!=='flexible'?4:0)+(b.time?2:0)+(b.sessions?1:0))-((a.dateRule!=='flexible'?4:0)+(a.time?2:0)+(a.sessions?1:0)));
       for(const a of ordered){
         if(a.forced&&fixedAssignments(a.id,data).length)continue;
+        if(!a.noCoord&&!fc181HasCoord(a)){if(window.fc181Want)fc181Want({map:a.map,name:a.name});a.scheduleReason='找不到座標：請確認地圖（貼含座標的 Google Maps 連結），或勾選「無座標」並自行設定日期時間，才能智慧排入';continue;}
         a.forced=false;let picked=null,reason=plannerRules(a).error||'旅遊日期內沒有適合的空檔';
         const matches=Object.entries(data).flatMap(([day,d])=>(d.items||[]).filter(x=>!x.fixedActivityId&&x.title?.replace(/\p{Extended_Pictographic}|\uFE0F/gu,'').trim()===a.name).map(item=>({day,item})));
         if(matches.length>1){a.scheduleReason='現有行程有多筆同名項目，請主辦人手動確認';continue;}
@@ -3391,22 +3397,29 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
             a.scheduleReason='未填時間，無法排入正確行程';delete a.pendingItem;continue;}
         }
         const nearMap=window.fc178Near?fc178Near(a,data):null;
+        const hs=window.fc179Hotels?fc179Hotels():null,zone=hs?fc179Zone({map:a.map,name:a.name},hs):null;
         for(const [i,date] of getTripDays().entries()){
-          const day=String(i+1),items=getItineraryWithTransfers(data)[day]?.items||[],slot=plannerSlot(a,date,items);
-          if(slot.start!==undefined){const score=items.length,nr=nearMap?nearMap[day]:null;const better=!picked||(nr&&!picked.near)||(nr&&picked.near?(nr.d<picked.near.d-1e-9||(Math.abs(nr.d-picked.near.d)<1e-9&&score<picked.score)):(!picked.near&&score<picked.score));if(better)picked={day,slot,score,near:nr};}
+          const day=String(i+1),items=getItineraryWithTransfers(data)[day]?.items||[];let viol=false,extra=[];
+          if(zone!==null){const dz=fc179DayZones(hs,date);if(dz.set.size&&!dz.set.has(zone))viol=true;
+            else if(dz.stay>=0&&dz.prev>=0&&dz.stay!==dz.prev){const di=fc179DayItems(data,day,hs);
+              if(zone===dz.stay){const m=Math.max(-1,...di.filter(x=>x.zone===dz.prev).map(x=>x.e));if(m>0)extra.push({id:'fc179-p',time:'00:00 - '+plannerClock(Math.min(m,1439))});}
+              else if(zone===dz.prev){const m=Math.min(1440,...di.filter(x=>x.zone===dz.stay).map(x=>x.s));if(m<1440)extra.push({id:'fc179-p',time:plannerClock(m)+' - 23:59'});}}}
+          const slot=plannerSlot(a,date,extra.length?[...items,...extra]:items);
+          if(slot.start!==undefined){const score=items.length,nr=nearMap?nearMap[day]:null;let better;if(!picked)better=true;else if(picked.viol!==viol)better=!viol;else better=(nr&&!picked.near)||(nr&&picked.near?(nr.d<picked.near.d-1e-9||(Math.abs(nr.d-picked.near.d)<1e-9&&score<picked.score)):(!picked.near&&score<picked.score));if(better)picked={day,slot,score,near:nr,viol};}
           else if(plannerAllowedDate(a,date))reason=slot.reason;
         }
         if(picked){
           data[picked.day] ||= {items:[]};data[picked.day].items.push(fixedItineraryItem(a,picked.slot,previous.get(a.id)||a.pendingItem));
-          data[picked.day].items.sort((x,y)=>(x.noTimeWarn?-1:(plannerTimes(x.time)[0]??1440))-(y.noTimeWarn?-1:(plannerTimes(y.time)[0]??1440)));a.scheduleReason='';a.nearNote=picked.near?'離「'+picked.near.near+'」約 '+fc178Km(picked.near.d)+' 公里':'';delete a.pendingItem;
+          data[picked.day].items.sort((x,y)=>(x.noTimeWarn?-1:(plannerTimes(x.time)[0]??1440))-(y.noTimeWarn?-1:(plannerTimes(y.time)[0]??1440)));a.scheduleReason='';if(a.noCoord)a.forced=true;a.nearNote=(picked.near?'離「'+picked.near.near+'」約 '+fc178Km(picked.near.d)+' 公里':'')+(picked.viol?(picked.near?'，':'')+'⚠️ 不順路（沒有符合住宿區域的空檔）':'');delete a.pendingItem;
         }else {a.scheduleReason=reason;if(previous.has(a.id))a.pendingItem=previous.get(a.id);}
       }
+      window.__fc179Warn='';try{const hs=window.fc179Hotels&&fc179Hotels();if(hs){const bad=[];getTripDays().forEach((date,i)=>{const dz=fc179DayZones(hs,date);if(dz.stay>=0&&dz.prev>=0&&dz.stay!==dz.prev){const di=fc179DayItems(data,String(i+1),hs).sort((x,y)=>x.s-y.s);let seenStay=false;for(const x of di){if(x.zone===dz.stay)seenStay=true;else if(x.zone===dz.prev&&seenStay){bad.push('Day '+(i+1));break;}}}});if(bad.length)window.__fc179Warn='⚠️ '+bad.join('、')+' 景點順序逆路（先到新飯店區再回舊飯店區），請檢查鎖定的行程';}}catch(e){}
       pushStateToCloud('fixedActivities',list);pushStateToCloud('itinerary',data);renderFixedPlannerList();
     }
     function saveAndArrangeFixedActivities(){
       if(!requireRoom()||!isOrganizer())return;
       if(!document.getElementById('fixed-activity-editor').classList.contains('hidden'))return saveFixedActivity();
-      arrangeFixedActivities();const list=getFixedActivities(),n=list.filter(a=>fixedAssignments(a.id).length).length;showToast(`已安排 ${n} 個，待安排 ${list.length-n} 個`);
+      arrangeFixedActivities();const list=getFixedActivities(),n=list.filter(a=>fixedAssignments(a.id).length).length;showToast(`已安排 ${n} 個，待安排 ${list.length-n} 個`+(window.__fc179Warn?'\n'+window.__fc179Warn:''));
     }
     function deleteFixedActivity(id){
       if(!requireRoom()||!isOrganizer())return;
@@ -3606,8 +3619,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     function fc41SwapTranslation(){fc41TranslationRevision++;const a=document.getElementById('translate-from'),b=document.getElementById('translate-to'),v=a.value;a.value=b.value;b.value=v;document.getElementById('translate-output').value='';fc41GoogleLink();}
     async function fc41Translate(){const text=document.getElementById('translate-input').value.trim(),from=document.getElementById('translate-from').value,to=document.getElementById('translate-to').value,status=document.getElementById('translate-status'),out=document.getElementById('translate-output'),button=document.getElementById('translate-button');if(!text){status.textContent='請先輸入文字';return;}if(new TextEncoder().encode(text).length>500){status.textContent='文字過長，請分成簡短句子，或使用下方 Google 翻譯。';fc41GoogleLink();return;}const rev=++fc41TranslationRevision;out.value='';if(from===to){out.value=text;status.textContent='來源與目標語言相同';return;}button.disabled=true;status.textContent='翻譯中…';fc41GoogleLink();const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);try{const url=new URL('https://api.mymemory.translated.net/get');url.search=new URLSearchParams({q:text,langpair:from+'|'+to});const response=await fetch(url,{signal:controller.signal});if(!response.ok)throw Error('連線失敗');const data=await response.json();if(Number(data.responseStatus)!==200||data.quotaFinished||!data.responseData?.translatedText)throw Error('服務暫時無法翻譯或已達使用上限');if(rev!==fc41TranslationRevision)return;const el=document.createElement('textarea');el.innerHTML=data.responseData.translatedText;out.value=el.value;status.textContent='翻譯完成・MyMemory';}catch(e){if(rev===fc41TranslationRevision)status.textContent='翻譯服務暫時無法使用，請點下方 Google 翻譯。';}finally{clearTimeout(timeout);button.disabled=false;}}
     async function fc41CopyTranslation(){const field=document.getElementById('translate-output');if(!field.value)return showToast('請先翻譯');try{await navigator.clipboard.writeText(field.value);showToast('已複製翻譯結果');}catch(e){field.focus();field.select();field.setSelectionRange(0,field.value.length);showToast('請長按全選並複製翻譯結果');}}
-    function fc41ReadRoute(row){return [...row.querySelectorAll('.tv-stop')].map(r=>({name:r.querySelector('.ts-name').value.trim(),wait:r.querySelector('.ts-wait').value===''?NaN:Number(r.querySelector('.ts-wait').value),drive:r.querySelector('.ts-drive').value===''?NaN:Number(r.querySelector('.ts-drive').value),map:(r.querySelector('.ts-map')?.value||'').trim(),mapOk:!!r.querySelector('.ts-map')&&r.dataset.ok===r.querySelector('.ts-map').value.trim()&&!!r.dataset.ok}));}
-    function fc41AddStop(row,x={}){const el=document.createElement('div');el.className='tv-stop border bg-white rounded-xl p-2 space-y-2';el.innerHTML=`<div class="flex gap-1"><input class="ts-name min-w-0 flex-1 border rounded-lg p-2 text-xs" placeholder="接送地點" value="${escapeHtml(x.name||'')}"><button type="button" onclick="fc41MoveStop(this,-1)" aria-label="上移地點">↑</button><button type="button" onclick="fc41MoveStop(this,1)" aria-label="下移地點">↓</button><button type="button" onclick="const r=this.closest('.transfer-vehicle');this.closest('.tv-stop').remove();fc41UpdateVehicle(r)" class="text-rose-600" aria-label="刪除地點">×</button></div><div class="space-y-1"><label class="text-[10px] block">地圖確認（地址定位不準時，貼上 Google 地圖連結）<input class="ts-map w-full p-2 border rounded-lg text-xs mt-0.5" type="url" placeholder="貼上 Google 地圖連結" value="${escapeHtml(x.map||'')}"></label><p class="ts-mapmsg text-[10px] text-slate-500"></p><div class="fc49-actions"><button type="button" class="fc49-button" onclick="fc41MapOpen(this)">開啟地圖</button><button type="button" class="fc49-button ts-mapok" onclick="fc41MapConfirm(this)">確認是此地點</button><button type="button" class="fc49-button fc49-secondary" onclick="fc41MapChange(this)">更換連結</button></div></div><div class="grid grid-cols-2 gap-2"><label class="text-[10px]">接人預留（分）<input class="ts-wait w-full p-2 border rounded-lg text-xs" type="number" min="0" step="1" value="${x.wait??5}"></label><label class="text-[10px]">到下一站／目的地（分）<input class="ts-drive w-full p-2 border rounded-lg text-xs" type="number" min="0" step="1" placeholder="請填車程" value="${x.drive??''}"></label></div><button type="button" onclick="fc41RouteMap(this)" class="text-xs text-sky-700">📍 行駛路線時間</button>`;if(x.mapOk&&x.map)el.dataset.ok=x.map;fc41MapRender(el);row.querySelector('.tv-route-rows').appendChild(el);el.addEventListener('input',e=>{if(e.target.classList.contains('ts-map')){if(el.dataset.ok!==e.target.value.trim())delete el.dataset.ok;fc41MapRender(el);}fc41UpdateVehicle(row);});fc41UpdateVehicle(row);}
+    function fc41ReadRoute(row){return [...row.querySelectorAll('.tv-stop')].map(r=>({name:r.querySelector('.ts-name').value.trim(),wait:r.querySelector('.ts-wait').value===''?NaN:Number(r.querySelector('.ts-wait').value),drive:r.querySelector('.ts-drive').value===''?NaN:Number(r.querySelector('.ts-drive').value),noCoord:!!r.querySelector('.ts-nc')?.checked,legacy:!!(r.dataset.orig&&r.dataset.orig===r.querySelector('.ts-name').value.trim()&&!(r.querySelector('.ts-map')?.value||'').trim()),map:(r.querySelector('.ts-map')?.value||'').trim(),mapOk:!!r.querySelector('.ts-map')&&r.dataset.ok===r.querySelector('.ts-map').value.trim()&&!!r.dataset.ok}));}
+    function fc41AddStop(row,x={}){const el=document.createElement('div');el.className='tv-stop border bg-white rounded-xl p-2 space-y-2';el.innerHTML=`<div class="flex gap-1"><input class="ts-name min-w-0 flex-1 border rounded-lg p-2 text-xs" placeholder="接送地點" value="${escapeHtml(x.name||'')}"><button type="button" onclick="fc41MoveStop(this,-1)" aria-label="上移地點">↑</button><button type="button" onclick="fc41MoveStop(this,1)" aria-label="下移地點">↓</button><button type="button" onclick="const r=this.closest('.transfer-vehicle');this.closest('.tv-stop').remove();fc41UpdateVehicle(r)" class="text-rose-600" aria-label="刪除地點">×</button></div><div class="space-y-1"><label class="text-[10px] block">地圖確認（地址定位不準時，貼上 Google 地圖連結）<input class="ts-map w-full p-2 border rounded-lg text-xs mt-0.5" type="url" placeholder="貼上 Google 地圖連結" value="${escapeHtml(x.map||'')}"></label><p class="ts-mapmsg text-[10px] text-slate-500"></p><label class="fc181-nc"><input type="checkbox" class="ts-nc" ${x.noCoord?'checked':''} style="margin-top:2px"><span>無座標，只用地址文字（行駛時間需自行查詢）</span></label><div class="fc49-actions"><button type="button" class="fc49-button" onclick="fc41MapOpen(this)">開啟地圖</button><button type="button" class="fc49-button ts-mapok" onclick="fc41MapConfirm(this)">確認是此地點</button><button type="button" class="fc49-button fc49-secondary" onclick="fc41MapChange(this)">更換連結</button></div></div><div class="grid grid-cols-2 gap-2"><label class="text-[10px]">接人預留（分）<input class="ts-wait w-full p-2 border rounded-lg text-xs" type="number" min="0" step="1" value="${x.wait??5}"></label><label class="text-[10px]">到下一站／目的地（分）<input class="ts-drive w-full p-2 border rounded-lg text-xs" type="number" min="0" step="1" placeholder="請填車程" value="${x.drive??''}"></label></div><button type="button" onclick="fc41RouteMap(this)" class="text-xs text-sky-700">📍 行駛路線時間</button>`;if(x.mapOk&&x.map)el.dataset.ok=x.map;if(x.orig)el.dataset.orig=x.orig;fc41MapRender(el);row.querySelector('.tv-route-rows').appendChild(el);el.addEventListener('input',e=>{if(e.target.classList.contains('ts-map')){if(el.dataset.ok!==e.target.value.trim())delete el.dataset.ok;fc41MapRender(el);}fc41UpdateVehicle(row);});fc41UpdateVehicle(row);}
     function fc41MoveStop(button,direction){const el=button.closest('.tv-stop'),other=direction<0?el.previousElementSibling:el.nextElementSibling;if(!other)return;direction<0?el.parentNode.insertBefore(el,other):el.parentNode.insertBefore(other,el);fc41UpdateVehicle(el.closest('.transfer-vehicle'));}
     function fc41MapRender(el){const inp=el.querySelector('.ts-map'),msg=el.querySelector('.ts-mapmsg'),ok=el.querySelector('.ts-mapok'),v=inp.value.trim(),done=!!v&&el.dataset.ok===v;msg.textContent=done?'✓ 地點已確認（行駛路線時間會用這個位置）':v?(fc49ValidMap(v)?'請按「開啟地圖」核對位置，再確認。':'這不是 Google 地圖連結，請重新貼上。'):'沒填時會用上面的地址文字定位。';msg.style.color=done?'#047857':'';ok.textContent=done?'✓ 已確認':'確認是此地點';}
     function fc41MapOpen(b){const el=b.closest('.tv-stop'),v=el.querySelector('.ts-map').value.trim(),n=el.querySelector('.ts-name').value.trim();const u=fc49ValidMap(v)?v:(n?buildAutoMapLink(n):'');if(!u)return showToast('請先填寫地點');window.open(u,'_blank','noopener');}
@@ -3920,7 +3933,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const days=getTripDays(),first=days[0]||'',last=days[days.length-1]||'',box=document.getElementById('info-edit-fields'),ec=escapeHtml;
       const inp='w-full p-2.5 border border-slate-200 rounded-xl text-xs bg-white';
       box.innerHTML=(fc70HotelDraft.length?fc70HotelDraft.map((h,i)=>{const n=fc70Nights(h);
-        return `<div class="rounded-xl border border-slate-200 p-2.5 space-y-2"><div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-600">住宿 ${i+1}${n?`・${n} 晚`:''}</span><button type="button" onclick="fc70HotelDel(${i})" class="text-rose-500 text-xs font-bold px-1">刪除</button></div><input value="${ec(h.name)}" oninput="fc70HotelSync(${i},'name',this.value)" placeholder="飯店名稱" class="${inp}">${fc133DateField(h,i,first,last)}<input value="${ec(h.map||'')}" oninput="fc70HotelSync(${i},'map',this.value.trim())" placeholder="Google Maps 連結（可留白，自動依飯店名稱搜尋）" class="${inp}"><div class="flex items-center gap-2"><button type="button" onclick="fc70HotelOpen(${i})" class="flex-1 py-2 rounded-lg bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold">📍 開啟地圖</button><button type="button" id="fc70-hc-${i}" ${h.opened&&h.opened===fc70HotelUrl(h)?'':'disabled'} onclick="fc70HotelConfirm(${i})" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-40">確認位置</button></div><p id="fc70-hm-${i}" class="${h.confirmed&&h.confirmed===fc70HotelUrl(h)?'text-[11px] font-bold text-emerald-700':'text-[11px] font-bold text-amber-700'}">${h.confirmed&&h.confirmed===fc70HotelUrl(h)?'✓ 地圖位置已確認':'尚未確認地圖'}</p></div>`;}).join(''):'<p class="text-xs text-slate-400 py-2">尚未設定住宿，請按下方新增。</p>')
+        return `<div class="rounded-xl border border-slate-200 p-2.5 space-y-2"><div class="flex items-center justify-between"><span class="text-[11px] font-bold text-slate-600">住宿 ${i+1}${n?`・${n} 晚`:''}</span><button type="button" onclick="fc70HotelDel(${i})" class="text-rose-500 text-xs font-bold px-1">刪除</button></div><input value="${ec(h.name)}" oninput="fc70HotelSync(${i},'name',this.value)" placeholder="飯店名稱" class="${inp}">${fc133DateField(h,i,first,last)}<input value="${ec(h.map||'')}" oninput="fc70HotelSync(${i},'map',this.value.trim())" placeholder="Google Maps 連結（可留白，自動依飯店名稱搜尋）" class="${inp}"><label class="fc181-nc"><input type="checkbox" ${h.noCoord?'checked':''} onchange="fc70HotelSync(${i},'noCoord',this.checked)" style="margin-top:2px"><span>無座標，不用確認地圖（景點順路規則將略過）</span></label><div class="flex items-center gap-2"><button type="button" onclick="fc70HotelOpen(${i})" class="flex-1 py-2 rounded-lg bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold">📍 開啟地圖</button><button type="button" id="fc70-hc-${i}" ${h.opened&&h.opened===fc70HotelUrl(h)?'':'disabled'} onclick="fc70HotelConfirm(${i})" class="flex-1 py-2 rounded-lg bg-emerald-600 text-white text-xs font-bold disabled:opacity-40">確認位置</button></div><p id="fc70-hm-${i}" class="${h.confirmed&&h.confirmed===fc70HotelUrl(h)?'text-[11px] font-bold text-emerald-700':'text-[11px] font-bold text-amber-700'}">${h.confirmed&&h.confirmed===fc70HotelUrl(h)?'✓ 地圖位置已確認':'尚未確認地圖'}</p></div>`;}).join(''):'<p class="text-xs text-slate-400 py-2">尚未設定住宿，請按下方新增。</p>')
         +`<button type="button" onclick="fc70HotelAdd()" class="w-full py-2 rounded-xl border border-dashed border-sky-400 text-sky-700 text-xs font-bold">＋ 新增住宿</button><p class="text-[10px] text-slate-400">日期須在旅程範圍內，退房晚於入住，各住宿不可重疊。</p>`;
     }
     function getInfoConfig(){
@@ -4201,13 +4214,13 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           const n='住宿 '+(i+1);
           if(!x.name)return showToast(n+'請填寫飯店名稱');
           if(!x.start||!x.end)return showToast(n+'請選擇入住與退房日期');
-          if(!x.confirmed||x.confirmed!==fc70HotelUrl(x))return showToast(n+'請先開啟地圖並按「確認位置」');
+          if(!x.noCoord&&(!x.confirmed||x.confirmed!==fc70HotelUrl(x)))return showToast(n+'請先確認地圖位置或勾選無座標儲存');
           if(x.end<=x.start)return showToast(n+'退房日期必須晚於入住日期');
           if(first&&last&&(x.start<first||x.end>last))return showToast(n+'日期超出旅程範圍（'+first.replaceAll('-','/')+' ～ '+last.replaceAll('-','/')+'）');
         }
         for(let i=0;i<list.length;i++)for(let k=i+1;k<list.length;k++)if(list[i].start<list[k].end&&list[k].start<list[i].end)return showToast('住宿 '+(i+1)+' 與住宿 '+(k+1)+' 的日期重疊');
         list.sort((a,b)=>a.start<b.start?-1:1);
-        c.hotel.list=list.map(x=>({name:x.name,start:x.start,end:x.end,map:x.map||'',mapConfirmed:x.confirmed}));
+        c.hotel.list=list.map(x=>({name:x.name,start:x.start,end:x.end,map:x.map||'',mapConfirmed:x.confirmed,noCoord:!!x.noCoord}));
         [0,1].forEach(k=>{const x=list[k];c.hotel['h'+(k+1)+'Name']=x?x.name:'';c.hotel['h'+(k+1)+'Dates']=x?fc70HotelDates(x):'';});
         pushStateToCloud('infoConfig',c);closeModal();renderInfoPage();showToast('資訊已更新');return;
       }
@@ -4909,6 +4922,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const catId = document.getElementById('edit-fcat-id').value;
       const itemId = document.getElementById('edit-fitem-id').value;
       const newNote = document.getElementById('input-edit-fitem-note').value.trim();
+      if(!fc181Gate('favedit'))return;
 
       const data = getStoredData('favorites', defaultFavoritesData);
       const cat = data.find(c => c.id === catId);
@@ -4917,7 +4931,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         if (catItem) {
           catItem.note = newNote;
           catItem.video = safeExternalUrl(document.getElementById('input-edit-fitem-video').value.trim());
-          if(window.fc129Read){const c=fc129Read('edit');if(c.map){catItem.map=c.map;catItem.mapConfirmed=!!c.mapConfirmed}else{delete catItem.map;delete catItem.mapConfirmed}if(Number.isFinite(c.lat)){catItem.lat=c.lat;catItem.lon=c.lon}else{delete catItem.lat;delete catItem.lon}}
+          if(window.fc129Read){const c=fc129Read('edit');if(c.map){catItem.map=c.map;catItem.mapConfirmed=!!c.mapConfirmed}else{delete catItem.map;delete catItem.mapConfirmed}if(c.noCoord)catItem.noCoord=true;else delete catItem.noCoord;if(Number.isFinite(c.lat)){catItem.lat=c.lat;catItem.lon=c.lon}else{delete catItem.lat;delete catItem.lon}}
         }
       }
       pushStateToCloud('favorites', data);
@@ -5993,6 +6007,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const note = document.getElementById('input-fitem-note').value.trim();
 
       if (name) {
+        if(!fc181Gate('fav'))return;
         const data = getStoredData('favorites', defaultFavoritesData);
         const cat = data.find(c => c.id === catId);
         if (cat) {
@@ -6046,7 +6061,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       <div class="tv-provider-summary hidden text-[9px] leading-relaxed bg-white border border-sky-100 rounded-lg p-2 text-slate-600"></div>
       <input class="tv-people w-full p-2 border rounded-lg text-[11px]" placeholder="搭乘人員，例如：媽媽、小明、小華" value="${escapeHtml(v.people||'')}">
       <details class="tv-route border-t pt-2"><summary class="text-xs font-bold text-sky-700 cursor-pointer">編輯路線・<span class="tv-route-summary">設定各站車程</span></summary><div class="tv-route-rows space-y-2 mt-2"></div><button type="button" onclick="fc41AddStop(this.closest('.transfer-vehicle'))" class="w-full py-2 text-sky-700 border border-dashed rounded-xl mt-2 text-xs">＋ 新增接送地點</button><p class="text-xs text-slate-500 mt-2">最後一段車程需到目的地；可點地圖確認後填寫分鐘。回程按反向路線估算。</p></details><div class="tv-times text-xs text-sky-800 leading-relaxed"></div>`;
-      c.appendChild(row);(v.stops||[]).forEach((name,i)=>fc41AddStop(row,{name,map:v.route?.[i]?.map||'',mapOk:!!v.route?.[i]?.mapOk,wait:v.route?.[i]?.wait??Number(document.getElementById('transfer-stop-min').value),drive:v.route?.[i]?.drive??(i===v.stops.length-1?Number(document.getElementById('transfer-drive-min').value):'')}));fc41UpdateVehicle(row); const modeEl=row.querySelector('.tv-mode'); modeEl.value=v.mode||'包車店家';
+      c.appendChild(row);(v.stops||[]).forEach((name,i)=>fc41AddStop(row,{name,map:v.route?.[i]?.map||'',mapOk:!!v.route?.[i]?.mapOk,noCoord:!!v.route?.[i]?.noCoord,orig:(v.route&&v.route[i]&&!v.route[i].mapOk&&!v.route[i].noCoord)?name:'',wait:v.route?.[i]?.wait??Number(document.getElementById('transfer-stop-min').value),drive:v.route?.[i]?.drive??(i===v.stops.length-1?Number(document.getElementById('transfer-drive-min').value):'')}));fc41UpdateVehicle(row); const modeEl=row.querySelector('.tv-mode'); modeEl.value=v.mode||'包車店家';
       modeEl.addEventListener('change',()=>applyProviderToVehicle(row, true));
       applyProviderToVehicle(row, false);
     }
@@ -6137,7 +6152,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const target=document.getElementById('transfer-target-datetime'),back=document.getElementById('transfer-return-datetime');
       const d={type:document.querySelector('input[name="transfer-type"]:checked')?.value||'both',airportOut:document.getElementById('transfer-airport-out').value.trim(),airportBack:document.getElementById('transfer-airport-back').value.trim(),stopMin:Number(document.getElementById('transfer-stop-min').value),driveMin:Number(document.getElementById('transfer-drive-min').value),targetDatetime:target.value,targetAuto:!!target.dataset.autoDatetime&&target.value===target.dataset.autoDatetime,returnDatetime:back.value,returnAuto:!!back.dataset.autoDatetime&&back.value===back.dataset.autoDatetime,provider:{...currentTransferProvider(),note:document.getElementById('transfer-provider-note').value.trim()},vehicles:readTransferVehicles()};
       if(!d.vehicles.length)return showToast('請至少新增一個車次');
-      for(const v of d.vehicles){if(!v.route.length)return alert(v.name+'：請至少新增一個接送地點');for(const [i,x] of v.route.entries()){if(!x.name)return alert(v.name+'：第 '+(i+1)+' 站缺少地點');if(!Number.isFinite(x.drive)||x.drive<0||!Number.isFinite(x.wait)||x.wait<0)return alert(v.name+'：第 '+(i+1)+' 站請填寫有效車程與接人預留分鐘');}}
+      for(const v of d.vehicles){if(!v.route.length)return alert(v.name+'：請至少新增一個接送地點');for(const [i,x] of v.route.entries()){if(!x.name)return alert(v.name+'：第 '+(i+1)+' 站缺少地點');if(!x.mapOk&&!x.noCoord&&!x.legacy)return alert(v.name+'：第 '+(i+1)+' 站請先確認地圖位置或勾選無座標儲存');if(!Number.isFinite(x.drive)||x.drive<0||!Number.isFinite(x.wait)||x.wait<0)return alert(v.name+'：第 '+(i+1)+' 站請填寫有效車程與接人預留分鐘');}}
       if(!Number.isFinite(d.stopMin)||!Number.isFinite(d.driveMin)||d.stopMin<0||d.driveMin<0)return showToast('車程與每站預留時間不能為負數');
       if(d.type!=='inbound'&&!d.targetDatetime)return showToast('請填寫去程預計抵達時間');
       if(d.type!=='outbound'&&!d.returnDatetime)return showToast('請填寫回程集合出發時間，或先填回程班機抵達時間');
@@ -6352,7 +6367,7 @@ function fc49Read(kind){const f=placeGuideFields(kind);return {brief:document.ge
 
 function fc49Combined(parts){return parts.brief||parts.highlights?'【簡介】\n'+parts.brief+'\n\n【介紹重點】\n'+parts.highlights:'';}
 
-function fc49Load(kind,record={}){const p=fc49Parts(record),f=placeGuideFields(kind);document.getElementById(f.intro).value=p.brief;document.getElementById('fc49-highlights-'+kind).value=p.highlights;const q=document.getElementById('fc49-query-'+kind);if(q)q.value='';const inf=document.getElementById('fc50-info-'+kind);if(inf)inf.value=String(record.guideInfo||'');const flg=document.getElementById('fc50-ai-flag-'+kind);if(flg)flg.value=record.guideAi?'1':'';const ap=document.getElementById('fc50-ai-paste-'+kind);if(ap)ap.value='';const ast=document.getElementById('fc50-ai-status-'+kind);if(ast)ast.textContent='';fc49Maps[kind]={url:document.getElementById(f.map).value.trim(),confirmed:record.guideMapConfirmed||'',revision:0};const sp=document.getElementById(fc70SuppId(kind));if(sp)sp.value=String(record.guideNote||'');fc49RenderMap(kind);}
+function fc49Load(kind,record={}){{const nc=document.getElementById('fc181-nc-'+kind);if(nc)nc.checked=!!record.noCoord;}const p=fc49Parts(record),f=placeGuideFields(kind);document.getElementById(f.intro).value=p.brief;document.getElementById('fc49-highlights-'+kind).value=p.highlights;const q=document.getElementById('fc49-query-'+kind);if(q)q.value='';const inf=document.getElementById('fc50-info-'+kind);if(inf)inf.value=String(record.guideInfo||'');const flg=document.getElementById('fc50-ai-flag-'+kind);if(flg)flg.value=record.guideAi?'1':'';const ap=document.getElementById('fc50-ai-paste-'+kind);if(ap)ap.value='';const ast=document.getElementById('fc50-ai-status-'+kind);if(ast)ast.textContent='';fc49Maps[kind]={url:document.getElementById(f.map).value.trim(),confirmed:record.guideMapConfirmed||'',revision:0};const sp=document.getElementById(fc70SuppId(kind));if(sp)sp.value=String(record.guideNote||'');fc49RenderMap(kind);}
 
 function fc49GuideData(kind){const p=fc49Read(kind),url=document.getElementById(placeGuideFields(kind).map).value.trim();const inf=document.getElementById('fc50-info-'+kind),flg=document.getElementById('fc50-ai-flag-'+kind);return {guideBrief:p.brief,guideHighlights:p.highlights,guideText:fc49Combined(p),guideMapConfirmed:fc49Maps[kind]?.confirmed===url?url:'',...(inf?{guideInfo:inf.value.trim()}:{}),...(flg?{guideAi:flg.value==='1'}:{}),...(document.getElementById(fc70SuppId(kind))?{guideNote:document.getElementById(fc70SuppId(kind)).value.trim()}:{})};}
 
@@ -7862,6 +7877,19 @@ function fc174Apply(){var v=fc174Get(),h=document.documentElement;h.classList.re
 function fc174Set(v){try{localStorage.setItem(FC174_KEY,String(v));}catch(e){if(typeof showToast==='function')showToast('無法儲存字體大小');}fc174Apply();}
 fc174Apply();document.addEventListener('DOMContentLoaded',fc174Apply);
 </script>
+<script id="fc181-js">
+var FC181_TAG='📍 無座標・需自行設定日期時間始可排入';
+function fc181NcHtml(kind,label){return '<label class="fc181-nc"><input type="checkbox" id="fc181-nc-'+kind+'" style="margin-top:2px"><span>'+(label||'無座標，改手動排入（需自行設定日期時間）')+'</span></label>';}
+function fc181Gate(kind){
+  try{const f=placeGuideFields(kind),u=(document.getElementById(f.map)?.value||'').trim(),nc=document.getElementById('fc181-nc-'+kind)?.checked;
+    const ok=!!u&&fc49Maps[kind]&&fc49Maps[kind].confirmed===u;
+    if(ok||nc)return true;
+    showToast('請先確認地圖位置或勾選無座標儲存');
+    const box=document.getElementById('fc49-map-'+kind);if(box&&box.scrollIntoView)box.scrollIntoView({block:'center'});
+    return false;}catch(e){return true;}
+}
+function fc181HasCoord(a){try{return !!(window.fc128HasCoord&&fc128HasCoord({map:a.map,name:a.name,lat:a.lat,lon:a.lon}));}catch(e){return false;}}
+</script>
 <script id="fc160-js">
 (function(){
 var CATS=[['food','🍜 餐飲'],['transport','🚕 交通'],['shop','🛍️ 購物'],['ticket','🎫 門票'],['hotel','🏨 住宿'],['other','📝 其他']];
@@ -8403,7 +8431,7 @@ window.fc166Save=async function(){
       for(const it of (x&&x.items)||[]){
         const f=it.favItemId&&favById[it.favItemId];
         const o=f?{map:f.map||it.map,name:f.name,lat:f.lat,lon:f.lon}:{map:it.map,name:it.title};
-        (out[day]=out[day]||[]).push({o,name:plain(f?f.name:it.title).replace(/\s*[（(].*$/,'').slice(0,18)});
+        (out[day]=out[day]||[]).push({o,time:it.time,name:plain(f?f.name:it.title).replace(/\s*[（(].*$/,'').slice(0,18)});
       }
     }
     return out;}
@@ -8422,6 +8450,16 @@ window.fc166Save=async function(){
     return best;}
   window.fc178Near=function(item,data){try{const c=coordOf({map:item.map,name:item.name,lat:item.lat,lon:item.lon});if(!c)return null;const an=anchors(data),out={};for(const [day,list] of Object.entries(an)){let m=null;for(const a of list){const ac=coordOf(a.o);if(!ac)continue;const d=km(c,ac);if(!m||d<m.d)m={d,near:a.name};}if(m)out[day]=m;}return out;}catch(e){return null;}};
   window.fc178Km=fmtKm;
+  // ── 179：換飯店時景點要順路（A 區 → B 區）──
+  window.fc181Want=function(o){try{want(o,true);}catch(e){}};
+  window.fc179Hotels=function(){try{
+    const list=(fc70Hotels(getInfoConfig())||[]).filter(h=>h&&h.name&&h.start&&h.end).sort((a,b)=>a.start<b.start?-1:1);
+    if(list.length<2)return null;const out=[];
+    for(const h of list){if(h.noCoord)return null;const o={map:h.map||(typeof fc70HotelUrl==='function'?fc70HotelUrl(h):''),name:h.name};const c=coordOf(o);if(!c){want(o,true);return null;}out.push({h,c});}
+    return out;}catch(e){return null;}};
+  window.fc179Zone=function(o,hs){const c=coordOf(o);if(!c||!hs)return null;let b=-1,bd=1e9;hs.forEach((x,i)=>{const d=km(c,x.c);if(d<bd){bd=d;b=i;}});return b<0?null:b;};
+  window.fc179DayZones=function(hs,date){const stay=hs.findIndex(x=>x.h.start<=date&&date<x.h.end),prev=hs.findIndex(x=>x.h.start<date&&date<=x.h.end);return {stay,prev,set:new Set([stay,prev].filter(i=>i>=0))};};
+  window.fc179DayItems=function(data,day,hs){const an=anchors(data)[day]||[];return an.map(a=>{const t=plannerTimes(a.time);return {zone:fc179Zone(a.o,hs),s:t.length?t[0]:null,e:t.length?(t[1]!==undefined?t[1]:t[0]+60):null,name:a.name};}).filter(x=>x.zone!==null&&x.s!==null);};
   window.fc128SuggestDay=function(item){try{const s=suggest(item,false);return s?s.day:null}catch(e){return null}};
   function hint(item){
     let org=[],mine=[];try{org=getFavoriteDays(item.id)}catch(e){}try{mine=fc52MyFavDays(item.id)}catch(e){}
@@ -8490,6 +8528,7 @@ window.fc166Save=async function(){
     const k=K[p],f=placeGuideFields(k),input=$(f.map);if(!input)return;
     const url=(item&&item.map)||'';
     if(p==='edit'){const h=$('edit-fitem-name-hidden');if(h)h.value=(item&&item.name)||'';}
+    {const nc=$('fc181-nc-'+k);if(nc)nc.checked=!!(item&&item.noCoord);}
     input.value=url;
     fc49Maps[k]={url,confirmed:(item&&item.mapConfirmed&&url)?url:'',revision:((fc49Maps[k]&&fc49Maps[k].revision)||0)+1};
     try{fc49RenderMap(k)}catch(e){}
@@ -8502,8 +8541,9 @@ window.fc166Save=async function(){
       const c=window.fc128CoordFromUrl&&window.fc128CoordFromUrl(u);
       if(c){out.lat=c.lat;out.lon=c.lon;}
     }
+    {const nc=$('fc181-nc-'+k);if(nc&&nc.checked)out.noCoord=true;}
     return out;};
-  window.fc129Pin=function(it){try{return window.fc128HasCoord&&fc128HasCoord(it)?' <span title="已有座標" style="font-size:10px">✅</span>':''}catch(e){return ''}};
+  window.fc129Pin=function(it){try{return window.fc128HasCoord&&fc128HasCoord(it)?' <span title="已有座標" style="font-size:10px">✅</span>':' <br><span class="fc181-tag">'+FC181_TAG+'</span>'}catch(e){return ''}};
 })();
 </script>
 <script id="fc125-mail-js">
