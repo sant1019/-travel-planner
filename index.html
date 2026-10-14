@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-87</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-87a</span>
         </div>
       </div>
     </header>
@@ -3628,6 +3628,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
     function fc41MapChange(b){const el=b.closest('.tv-stop'),i=el.querySelector('.ts-map');delete el.dataset.ok;i.focus();i.select();fc41MapRender(el);}
     function fc41StopPoint(el){const v=(el.querySelector('.ts-map')?.value||'').trim();return el.dataset.ok&&el.dataset.ok===v?v:el.querySelector('.ts-name').value.trim();}
     function fc41RouteMap(button){const el=button.closest('.tv-stop'),name=fc41StopPoint(el),nx=el.nextElementSibling,next=nx?fc41StopPoint(nx):document.getElementById('transfer-airport-out').value.trim();if(!name||!next)return showToast('請先填寫此站及下一站／目的地');const u=new URL('https://www.google.com/maps/dir/');u.search=new URLSearchParams({api:'1',origin:name,destination:next,travelmode:'driving'});window.open(u.href,'_blank','noopener');}
+    function fc41TransferSchedule(vehicle,anchor,reverse=false,legacy={}){const route=vehicle.route||vehicle.stops.map((name,i)=>({name,wait:Number(legacy.stopMin)||0,drive:i===vehicle.stops.length-1?Number(legacy.driveMin)||0:0}));const out=[];let cursor=new Date(anchor);if(reverse){for(let i=route.length-1;i>=0;i--){const x=route[i];cursor=addMinutes(cursor,x.drive);const arrive=new Date(cursor),depart=addMinutes(arrive,x.wait);out.push({name:x.name,arrive,depart});cursor=depart;}}else{for(let i=route.length-1;i>=0;i--){const x=route[i],depart=addMinutes(cursor,-x.drive),arrive=addMinutes(depart,-x.wait);out.unshift({name:x.name,arrive,depart});cursor=arrive;}}return out;}
     function fc41UpdateVehicle(row){const route=fc41ReadRoute(row),valid=route.length&&route.every(x=>x.name&&Number.isFinite(x.wait)&&x.wait>=0&&Number.isFinite(x.drive)&&x.drive>=0),summary=row.querySelector('.tv-route-summary'),times=row.querySelector('.tv-times');summary.textContent=valid?route.map(x=>x.name).join(' → ')+'｜車程 '+route.reduce((n,x)=>n+x.drive,0)+' 分':route.length+' 個地點・待補齊車程';const raw=document.getElementById('transfer-target-datetime').value;if(valid&&raw){const schedule=fc41TransferSchedule({route},new Date(raw));times.textContent=schedule.map(x=>x.name+'：集合 '+hhmm(x.arrive)+'／出發 '+hhmm(x.depart)).join('；');}else times.textContent='請填寫各站地點、車程與抵達时间後預覽集合時間。'.replace('时间','時間');}
 
     function fc37AiPlain(value){return scenicPlainText(value).replace(/\s+/g,' ').trim();}
