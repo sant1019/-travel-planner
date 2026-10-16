@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-92</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-93</span>
         </div>
       </div>
     </header>
@@ -3413,7 +3413,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
               if(zone===dz.stay){const m=Math.max(-1,...di.filter(x=>x.zone===dz.prev).map(x=>x.e));if(m>0)extra.push({id:'fc179-p',time:'00:00 - '+plannerClock(Math.min(m,1439))});}
               else if(zone===dz.prev){const m=Math.min(1440,...di.filter(x=>x.zone===dz.stay).map(x=>x.s));if(m<1440)extra.push({id:'fc179-p',time:plannerClock(m)+' - 23:59'});}}}
           const slot=plannerSlot(a,date,extra.length?[...items,...extra]:items);
-          if(slot.start!==undefined){const score=items.length,nr=nearMap?nearMap[day]:null;let better;if(!picked)better=true;else if(picked.viol!==viol)better=!viol;else better=(nr&&!picked.near)||(nr&&picked.near?(nr.d<picked.near.d-1e-9||(Math.abs(nr.d-picked.near.d)<1e-9&&score<picked.score)):(!picked.near&&score<picked.score));if(better)picked={day,slot,score,near:nr,viol};}
+          if(slot.start!==undefined){const score=items.length,nr=nearMap?nearMap[day]:null,cost=(nr?nr.d:12)+3*score;let better;if(!picked)better=true;else if(picked.viol!==viol)better=!viol;else better=cost<picked.cost-1e-9||(Math.abs(cost-picked.cost)<1e-9&&score<picked.score);if(better)picked={day,slot,score,near:nr,viol,cost};}
           else if(plannerAllowedDate(a,date))reason=slot.reason;
         }
         if(picked){
