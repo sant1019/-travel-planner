@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-90</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-91</span>
         </div>
       </div>
     </header>
@@ -3341,7 +3341,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
       rest=rest.replace(/[、,，;；\s]/g,'');
       if(rest==='24小時'||rest==='全天') {ranges.push([0,1440]);rest='';}
       if(rest||ranges.some(([a,b])=>a===null||b===null||b<=a))return {error:'營業時間或跨夜限制無法判讀，請改用時段格式或手動安排'};
-      return {duration,preferred:preferred[0],sessions,ranges:ranges.length?ranges:[[540,1260]],closedDays};
+      return {duration,preferred:preferred[0],sessions,ranges:ranges.length?ranges:((preferred.length||sessions.length)?[[0,1440]]:[[540,1260]]),closedDays};
     }
     function plannerAllowedDate(a,date) {
       if(a.dateRule==='specific')return [date,date.replaceAll('-','/'),`${Number(date.slice(5,7))}/${Number(date.slice(8,10))}`].includes(a.dateValue);
