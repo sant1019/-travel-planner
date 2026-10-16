@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-94</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-95</span>
         </div>
       </div>
     </header>
@@ -3386,7 +3386,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
     }
     function arrangeFixedActivities(list=getFixedActivities()) {
       if(!requireRoom()||!isOrganizer())return;
-      const data=JSON.parse(JSON.stringify(getStoredData('itinerary',defaultItineraryData))),previous=new Map();
+      window.__fc195Fixed=list;const data=JSON.parse(JSON.stringify(getStoredData('itinerary',defaultItineraryData))),previous=new Map();
       const ids=new Set(list.filter(a=>!a.forced&&(a.noCoord||fc181HasCoord(a))).map(a=>a.id));
       Object.values(data).forEach(d=>{d.items=(d.items||[]).filter(x=>{if(ids.has(x.fixedActivityId)){previous.set(x.fixedActivityId,x);return false;}return true;});});
       const ordered=[...list].sort((a,b)=>((b.dateRule!=='flexible'?4:0)+(b.time?2:0)+(b.sessions?1:0))-((a.dateRule!=='flexible'?4:0)+(a.time?2:0)+(a.sessions?1:0)));
@@ -3422,7 +3422,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         }else {a.scheduleReason=reason;if(previous.has(a.id))a.pendingItem=previous.get(a.id);}
       }
       window.__fc179Warn='';try{const hs=window.fc179Hotels&&fc179Hotels();if(hs){const bad=[];getTripDays().forEach((date,i)=>{const dz=fc179DayZones(hs,date);if(dz.stay>=0&&dz.prev>=0&&dz.stay!==dz.prev){const di=fc179DayItems(data,String(i+1),hs).sort((x,y)=>x.s-y.s);let seenStay=false;for(const x of di){if(x.zone===dz.stay)seenStay=true;else if(x.zone===dz.prev&&seenStay){bad.push('Day '+(i+1));break;}}}});if(bad.length)window.__fc179Warn='⚠️ '+bad.join('、')+' 景點順序逆路（先到新飯店區再回舊飯店區），請檢查鎖定的行程';}}catch(e){}
-      pushStateToCloud('fixedActivities',list);pushStateToCloud('itinerary',data);renderFixedPlannerList();
+      window.__fc195Fixed=null;pushStateToCloud('fixedActivities',list);pushStateToCloud('itinerary',data);renderFixedPlannerList();
     }
     function saveAndArrangeFixedActivities(){
       if(!requireRoom()||!isOrganizer())return;
@@ -8447,10 +8447,11 @@ window.fc166Save=async function(){
     const out={};let data=dataOv||{};if(!dataOv){try{data=getStoredData('itinerary',defaultItineraryData)||{}}catch(e){}}
     let favs=[];try{favs=getStoredData('favorites',defaultFavoritesData)||[]}catch(e){}
     const favById={};for(const c of favs)for(const it of (c.items||[]))favById[it.id]=it;
+    let fxs=window.__fc195Fixed;if(!fxs){try{fxs=getStoredData('fixedActivities',[])||[]}catch(e){fxs=[]}}const fxById={};for(const f of fxs)if(f&&f.id)fxById[f.id]=f;
     for(const [day,x] of Object.entries(data)){
       for(const it of (x&&x.items)||[]){
-        const f=it.favItemId&&favById[it.favItemId];
-        const o=f?{map:f.map||it.map,name:f.name,lat:f.lat,lon:f.lon}:{map:it.map,name:it.title};
+        const f=it.favItemId&&favById[it.favItemId],fx=it.fixedActivityId&&fxById[it.fixedActivityId];
+        const o=f?{map:f.map||it.map,name:f.name,lat:f.lat,lon:f.lon}:(fx&&(Number.isFinite(fx.lat)||fx.map)?{map:fx.map||it.map,name:fx.name||it.title,lat:fx.lat,lon:fx.lon}:{map:it.map,name:it.title});
         (out[day]=out[day]||[]).push({o,time:it.time,name:plain(f?f.name:it.title).replace(/\s*[（(].*$/,'').slice(0,18)});
       }
     }
