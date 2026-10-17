@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-95</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-97</span>
         </div>
       </div>
     </header>
@@ -3373,7 +3373,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
       else for(const [lo,hi] of r.ranges)for(let n=lo;n+r.duration<=hi;n+=15)starts.push(n);
       for(const start of starts){
         const end=start+r.duration;
-        if(r.sessions.length&&!r.sessions.includes(start))continue;
+        if(r.preferred===undefined&&r.sessions.length&&!r.sessions.includes(start))continue;
         if(!r.ranges.some(([lo,hi])=>start>=lo&&end<=hi))continue;
         if(busy.some(([lo,hi])=>start<hi&&end>lo))continue;
         return {start,end};
