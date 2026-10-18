@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-98</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-99</span>
         </div>
       </div>
     </header>
@@ -3382,7 +3382,8 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
     }
     function plannerClock(n){return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
     function fixedItineraryItem(a,slot,previous={}) {
-      return {...previous,id:previous.id||'fixed-itin-'+a.id,fixedActivityId:a.id,guideText:a.guideText||'',guideBrief:a.guideBrief,guideHighlights:a.guideHighlights,guideMapConfirmed:a.guideMapConfirmed,title:a.name,time:slot?`${plannerClock(slot.start)} - ${plannerClock(slot.end)}`:a.time||'時間待確認',duration:a.duration||'1 小時',desc:fixedActivityDescription(a),fixedDescription:fixedActivityDescription(a),map:a.map||buildAutoMapLink(a.name)};
+      const prev={...previous};if(slot)delete prev.noTimeWarn;
+      return {...prev,id:prev.id||'fixed-itin-'+a.id,fixedActivityId:a.id,guideText:a.guideText||'',guideBrief:a.guideBrief,guideHighlights:a.guideHighlights,guideMapConfirmed:a.guideMapConfirmed,title:a.name,time:slot?`${plannerClock(slot.start)} - ${plannerClock(slot.end)}`:a.time||'時間待確認',duration:a.duration||'1 小時',desc:fixedActivityDescription(a),fixedDescription:fixedActivityDescription(a),map:a.map||buildAutoMapLink(a.name)};
     }
     function arrangeFixedActivities(list=getFixedActivities()) {
       if(!requireRoom()||!isOrganizer())return;
@@ -4371,6 +4372,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
 
       const item = dayData.items.find(i => i.id === itemId);
       if (!item) return;
+      if (item.fixedActivityId && getFixedActivities().some(x=>String(x.id)===String(item.fixedActivityId))) { const fid=item.fixedActivityId; openFixedPlannerModal(); setTimeout(()=>openFixedActivityEditor(fid),0); return; }
 
       document.getElementById('edit-itin-id').value = itemId;
       document.getElementById('itin-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-sky-600 mr-1.5"></i>編輯行程資訊與註解`;
