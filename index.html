@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-102</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-103</span>
         </div>
       </div>
     </header>
@@ -1544,12 +1544,18 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <input type="text" id="input-souv-name" placeholder="例如：越南帶皮腰果、G7咖啡" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
       </div>
       <div>
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">分類（選填，例如：零食、咖啡、保養品）：</label>
+        <input type="text" id="input-souv-cat" maxlength="20" placeholder="沒填會放在「未分類」" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+        <div id="souv-cat-chips" class="flex flex-wrap gap-1.5 mt-1.5"></div>
+      </div>
+      <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">理想價格 (預算)：</label>
         <input type="text" id="input-souv-price" placeholder="例如：約 $150,000 盾 / 盒" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
       </div>
       <div>
-        <label class="text-[11px] font-bold text-slate-600 block mb-1">示意圖圖片網址 (URL)：</label>
-        <input type="text" id="input-souv-img" placeholder="例如：https://... 圖片連結" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+        <label class="text-[11px] font-bold text-slate-600 block mb-1">網址（商品頁、IG、影片、圖片都可以貼）：</label>
+        <input type="text" id="input-souv-img" placeholder="貼上網址，整段分享文字也可以" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-rose-500 focus:outline-none">
+        <p class="text-[10px] text-slate-400 mt-1">圖片網址會顯示縮圖，其他網址會顯示「開啟連結」按鈕。</p>
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">備註說明：</label>
@@ -4533,8 +4539,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
 
     function fc200Set(key){try{return new Set(JSON.parse(localStorage.getItem('fc200-fold-'+key)||'[]'))}catch(e){return new Set()}}
     function fc200Folded(key,id){return fc200Set(key).has(String(id));}
-    function fc200Toggle(key,id){const st=fc200Set(key);id=String(id);if(st.has(id))st.delete(id);else st.add(id);try{localStorage.setItem('fc200-fold-'+key,JSON.stringify([...st]))}catch(e){}if(key==='pack')renderPackingList();else renderFavorites();}
-    function fc200Chev(key,id,n){const f=fc200Folded(key,id);return `<button type="button" onclick="fc200Toggle('${key}','${id}')" aria-expanded="${!f}" class="fc200-chev text-slate-400 text-xs px-1 shrink-0" title="${f?'展開':'收折'}"><i class="fa-solid fa-chevron-${f?'right':'down'}"></i></button>`;}
+    function fc200Toggle(key,id){const st=fc200Set(key);id=String(id);if(st.has(id))st.delete(id);else st.add(id);try{localStorage.setItem('fc200-fold-'+key,JSON.stringify([...st]))}catch(e){}if(key==='pack')renderPackingList();else if(key==='souv')renderSouvenirsList();else renderFavorites();}
+    function fc200Chev(key,id,n){const f=fc200Folded(key,id);return `<button type="button" onclick="event.stopPropagation();fc200Toggle('${key}','${id}')" aria-expanded="${!f}" class="fc200-chev text-slate-400 text-xs px-1 shrink-0" title="${f?'展開':'收折'}"><i class="fa-solid fa-chevron-${f?'right':'down'}"></i></button>`;}
     function renderPackingList() {
       const globalPacking = getStoredData('packing', defaultPackingData);
       const personalCheckedState = getPersonalPackingState('checked');
@@ -5637,23 +5643,35 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         return;
       }
 
-      container.innerHTML = souvenirs.map(item => `
+      const groups=[],idx={};
+      souvenirs.forEach(it=>{const c=(it.cat||'').trim()||'未分類';if(!(c in idx)){idx[c]=groups.length;groups.push({name:c,items:[]});}groups[idx[c]].items.push(it);});
+      const ui=groups.findIndex(g=>g.name==='未分類');if(ui>=0&&ui<groups.length-1)groups.push(groups.splice(ui,1)[0]);
+      const card=item=>`
         <div class="p-3 bg-slate-50 rounded-xl border border-slate-100 flex items-start space-x-3">
-          ${item.img ? `<img src="${item.img}" alt="${item.name}" onerror="this.style.display='none'" class="w-16 h-16 object-cover rounded-lg border border-slate-200 shrink-0 bg-white">` : ''}
+          ${item.img&&safeExternalUrl(item.img) ? `<img src="${escapeHtml(safeExternalUrl(item.img))}" alt="${escapeHtml(item.name)}" onerror="this.style.display='none'" class="w-16 h-16 object-cover rounded-lg border border-slate-200 shrink-0 bg-white">` : ''}
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-start">
-              <h4 class="font-bold text-slate-800 text-xs truncate">${item.name}</h4>
+              <h4 class="font-bold text-slate-800 text-xs truncate">${escapeHtml(item.name)}</h4>
               <div class="flex items-center space-x-1 pl-2">
                 <button onclick="openAddSouvenirModal('${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs" title="編輯伴手禮"><i class="fa-regular fa-pen-to-square"></i></button>
                 <button onclick="deleteSouvenir('${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs" title="刪除"><i class="fa-regular fa-trash-can"></i></button>
               </div>
             </div>
-            ${item.price ? `<p class="text-[11px] font-bold text-emerald-600 mt-0.5"><i class="fa-solid fa-tag mr-1"></i>理想價格：${item.price}</p>` : ''}
-            ${item.note ? `<p class="text-[10px] text-slate-500 mt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-rose-400"></i>${item.note}</p>` : ''}
+            ${item.price ? `<p class="text-[11px] font-bold text-emerald-600 mt-0.5"><i class="fa-solid fa-tag mr-1"></i>理想價格：${escapeHtml(item.price)}</p>` : ''}
+            ${item.note ? `<p class="text-[10px] text-slate-500 mt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-rose-400"></i>${escapeHtml(item.note)}</p>` : ''}
+            ${item.link&&safeExternalUrl(item.link) ? `<a href="${escapeHtml(safeExternalUrl(item.link))}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-[11px] font-bold text-sky-600 mt-1"><i class="fa-solid fa-link mr-1"></i>開啟連結 <span class="font-normal text-slate-400 ml-1">${escapeHtml(fc201Host(item.link))}</span></a>` : ''}
           </div>
-        </div>
-      `).join('');
+        </div>`;
+      container.innerHTML = groups.map(g=>{const sid=encodeURIComponent(g.name),f=fc200Folded('souv',sid);return `
+        <div class="bg-white p-3 rounded-2xl border border-slate-200 space-y-2">
+          <div class="flex items-center cursor-pointer" onclick="fc200Toggle('souv','${sid}')">${fc200Chev('souv',sid)}<h3 class="text-xs font-bold text-slate-800"><i class="fa-solid fa-folder text-rose-400 mr-1.5"></i>${escapeHtml(g.name)} <span class="text-[10px] font-normal text-slate-400">${g.items.length} 項</span></h3></div>
+          <div class="space-y-2 ${f?'hidden':''}">${g.items.map(card).join('')}</div>
+        </div>`;}).join('');
     }
+    function fc201Host(u){try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return ''}}
+    function fc201Url(t){const m=String(t||'').match(/https?:\/\/[^\s<>"'）)」]+/i);return m?m[0].replace(/[，。,.；;]+$/,''):''}
+    function fc201IsImg(u){try{return /\.(jpe?g|png|gif|webp|avif|bmp|svg)$/i.test(new URL(u).pathname)}catch(e){return false}}
+    function fc201Chips(){const box=document.getElementById('souv-cat-chips');if(!box)return;const cats=[...new Set(getStoredData('souvenirs',defaultSouvenirsData).map(x=>(x.cat||'').trim()).filter(Boolean))];box.innerHTML=cats.map(c=>`<button type="button" onclick="document.getElementById('input-souv-cat').value=decodeURIComponent('${encodeURIComponent(c)}')" class="text-[10px] px-2 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-100 font-bold">${escapeHtml(c)}</button>`).join('');}
 
     function openAddSouvenirModal(souvId) {
       if (souvId) {
@@ -5664,7 +5682,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           document.getElementById('souv-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square text-rose-500 mr-1.5"></i>編輯伴手禮資訊`;
           document.getElementById('input-souv-name').value = souv.name || '';
           document.getElementById('input-souv-price').value = souv.price || '';
-          document.getElementById('input-souv-img').value = souv.img || '';
+          document.getElementById('input-souv-img').value = souv.link || souv.img || '';
+          document.getElementById('input-souv-cat').value = souv.cat || '';
           document.getElementById('input-souv-note').value = souv.note || '';
         }
       } else {
@@ -5673,8 +5692,10 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         document.getElementById('input-souv-name').value = '';
         document.getElementById('input-souv-price').value = '';
         document.getElementById('input-souv-img').value = '';
+        document.getElementById('input-souv-cat').value = '';
         document.getElementById('input-souv-note').value = '';
       }
+      fc201Chips();
 
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -5686,7 +5707,10 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const souvId = document.getElementById('edit-souv-id').value;
       const name = document.getElementById('input-souv-name').value.trim();
       const price = document.getElementById('input-souv-price').value.trim();
-      const img = document.getElementById('input-souv-img').value.trim();
+      const rawUrl = document.getElementById('input-souv-img').value.trim();
+      const cat = document.getElementById('input-souv-cat').value.trim();
+      if (rawUrl && !fc201Url(rawUrl)) return showToast('這不是有效的網址（需以 http 開頭）');
+      const url = fc201Url(rawUrl), img = url && fc201IsImg(url) ? url : '', link = url && !img ? url : '';
       const note = document.getElementById('input-souv-note').value.trim();
 
       if (name) {
@@ -5697,6 +5721,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
             souv.name = name;
             souv.price = price;
             souv.img = img;
+            souv.link = link;
+            souv.cat = cat;
             souv.note = note;
           }
         } else {
@@ -5705,6 +5731,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
             name,
             price,
             img,
+            link,
+            cat,
             note
           });
         }
