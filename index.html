@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-99</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-101</span>
         </div>
       </div>
     </header>
@@ -1784,7 +1784,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
       <input type="hidden" id="edit-fitem-id"><input type="hidden" id="edit-fitem-name-hidden">
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">景點 / 店家名稱：</label>
-        <p id="edit-fitem-name-display" class="font-bold text-slate-800 text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-100"></p>
+        <input type="text" id="edit-fitem-name-input" maxlength="80" oninput="document.getElementById('edit-fitem-name-hidden').value=this.value" class="w-full p-2.5 border border-slate-200 rounded-xl text-xs font-bold focus:ring-2 focus:ring-rose-500 focus:outline-none">
       </div>
       <div>
         <label class="text-[11px] font-bold text-slate-600 block mb-1">備註事項：</label>
@@ -4883,6 +4883,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       if (!requireRoom()) return;
       const data = getStoredData('favorites', defaultFavoritesData);
       const cat = data.find(c => c.id === catId);
+      {const it=cat&&cat.items.find(i=>i.id===itemId),days=it?getFavoriteDays(itemId):[];if(!confirm('確定刪除收藏「'+(it?it.name:'')+'」嗎？'+(days.length?'\n它已排入行程（Day '+days.join('、')+'），行程裡的那一筆不會自動刪除。':'')+'\n刪除後無法復原。'))return;}
       if (cat) {
         cat.items = cat.items.filter(i => i.id !== itemId);
       }
@@ -4922,10 +4923,11 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
 
       document.getElementById('edit-fcat-id').value = catId;
       document.getElementById('edit-fitem-id').value = itemId;
-      document.getElementById('edit-fitem-name-display').textContent = item.name;
+      document.getElementById('edit-fitem-name-input').value = item.name;
       document.getElementById('input-edit-fitem-note').value = item.note || '';
       document.getElementById('input-edit-fitem-video').value = item.video || '';
       if(window.fc129Load)fc129Load('edit',item);
+      document.getElementById('edit-fitem-name-hidden').value = item.name;
 
       closeModal();
       document.getElementById('modal-backdrop').classList.remove('hidden');
@@ -4937,6 +4939,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       const catId = document.getElementById('edit-fcat-id').value;
       const itemId = document.getElementById('edit-fitem-id').value;
       const newNote = document.getElementById('input-edit-fitem-note').value.trim();
+      const newName = document.getElementById('edit-fitem-name-input').value.trim();
+      if(!newName)return showToast('請輸入景點／店家名稱');
       if(!fc181Gate('favedit'))return;
 
       const data = getStoredData('favorites', defaultFavoritesData);
@@ -4945,6 +4949,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
         const catItem = cat.items.find(i => i.id === itemId);
         if (catItem) {
           catItem.note = newNote;
+          if(catItem.name!==newName){const oldName=catItem.name;catItem.name=newName;try{const it=getStoredData('itinerary',defaultItineraryData),oldLink='https://maps.google.com/?q='+encodeURIComponent(oldName);let ch=false;Object.values(it).forEach(d=>(d.items||[]).forEach(x=>{if(x.favItemId===itemId){x.title='❤️ '+newName;if(x.map===oldLink)x.map='https://maps.google.com/?q='+encodeURIComponent(newName);ch=true;}}));if(ch)pushStateToCloud('itinerary',it);}catch(e){}}
           catItem.video = safeExternalUrl(document.getElementById('input-edit-fitem-video').value.trim());
           if(window.fc129Read){const c=fc129Read('edit');if(c.map){catItem.map=c.map;catItem.mapConfirmed=!!c.mapConfirmed}else{delete catItem.map;delete catItem.mapConfirmed}if(c.noCoord)catItem.noCoord=true;else delete catItem.noCoord;if(c.coordManual)catItem.coordManual=true;else delete catItem.coordManual;if(Number.isFinite(c.lat)){catItem.lat=c.lat;catItem.lon=c.lon}else{delete catItem.lat;delete catItem.lon}}
         }
