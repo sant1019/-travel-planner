@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-103</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-105</span>
         </div>
       </div>
     </header>
@@ -1194,7 +1194,10 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="text-xs font-bold text-teal-800">🔗 邀請朋友加入</div>
         <label class="flex items-start gap-2 text-xs text-slate-700"><input id="fc92-withpw" type="checkbox" onchange="fc92Sync()" class="mt-0.5"><span>連結內含房間密碼<br><span class="text-[11px] text-slate-500">勾選：朋友點開就自動填好房名＋密碼。不勾：只填房名，密碼請另外告訴對方。</span></span></label>
         <input id="fc92-pw" type="password" autocomplete="off" placeholder="輸入房間密碼（用來放進連結）" class="hidden w-full p-2 border rounded-lg text-xs" style="min-height:40px">
-        <div class="flex gap-2"><button type="button" onclick="fc92Copy()" class="flex-1 bg-teal-700 text-white rounded-xl text-xs font-bold" style="min-height:42px">複製邀請連結</button><button type="button" id="fc92-share" onclick="fc92Share()" class="hidden flex-1 bg-white text-teal-700 border border-teal-300 rounded-xl text-xs font-bold" style="min-height:42px">分享…</button></div>
+        <div class="text-[11px] font-bold text-teal-800">① 新朋友（第一次加入，需註冊）</div>
+        <div class="flex gap-2"><button type="button" onclick="fc92Copy()" class="flex-1 bg-teal-700 text-white rounded-xl text-xs font-bold" style="min-height:42px">複製註冊連結</button><button type="button" id="fc92-share" onclick="fc92Share()" class="hidden flex-1 bg-white text-teal-700 border border-teal-300 rounded-xl text-xs font-bold" style="min-height:42px">分享…</button></div>
+        <div class="text-[11px] font-bold text-teal-800">② 已註冊過的團員（直接登入）</div>
+        <div class="flex gap-2"><button type="button" onclick="fc92Copy('login')" class="flex-1 bg-white text-teal-800 border border-teal-400 rounded-xl text-xs font-bold" style="min-height:42px">複製登入連結</button><button type="button" id="fc92-share2" onclick="fc92Share('login')" class="hidden flex-1 bg-white text-teal-700 border border-teal-300 rounded-xl text-xs font-bold" style="min-height:42px">分享…</button></div>
         <p class="text-[11px] text-slate-500">請只傳給同行朋友。若連結外流，可在下方刪除不認識的成員。</p>
       </div>
       <div class="flex justify-between items-center"><p id="fc43-member-status" role="status" class="text-xs text-slate-500"></p><button onclick="fc43LoadMembers()" class="text-xs text-sky-700 p-2">重新整理</button></div>
@@ -4969,6 +4972,12 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       showToast("備註已更新並同步");
     }
 
+    function fc201DaySelect(item){
+      if(getFavoriteDays(item.id).length||(typeof fc52MyFavDays==='function'&&fc52MyFavDays(item.id).length))return '';
+      const days=getTripDays(),sug=Math.min(item.sugDay||item.prox.day,days.length);
+      return `<div class="block text-xs mt-2"><span class="text-slate-600">排入哪一天</span><select data-fc201-day="${escapeHtml(item.id)}" data-sug="${sug}" onchange="fc201DayChanged(this)" class="block w-full mt-1 p-2 border border-slate-300 rounded-xl text-xs bg-white">${days.map((d,i)=>`<option value="${i+1}" ${i+1===sug?'selected':''}>Day ${i+1}・${Number(d.slice(5,7))}/${Number(d.slice(8,10))}${i+1===sug?'（推薦）':''}</option>`).join('')}</select></div>`;
+    }
+    function fc201DayChanged(sel){const note=sel.parentElement.parentElement.querySelector('.text-sky-600.font-bold');if(!note)return;const sug=Number(sel.dataset.sug),v=Number(sel.value);if(!note.dataset.orig)note.dataset.orig=note.textContent;note.textContent=v===sug?note.dataset.orig:'📍 你指定了 Day '+v+'（系統推薦 Day '+sug+'）';}
     function openSmartMatchModal() {
       const favData = getStoredData('favorites', defaultFavoritesData);
       const allFavs = [];
@@ -4979,6 +4988,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       });
 
       allFavs.sort((a, b) => (b.voteInfo.total || 0) - (a.voteInfo.total || 0));
+      {const extra=[];allFavs.forEach(f=>{if(getFavoriteDays(f.id).length||(typeof fc52MyFavDays==='function'&&fc52MyFavDays(f.id).length))return;const sg=window.fc201Suggest&&fc201Suggest(f,extra);if(sg){f.sugDay=sg.day;f.sugNear=sg.near;extra.push({day:sg.day,name:f.name,o:{map:f.map,name:f.name,lat:f.lat,lon:f.lon}});}});}
 
       const container = document.getElementById('smart-match-items-container');
       container.innerHTML = allFavs.map((item, idx) => `
@@ -4992,7 +5002,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
                 ${item.voteInfo.total > 0 ? `<span class="text-[9px] bg-rose-100 text-rose-700 font-bold px-1.5 py-0.2 rounded-full">${item.voteInfo.summaryStr} 想去</span>` : ''}
               </div>
               <p class="text-[10px] text-slate-500 mt-0.5">${item.note || '無備註'}</p><div class="block text-xs mt-2"><span class="text-slate-600">開始時間（選填）</span><span class="fc46-time-field fc138-time mt-1${getFavoriteDays(item.id).length?' fc138-off':''}"><input type="time" step="60" data-fc38-start="${escapeHtml(item.id)}" oninput="this.nextElementSibling.textContent=this.value||'選填 --:--'" ${getFavoriteDays(item.id).length?'disabled':''}><span aria-hidden="true">選填 --:--</span></span></div>
-              <span class="text-[10px] text-sky-600 font-bold mt-0.5 block">${getFavoriteDays(item.id).length ? '✅ 已安排至 Day '+getFavoriteDays(item.id).join('、') : (fc52MyFavDays(item.id).length ? '✅ 我已安排 Day '+fc52MyFavDays(item.id).join('、') : '📍 推薦排入 Day '+item.prox.day+' (近 '+item.prox.nearbyPoint+')')}</span>
+              ${fc201DaySelect(item)}<span class="text-[10px] text-sky-600 font-bold mt-0.5 block">${getFavoriteDays(item.id).length ? '✅ 已安排至 Day '+getFavoriteDays(item.id).join('、') : (fc52MyFavDays(item.id).length ? '✅ 我已安排 Day '+fc52MyFavDays(item.id).join('、') : (item.sugDay ? '📍 推薦排入 Day '+item.sugDay+(item.sugNear?'（近 '+escapeHtml(item.sugNear)+'）':'（當天還沒有行程）') : '📍 推薦排入 Day '+item.prox.day+' (近 '+item.prox.nearbyPoint+')'))}</span>
             </div>
           </label>
         </div>
@@ -5022,7 +5032,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
 
         if (foundFav) {
           const prox = calculateProximityMatch(foundFav);
-          const day = Math.min((window.fc128SuggestDay&&fc128SuggestDay(foundFav))||prox.day,getTripDays().length);
+          const selEl=Array.from(document.querySelectorAll('[data-fc201-day]')).find(el=>el.dataset.fc201Day===foundFav.id),pickedDay=selEl?parseInt(selEl.value,10):0;
+          const day = (pickedDay>=1&&pickedDay<=getTripDays().length)?pickedDay:Math.min((window.fc128SuggestDay&&fc128SuggestDay(foundFav))||prox.day,getTripDays().length);
           if(!itineraryData[day])itineraryData[day]={items:[]};
           const voteInfo = getItemVotesBreakdown(foundFav);
           
@@ -8268,10 +8279,10 @@ window.fc166Save=async function(){
 (function(){
   const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   const dec=t=>{t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';return JSON.parse(decodeURIComponent(escape(atob(t))))};
-  window.fc92Sync=function(){const on=document.getElementById('fc92-withpw').checked;document.getElementById('fc92-pw').classList.toggle('hidden',!(on&&!(cloudPassword&&cloudPassword.length>=6)));const sh=document.getElementById('fc92-share');if(sh)sh.classList.toggle('hidden',!navigator.share);};
-  window.fc92Link=function(){
+  window.fc92Sync=function(){const on=document.getElementById('fc92-withpw').checked;document.getElementById('fc92-pw').classList.toggle('hidden',!(on&&!(cloudPassword&&cloudPassword.length>=6)));['fc92-share','fc92-share2'].forEach(id=>{const sh=document.getElementById(id);if(sh)sh.classList.toggle('hidden',!navigator.share);});};
+  window.fc92Link=function(mode){
     if(!roomId||!isOrganizer())return null;
-    const o={r:roomId};
+    const o={r:roomId};if(mode==='login')o.m='login';
     if(document.getElementById('fc92-withpw').checked){
       const pw=(cloudPassword&&cloudPassword.length>=6)?cloudPassword:document.getElementById('fc92-pw').value;
       if(!pw||pw.length<6){showToast('請輸入房間密碼（至少六個字元）');return null;}
@@ -8279,14 +8290,14 @@ window.fc166Save=async function(){
     }
     return location.origin+location.pathname+'#join='+enc(o);
   };
-  window.fc92Copy=async function(){
-    const u=fc92Link();if(!u)return;
-    try{await navigator.clipboard.writeText(u);showToast('已複製邀請連結');}
-    catch(e){window.prompt('請長按複製這串邀請連結：',u);}
+  window.fc92Copy=async function(mode){
+    const u=fc92Link(mode);if(!u)return;
+    try{await navigator.clipboard.writeText(u);showToast(mode==='login'?'已複製登入連結（給已註冊的團員）':'已複製註冊連結（給新朋友）');}
+    catch(e){window.prompt('請長按複製這串連結：',u);}
   };
-  window.fc92Share=async function(){
-    const u=fc92Link();if(!u)return;
-    try{await navigator.share({title:'邀請你加入旅程',text:`加入「${roomId}」旅程`,url:u});}catch(e){}
+  window.fc92Share=async function(mode){
+    const u=fc92Link(mode);if(!u)return;
+    try{await navigator.share({title:mode==='login'?'登入旅程':'邀請你加入旅程',text:mode==='login'?`登入「${roomId}」旅程`:`加入「${roomId}」旅程`,url:u});}catch(e){}
   };
   window.fc92Join=function(){
     const m=/^#join=([\w-]+)/.exec(location.hash);if(!m)return false;
@@ -8297,6 +8308,14 @@ window.fc166Save=async function(){
     openSyncModal(true);
     document.getElementById('input-room-id').value=o.r;
     document.getElementById('input-room-password').value=typeof o.p==='string'?o.p:'';
+    if(o.m==='login'){
+      fc62SetMode('exists');setTripLoginMode(false);
+      const nick=localStorage.getItem(`perfect_last_nickname_${o.r}`)||'';
+      document.getElementById('trip-login-nickname').value=nick;
+      setTripLoginStatus(typeof o.p==='string'?'房間名稱與密碼已自動填入，請輸入你的暱稱與個人密碼登入':'房間名稱已填入，請輸入房間密碼、暱稱與你的個人密碼登入');
+      setTimeout(()=>{try{document.getElementById(typeof o.p!=='string'?'input-room-password':(nick?'trip-login-password':'trip-login-nickname')).focus()}catch(e){}},200);
+      return true;
+    }
     fc62SetMode('exists');setTripLoginMode(true);
     setTripLoginStatus(typeof o.p==='string'?'房間名稱與密碼已自動填入，請設定你的暱稱與個人密碼':'房間名稱已填入，請輸入房間密碼，並設定你的暱稱與個人密碼');
     setTimeout(()=>{try{document.getElementById(o.p?'trip-login-nickname':'input-room-password').focus()}catch(e){}},200);
@@ -8496,19 +8515,23 @@ window.fc166Save=async function(){
       }
     }
     return out;}
-  function suggest(item,prime){
+  function suggest(item,prime,extra){
     const o={map:item.map,name:item.name,lat:item.lat,lon:item.lon};if(prime)want(o,true);
     const c=coordOf(o);
     const an=anchors();
     if(prime)for(const d of Object.keys(an))for(const a of an[d])want(a.o);
     if(!c)return null;
+    for(const e of (extra||[]))(an[e.day]=an[e.day]||[]).push({o:e.o,name:e.name,time:''});
+    let n=0;try{n=getTripDays().length}catch(e){}if(!n)n=Math.max(0,...Object.keys(an).map(Number));
     let best=null;
-    for(const [day,list] of Object.entries(an)){
-      let m=null;
-      for(const a of list){const ac=coordOf(a.o);if(!ac)continue;const d=km(c,ac);if(!m||d<m.d)m={d,near:a.name};}
-      if(m&&(!best||m.d<best.d-1e-9||(Math.abs(m.d-best.d)<1e-9&&list.length<best.n)))best={day:+day,d:m.d,near:m.near,n:list.length};
+    for(let day=1;day<=n;day++){
+      const list=an[day]||[];let mn=null,mx=0;
+      for(const a of list){const ac=coordOf(a.o);if(!ac)continue;const d=km(c,ac);if(!mn||d<mn.d)mn={d,near:a.name};if(d>mx)mx=d;}
+      const cost=(mn?mx:12)+3*Math.max(0,list.length-3)+((n>2&&(day===1||day===n))?6:0);
+      if(!best||cost<best.cost-1e-9)best={day,d:mn?mn.d:null,near:mn?mn.near:'',n:list.length,cost};
     }
     return best;}
+  window.fc201Suggest=function(item,extra){try{return suggest(item,false,extra)}catch(e){return null}};
   window.fc178Near=function(item,data){try{const c=coordOf({map:item.map,name:item.name,lat:item.lat,lon:item.lon});if(!c)return null;const an=anchors(data),out={};for(const [day,list] of Object.entries(an)){let m=null;for(const a of list){const ac=coordOf(a.o);if(!ac)continue;const d=km(c,ac);if(!m)m={d,near:a.name,max:d};else{if(d<m.d){m.d=d;m.near=a.name;}if(d>m.max)m.max=d;}}if(m)out[day]=m;}return out;}catch(e){return null;}};
   window.fc178Km=fmtKm;
   // ── 179：換飯店時景點要順路（A 區 → B 區）──
@@ -8529,13 +8552,13 @@ window.fc166Save=async function(){
     const short=[],long=[];
     if(mine.length){short.push('我已排 Day '+mine.join('、'));long.push('你已把它排在 Day '+mine.join('、'));}
     if(org.length){short.push('主辦人排 Day '+org.join('、'));long.push('主辦人已把它排在 Day '+org.join('、'));}
-    if(sg&&!mine.length&&!org.length){short.push('建議 Day '+sg.day+'・'+fmtKm(sg.d)+'km');long.push('建議排在 Day '+sg.day+'：離當天「'+sg.near+'」約 '+fmtKm(sg.d)+' 公里（依地圖座標估算）');}
-    else if(sg){long.push('依距離，最順路的是 Day '+sg.day+'（離「'+sg.near+'」約 '+fmtKm(sg.d)+' 公里）');}
+    if(sg&&!mine.length&&!org.length){short.push('建議 Day '+sg.day+(sg.near?'・'+fmtKm(sg.d)+'km':''));long.push(sg.near?'建議排在 Day '+sg.day+'：離當天「'+sg.near+'」約 '+fmtKm(sg.d)+' 公里（依地圖座標估算）':'建議排在 Day '+sg.day+'：當天還沒有行程');}
+    else if(sg){long.push(sg.near?'依距離，最順路的是 Day '+sg.day+'（離「'+sg.near+'」約 '+fmtKm(sg.d)+' 公里）':'建議排在 Day '+sg.day+'（當天還沒有行程）');}
     else if(!mine.length&&!org.length&&legacy){short.push('建議 Day '+legacy.day);long.push('建議排在 Day '+legacy.day+'（'+legacy.driveMinutes+'；依名稱判斷，尚無座標）');}
     return {short:short.join('｜'),long:long.join('；'),sg};}
   // 收藏清單（取代原本只依店名關鍵字的建議）
   window.fc128ListHint=function(item,prox){
-    try{const sg=suggest(item,true);if(sg)return '建議 Day '+sg.day+'（離「'+sg.near+'」約 '+fmtKm(sg.d)+' km）';}catch(e){}
+    try{const sg=suggest(item,true);if(sg)return '建議 Day '+sg.day+(sg.near?'（離「'+sg.near+'」約 '+fmtKm(sg.d)+' km）':'（當天還沒有行程）');}catch(e){}
     return '建議 Day '+prox.day+' ('+prox.driveMinutes+')';};
   // 新增私人行程視窗
   function label(){
