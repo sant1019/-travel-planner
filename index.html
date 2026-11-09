@@ -576,7 +576,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
         <div class="max-w-md mx-auto trip-room fc32-utility">
           <button id="member-header-badge" onclick="currentMember ? openMemberSettingsModal() : openSyncModal()" class="trip-member" title="團員設定" aria-label="目前身份與團員設定">尚未登入</button>
           <button onclick="openSyncModal()" class="fc32-room-link" aria-label="房間登入與同步設定"><i id="cloud-header-icon" class="fa-solid fa-cloud text-slate-300"></i><span id="room-name-display" class="trip-room-name">登入房間</span><span id="cloud-header-status" class="trip-sync-status">尚未連線</span></button>
-          <span id="test-version-badge" class="trip-version fc71-ver">FC-105</span>
+          <span id="test-version-badge" class="trip-version fc71-ver">FC-108</span>
         </div>
       </div>
     </header>
@@ -620,7 +620,7 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
     </div>
   </div>
 
-  <section id="fc65-gate" aria-live="polite"><div class="text-center max-w-xs"><h2 class="text-xl font-bold text-slate-800 mb-2">旅遊小秘書</h2><p class="text-sm text-slate-500 mb-5">請先登入或建立房間，才能開始規劃旅程。</p><button type="button" onclick="openSyncModal(true)" class="w-full py-3 rounded-xl text-white font-bold" style="background:linear-gradient(110deg,#06abb1,#074779)">登入／建立房間</button><p id="fc65-gate-ver" class="mt-4 text-[10px] text-slate-400"></p></div></section>
+  <section id="fc65-gate" aria-live="polite"><div class="text-center max-w-xs"><h2 class="text-xl font-bold text-slate-800 mb-2">旅遊小秘書</h2><p class="text-sm text-slate-500 mb-5">請先登入或建立房間，才能開始規劃旅程。</p><button type="button" onclick="openSyncModal(true)" class="w-full py-3 rounded-xl text-white font-bold" style="background:linear-gradient(110deg,#06abb1,#074779)">登入／建立房間</button><p id="fc108-ios-tip" class="hidden mt-4 text-[11px] leading-relaxed text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 text-left">💡 在 iPhone 的 Safari 裡，超過 7 天沒打開，瀏覽器會自動清掉登入記錄。<br>建議按底部「分享」→「加入主畫面」，之後從主畫面圖示開啟，就不會被清掉、也不用重新登入。</p><p id="fc65-gate-ver" class="mt-4 text-[10px] text-slate-400"></p></div></section>
   <main class="max-w-md mx-auto px-4 pt-3 space-y-4">
 
     <!-- Toast Notification Banner -->
@@ -3392,8 +3392,9 @@ html.fc174-2 [id^="modal-"]{max-height:calc(88vh / 1.3) !important}
     function plannerClock(n){return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0');}
     function fixedItineraryItem(a,slot,previous={}) {
       const prev={...previous};if(slot)delete prev.noTimeWarn;
-      return {...prev,id:prev.id||'fixed-itin-'+a.id,fixedActivityId:a.id,guideText:a.guideText||'',guideBrief:a.guideBrief,guideHighlights:a.guideHighlights,guideMapConfirmed:a.guideMapConfirmed,title:a.name,time:slot?`${plannerClock(slot.start)} - ${plannerClock(slot.end)}`:a.time||'時間待確認',duration:a.duration||'1 小時',desc:fixedActivityDescription(a),fixedDescription:fixedActivityDescription(a),map:a.map||buildAutoMapLink(a.name)};
+      return {...prev,id:prev.id||'fixed-itin-'+a.id,fixedActivityId:a.id,guideText:a.guideText||'',guideBrief:a.guideBrief,guideHighlights:a.guideHighlights,guideMapConfirmed:a.guideMapConfirmed,title:a.name,time:slot?`${plannerClock(slot.start)} - ${plannerClock(slot.end)}`:a.time||'時間待確認',duration:a.duration||'1 小時',desc:fixedActivityDescription(a),fixedDescription:fixedActivityDescription(a),map:a.noCoord?'':(a.map||buildAutoMapLink(a.name)),noCoord:a.noCoord?true:undefined};
     }
+    window.fc202NoMap=function(item){try{if(!item)return false;if(item.noCoord)return true;const f=item.fixedActivityId&&getFixedActivities().find(x=>x.id===item.fixedActivityId);return !!(f&&f.noCoord);}catch(e){return false}};
     function arrangeFixedActivities(list=getFixedActivities()) {
       if(!requireRoom()||!isOrganizer())return;
       window.__fc195Fixed=list;const data=JSON.parse(JSON.stringify(getStoredData('itinerary',defaultItineraryData))),previous=new Map();
@@ -4343,9 +4344,9 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           ${(item.guideNote||item.comment) ? `
             <div class="flex items-start gap-1.5 text-[11px] text-slate-600 mt-1"><i class="fa-regular fa-pen-to-square text-sky-500 mt-0.5 shrink-0"></i><div class="leading-relaxed">${escapeHtml([item.guideNote,item.comment].filter(Boolean).join('\n')).replace(/\n/g,'<br>')}</div></div>
           ` : ''}
-          ${((item.map || buildAutoMapLink(item.title)) || item.ticketLink) ? `
+          ${(((item.map || buildAutoMapLink(item.title))&&!fc202NoMap(item)) || item.ticketLink) ? `
             <div class="flex items-center gap-3 pt-0.5 flex-wrap">
-              ${(item.map || buildAutoMapLink(item.title)) ? `<a href="${item.map || buildAutoMapLink(item.title)}" target="_blank" class="text-[11px] text-sky-600 font-bold inline-block"><i class="fa-solid fa-location-dot mr-1"></i>開啟 Google Map</a>` : ''}
+              ${((item.map || buildAutoMapLink(item.title))&&!fc202NoMap(item)) ? `<a href="${item.map || buildAutoMapLink(item.title)}" target="_blank" class="text-[11px] text-sky-600 font-bold inline-block"><i class="fa-solid fa-location-dot mr-1"></i>開啟 Google Map</a>` : ''}
               ${item.ticketLink ? `<a href="${item.ticketLink}" target="_blank" class="text-[11px] text-indigo-600 font-bold inline-block"><i class="fa-solid fa-ticket mr-1"></i>開啟購票連結</a>` : ''}
             </div>
           ` : ''}
@@ -4698,7 +4699,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
           <div class="flex justify-between items-center border-b border-slate-100 pb-1.5">
             <div class="flex items-center space-x-1.5">
               ${fc200Chev('fav',cat.id)}<h3 class="text-xs font-bold text-slate-800 cursor-pointer" onclick="fc200Toggle('fav','${cat.id}')"><i class="fa-solid fa-heart text-rose-500 mr-1"></i>${cat.title}${fc200Folded('fav',cat.id)?` <span class="text-[10px] font-normal text-slate-400">${cat.items.length} 項</span>`:''}</h3>
-              <button onclick="openEditFavCatModal('${cat.id}', '${cat.title}')" class="text-slate-400 hover:text-rose-600 text-xs px-1" title="修改類別名稱"><i class="fa-regular fa-pen-to-square"></i></button>
+              <button onclick="openEditFavCatModal('${cat.id}', '${cat.title}')" class="text-slate-400 hover:text-rose-600 text-xs px-1" title="修改類別名稱"><i class="fa-regular fa-pen-to-square"></i></button>${data.length>1?`<button type="button" onclick="fc203MoveCat('${cat.id}',-1)" class="text-slate-400 hover:text-rose-600 text-xs px-1" style="${data[0].id===cat.id?'opacity:.25;pointer-events:none':''}" title="上移" aria-label="類別上移"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="fc203MoveCat('${cat.id}',1)" class="text-slate-400 hover:text-rose-600 text-xs px-1" style="${data[data.length-1].id===cat.id?'opacity:.25;pointer-events:none':''}" title="下移" aria-label="類別下移"><i class="fa-solid fa-arrow-down"></i></button>`:''}
             </div>
             <button onclick="openAddFavItemModal('${cat.id}')" class="text-[11px] text-rose-600 font-bold hover:underline">+ 新增收藏</button>
           </div>
@@ -4727,7 +4728,7 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
                     </div>
                     <div class="flex items-center space-x-1">
                       <button onclick="openVoteFavModal('${cat.id}', '${item.id}')" class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg hover:bg-rose-200 active:scale-95 transition">🙋‍ 我想去</button>
-                      <button onclick="openEditFavNoteModal('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1" title="修改備註"><i class="fa-regular fa-pen-to-square"></i></button>
+                      ${cat.items.length>1?`<button type="button" onclick="fc203MoveItem('${cat.id}','${item.id}',-1)" class="text-slate-300 hover:text-rose-500 text-xs px-1" style="${cat.items[0].id===item.id?'opacity:.25;pointer-events:none':''}" title="上移" aria-label="上移"><i class="fa-solid fa-arrow-up"></i></button><button type="button" onclick="fc203MoveItem('${cat.id}','${item.id}',1)" class="text-slate-300 hover:text-rose-500 text-xs px-1" style="${cat.items[cat.items.length-1].id===item.id?'opacity:.25;pointer-events:none':''}" title="下移" aria-label="下移"><i class="fa-solid fa-arrow-down"></i></button>`:''}<button onclick="openEditFavNoteModal('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1" title="修改備註"><i class="fa-regular fa-pen-to-square"></i></button>
                       <button onclick="deleteFavItem('${cat.id}', '${item.id}')" class="text-slate-300 hover:text-rose-500 text-xs px-1"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                   </div>
@@ -4892,6 +4893,8 @@ function fc70Tab(tab){const ai=tab==='ai';document.getElementById('fc70-pane-ai'
       pushStateToCloud('favorites', data);
     }
 
+    window.fc203MoveCat=function(catId,dir){if(!requireRoom())return;const data=getStoredData('favorites',defaultFavoritesData);const i=data.findIndex(c=>c.id===catId),j=i+dir;if(i<0||j<0||j>=data.length)return;[data[i],data[j]]=[data[j],data[i]];pushStateToCloud('favorites',data);};
+    window.fc203MoveItem=function(catId,itemId,dir){if(!requireRoom())return;const data=getStoredData('favorites',defaultFavoritesData);const cat=data.find(c=>c.id===catId);if(!cat)return;const i=cat.items.findIndex(x=>x.id===itemId),j=i+dir;if(i<0||j<0||j>=cat.items.length)return;[cat.items[i],cat.items[j]]=[cat.items[j],cat.items[i]];pushStateToCloud('favorites',data);};
     function deleteFavItem(catId, itemId) {
       if (!requireRoom()) return;
       const data = getStoredData('favorites', defaultFavoritesData);
@@ -8845,6 +8848,17 @@ window.fc166Save=async function(){
       startGlobal();
     }catch(e){}
   },1200);
+})();
+</script>
+<script id="fc108-persist-js">
+(function(){
+  try{
+    const ua=navigator.userAgent||'',ios=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+    const standalone=window.navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches);
+    const tip=document.getElementById('fc108-ios-tip');
+    if(tip&&ios&&!standalone)tip.classList.remove('hidden');
+    if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+  }catch(e){}
 })();
 </script>
 </body>
